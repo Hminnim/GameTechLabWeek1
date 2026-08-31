@@ -6,6 +6,9 @@
 #include "CollisionManager.h"
 #include "UBall.h"
 #include "GameTimer.h"
+#include "USoundManager.h"
+
+
 
 extern LRESULT ImGui_ImplWin32_WndProcHandler(HWND hwnd, UINT msg, WPARAM wParam, LPARAM lParam);
 
@@ -55,9 +58,15 @@ void IncreaseCapacity()
 }
 
 
+
 int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLine, int nShowCmd)
 {
-	WCHAR WindowClass[] = L"JungleWindowClass";
+    // SoundManager 초기화 및 재생할 음원 파일 설정
+    USoundManager SoundManager;
+    SoundManager.Init();
+	SoundManager.LoadSound("TestSound", "Resources/AlarmSound.wav");
+    
+    WCHAR WindowClass[] = L"JungleWindowClass";
 	WCHAR Title[] = L"Game Tech Lab";
 
 	// 각종 메시지를 처리할 함수인 WndProc의 함수 포인터를 WindowClass 구조체에 넣는다.
@@ -97,10 +106,11 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLine
     // States
     bool bEnableChangeElastic = false;
     bool bEnableGravity = true;
-    bool bEnableMagnetism = false;
+    bool bEnableReverseMagnetism = false;
     bool bEnableAirResistance = false;
     bool bEnableMouseInteractMode = false;
     bool bEnableAngularVelocity = false;
+    bool bEnableSound = false;
 
     // Values
     float CurrentElastic = 1.0f;
@@ -113,14 +123,17 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLine
     GameTimer Timer;
     float DeltaTime = 0.0f;
 
+    bool bActiveMagnetism = true;
+
     // Collision Manager
     CollisionManager CollisionMan;
-
     bool bIsExit = false;
+
 	// Main Loop (Quit Message가 들어오기 전까지 아래 Loop를 무한히 실행하게 됨)
     while (bIsExit == false)
     {
-        
+		// SoundManager 업데이트
+        SoundManager.Update();
         DeltaTime = Timer.GetDeltaTime();
 
         MSG msg;
@@ -139,9 +152,9 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLine
                 break;
             }
         }
-
         ////////////////////////////////////////////
         // 매번 실행되는 코드를 여기에 추가합니다.
+        
         for (int i = 0; i < UBall::TotalNumBalls; i++)
         {
             UBall* CurrentBall = (UBall*)PrimitiveList[i];
@@ -163,13 +176,27 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLine
                 // 충돌 처리
                 CollisionMan.ResolveCollision(CurrentBall, PrimitiveList[j]);                
 
-                // 자력 처리
-                if (bEnableMagnetism)
+                if(bEnableReverseMagnetism)
                 {
-                    CurrentBall->ApplyMagnetism(PrimitiveList[j], DeltaTime, CurrentMagneticForce);
+                    CurrentBall->ApplyReverseMagnetism(PrimitiveList[j], DeltaTime, CurrentMagneticForce);
                 }
             }
         }
+
+        /*if (SelectedBall != nullptr && ImGui::IsMouseDown(ImGuiMouseButton_Left) && bEnableMagnetism && bActiveMagnetism)
+        {
+
+            for (int j = 0; j < UBall::TotalNumBalls; j++)
+            {
+                if (PrimitiveList[j] != SelectedBall)
+                {
+                    SelectedBall->ApplyReverseMagnetism(PrimitiveList[j], DeltaTime, CurrentMagneticForce);
+                }
+            }
+            bActiveMagnetism = false;
+        }*/
+
+      
 
 
         renderer.Prepare();
@@ -191,7 +218,11 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLine
         // 이후 ImGui UI 컨트롤 추가는 ImGui::NewFrame()과 ImGui::Render() 사이인 여기에 위치합니다.
         ImGui::Begin("Jungle Property Window");
         ImGui::Text("Hello Jungle World!");
-
+        ImGui::Checkbox("Sound", &bEnableSound);
+        if (bEnableSound)
+        {
+            SoundManager.PlaySound("TestSound");
+        }
         ImGui::Checkbox("Gravity", &bEnableGravity);
         if (bEnableGravity)
         {
@@ -202,8 +233,8 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLine
         {
             ImGui::SliderFloat("Elasticity", &CurrentElastic, 0.0f, 1.1f);
         }
-        ImGui::Checkbox("Magnetism", &bEnableMagnetism);
-        if (bEnableMagnetism)
+        ImGui::Checkbox("Reverse Magnetism", &bEnableReverseMagnetism);
+        if (bEnableReverseMagnetism)
         {
             ImGui::SliderFloat("Magnetic Force", &CurrentMagneticForce, 0.0f, 0.5f);
         }
@@ -270,6 +301,11 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLine
                     PrimitiveList[UBall::TotalNumBalls - 1] = NewBall;
                     TargetNumBalls++;
                 }
+            }
+
+            if (ImGui::IsMouseClicked(ImGuiMouseButton_Right) && !io.WantCaptureMouse)
+            {
+
             }
 
             // 마우스 왼쪽 클릭 풀 때
@@ -375,6 +411,7 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLine
     renderer.ReleaseConstantBuffer();
     renderer.ReleaseShader();
     renderer.Release();
+	SoundManager.Release();
 
     // Primitive 메모리 해제
     int CurrrentBallCount = UBall::TotalNumBalls;

@@ -27,7 +27,7 @@ public:
     virtual void ApplyGravity(float DeltaTime) = 0;
     virtual void SetGNumber(float NewG) = 0;
     virtual void SetElastic(float NewElastic) = 0;
-    virtual void ApplyMagnetism(UPrimitive* OtherPrimitive, float DeltaTime, float MagneticForce) = 0;
+    virtual void ApplyReverseMagnetism(UPrimitive* OtherPrimitive, float DeltaTime, float MagneticForce) = 0;
     virtual void ApplyAirResistance(float DeltaTime, float AirResistance) = 0;
     virtual void SetEnableAngularMomentum(bool bEnable) = 0;
 };
