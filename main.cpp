@@ -6,6 +6,7 @@
 #include "CollisionManager.h"
 #include "UBall.h"
 #include "GameTimer.h"
+#include "UResourceManager.h"
 
 extern LRESULT ImGui_ImplWin32_WndProcHandler(HWND hwnd, UINT msg, WPARAM wParam, LPARAM lParam);
 
@@ -115,6 +116,16 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLine
 
     // Collision Manager
     CollisionManager CollisionMan;
+
+	// Resource Manager
+    UResourceManager resourceMgr(renderer.Device);
+    ID3D11ShaderResourceView* testTexture = resourceMgr.GetTexture("Resources/circle1.png");
+    if (!testTexture) {
+        OutputDebugStringA("Texture Load Failed!\n");
+        assert(false);
+    }
+    renderer.DeviceContext->PSSetShaderResources(0, 1, &testTexture);
+
 
     bool bIsExit = false;
 	// Main Loop (Quit Message가 들어오기 전까지 아래 Loop를 무한히 실행하게 됨)

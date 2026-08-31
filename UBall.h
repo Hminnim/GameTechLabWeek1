@@ -7,6 +7,8 @@ class UBall : public UPrimitive
 public:
     static int TotalNumBalls;
 
+    std::string m_textureKey;
+
     UBall();
     virtual ~UBall();
     virtual void Render(URenderer& Renderer) override;
