@@ -18,6 +18,7 @@
 
 #include "URenderer.h"
 #include "UBall.h"
+#include "GameTimer.h"
 
 extern LRESULT ImGui_ImplWin32_WndProcHandler(HWND hwnd, UINT msg, WPARAM wParam, LPARAM lParam);
 
@@ -122,20 +123,15 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLine
     UBall* SelectedBall = nullptr;
 
     // DeltaTime
-    LARGE_INTEGER Frequency;
-    QueryPerformanceFrequency(&Frequency);
-
-    LARGE_INTEGER CurrentTime, LastTime;
-    QueryPerformanceCounter(&LastTime);
+    GameTimer Timer;
     float DeltaTime = 0.0f;
 
     bool bIsExit = false;
 	// Main Loop (Quit Message가 들어오기 전까지 아래 Loop를 무한히 실행하게 됨)
     while (bIsExit == false)
     {
-        QueryPerformanceCounter(&CurrentTime);
-        DeltaTime = (float)(CurrentTime.QuadPart - LastTime.QuadPart) / Frequency.QuadPart;
-        LastTime = CurrentTime;
+        
+        DeltaTime = Timer.GetDeltaTime();
 
         MSG msg;
 
