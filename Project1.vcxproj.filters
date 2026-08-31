@@ -53,6 +53,9 @@
     <ClCompile Include="URenderer .cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="UBall.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="ImGui\imconfig.h">
@@ -86,6 +89,12 @@
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="URenderer.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="UPrimitive.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="UBall.h">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>
