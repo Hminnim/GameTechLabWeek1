@@ -4,6 +4,8 @@
 
 UBall::UBall()
 {
+	bool bEnableFreeze = false;
+    bool isFreezed = false;
     TotalNumBalls++;
 
     // 기본 값
@@ -142,6 +144,11 @@ void UBall::ApplyAirResistance(float DeltaTime, float AirResistance)
         // 속도에 적용
         Velocity += DragAccelration * DeltaTime;
     }
+}
+
+void UBall::ApplySizeScaling(float Scale)
+{
+    Radius *= Scale;
 }
 
 void UBall::SetEnableAngularMomentum(bool bEnable)
