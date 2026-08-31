@@ -59,5 +59,10 @@ float4 mainPS(PS_INPUT input) : SV_TARGET
 {
     float4 texColor = g_Texture.Sample(g_Sampler, input.UV);
     
+    if (texColor.a < 0.1f)
+    {
+        discard;
+    }
+    
     return texColor;
 }
