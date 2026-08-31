@@ -19,6 +19,9 @@
     <Filter Include="ImGui">
       <UniqueIdentifier>{9808819a-1092-42c2-bea5-0f26c12a5ff5}</UniqueIdentifier>
     </Filter>
+    <Filter Include="inc">
+      <UniqueIdentifier>{c0a728df-e3c8-4be3-ae40-cb2664664c91}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <FxCompile Include="ShaderW0.hlsl">
@@ -57,6 +60,15 @@
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="GameTimer.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="pch.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="UResourceManager.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="USoundManager.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="CollisionManager.cpp">
@@ -106,6 +118,39 @@
     <ClInclude Include="GameTimer.h">
       <Filter>Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="pch.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="UResourceManager.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="USoundManager.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\GameTechLabWeek1\inc\fmod.h">
+      <Filter>inc</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\GameTechLabWeek1\inc\fmod.hpp">
+      <Filter>inc</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\GameTechLabWeek1\inc\fmod_codec.h">
+      <Filter>inc</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\GameTechLabWeek1\inc\fmod_common.h">
+      <Filter>inc</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\GameTechLabWeek1\inc\fmod_dsp.h">
+      <Filter>inc</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\GameTechLabWeek1\inc\fmod_dsp_effects.h">
+      <Filter>inc</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\GameTechLabWeek1\inc\fmod_errors.h">
+      <Filter>inc</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\GameTechLabWeek1\inc\fmod_output.h">
+      <Filter>inc</Filter>
+    </ClInclude>
     <ClInclude Include="CollisionManager.h">
       <Filter>Header Files</Filter>
     </ClInclude>
@@ -114,5 +159,15 @@
     <None Include="ImGui\imgui.ini">
       <Filter>ImGui</Filter>
     </None>
+    <None Include="..\..\GameTechLabWeek1\inc\fmod.cs">
+      <Filter>inc</Filter>
+    </None>
+    <None Include="..\..\GameTechLabWeek1\inc\fmod_dsp.cs">
+      <Filter>inc</Filter>
+    </None>
+    <None Include="..\..\GameTechLabWeek1\inc\fmod_errors.cs">
+      <Filter>inc</Filter>
+    </None>
+    <None Include="packages.config" />
   </ItemGroup>
 </Project>
