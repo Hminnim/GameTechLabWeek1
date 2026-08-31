@@ -1,6 +1,7 @@
 #pragma once
 
 #include <windows.h>
+#include <wrl.h>
 
 // D3D 사용에 필요한 라이브러리들을 링크합니다.
 #pragma comment(lib, "user32")
@@ -11,9 +12,15 @@
 #include <d3d11.h>
 #include <d3dcompiler.h>
 
+// IMGUI
 #include "ImGui/imgui.h"
 #include "ImGui/imgui_internal.h"
 #include "ImGui/imgui_impl_dx11.h"
 #include "imGui/imgui_impl_win32.h"
 
 #include <math.h>
+
+#include <unordered_map>
+#include <string>
+
+#include <WICTextureLoader.h>
