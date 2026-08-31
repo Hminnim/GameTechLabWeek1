@@ -136,7 +136,6 @@
     </FxCompile>
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="CollisionManager.cpp" />
     <ClCompile Include="GameTimer.cpp" />
     <ClCompile Include="ImGui\imgui.cpp">
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">NotUsing</PrecompiledHeader>
@@ -164,9 +163,17 @@
     <ClCompile Include="UBall.cpp" />
     <ClCompile Include="URenderer .cpp" />
     <ClCompile Include="UResourceManager.cpp" />
+    <ClCompile Include="USoundManager.cpp" />
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="CollisionManager.h" />
+    <ClInclude Include="..\..\GameTechLabWeek1\inc\fmod.h" />
+    <ClInclude Include="..\..\GameTechLabWeek1\inc\fmod.hpp" />
+    <ClInclude Include="..\..\GameTechLabWeek1\inc\fmod_codec.h" />
+    <ClInclude Include="..\..\GameTechLabWeek1\inc\fmod_common.h" />
+    <ClInclude Include="..\..\GameTechLabWeek1\inc\fmod_dsp.h" />
+    <ClInclude Include="..\..\GameTechLabWeek1\inc\fmod_dsp_effects.h" />
+    <ClInclude Include="..\..\GameTechLabWeek1\inc\fmod_errors.h" />
+    <ClInclude Include="..\..\GameTechLabWeek1\inc\fmod_output.h" />
     <ClInclude Include="GameTimer.h" />
     <ClInclude Include="ImGui\imconfig.h" />
     <ClInclude Include="ImGui\imgui.h" />
@@ -183,8 +190,12 @@
     <ClInclude Include="UPrimitive.h" />
     <ClInclude Include="URenderer.h" />
     <ClInclude Include="UResourceManager.h" />
+    <ClInclude Include="USoundManager.h" />
   </ItemGroup>
   <ItemGroup>
+    <None Include="..\..\GameTechLabWeek1\inc\fmod.cs" />
+    <None Include="..\..\GameTechLabWeek1\inc\fmod_dsp.cs" />
+    <None Include="..\..\GameTechLabWeek1\inc\fmod_errors.cs" />
     <None Include="ImGui\imgui.ini" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />

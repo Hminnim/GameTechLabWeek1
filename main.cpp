@@ -6,6 +6,9 @@
 #include "CollisionManager.h"
 #include "UBall.h"
 #include "GameTimer.h"
+#include "USoundManager.h"
+
+
 
 extern LRESULT ImGui_ImplWin32_WndProcHandler(HWND hwnd, UINT msg, WPARAM wParam, LPARAM lParam);
 
@@ -55,9 +58,14 @@ void IncreaseCapacity()
 }
 
 
+
 int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLine, int nShowCmd)
 {
-	WCHAR WindowClass[] = L"JungleWindowClass";
+    USoundManager SoundManager;
+    SoundManager.Init();
+	SoundManager.LoadSound("Resources/AlarmSound.wav");
+    
+    WCHAR WindowClass[] = L"JungleWindowClass";
 	WCHAR Title[] = L"Game Tech Lab";
 
 	// 각종 메시지를 처리할 함수인 WndProc의 함수 포인터를 WindowClass 구조체에 넣는다.
@@ -101,6 +109,7 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLine
     bool bEnableAirResistance = false;
     bool bEnableMouseInteractMode = false;
     bool bEnableAngularVelocity = false;
+    bool bEnableSound = false;
 
     // Values
     float CurrentElastic = 1.0f;
@@ -122,7 +131,7 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLine
 	// Main Loop (Quit Message가 들어오기 전까지 아래 Loop를 무한히 실행하게 됨)
     while (bIsExit == false)
     {
-        
+        SoundManager.Update();
         DeltaTime = Timer.GetDeltaTime();
 
         MSG msg;
@@ -143,6 +152,7 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLine
         }
         ////////////////////////////////////////////
         // 매번 실행되는 코드를 여기에 추가합니다.
+        
         for (int i = 0; i < UBall::TotalNumBalls; i++)
         {
             UBall* CurrentBall = (UBall*)PrimitiveList[i];
@@ -206,7 +216,11 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLine
         // 이후 ImGui UI 컨트롤 추가는 ImGui::NewFrame()과 ImGui::Render() 사이인 여기에 위치합니다.
         ImGui::Begin("Jungle Property Window");
         ImGui::Text("Hello Jungle World!");
-
+        ImGui::Checkbox("Sound", &bEnableSound);
+        if (bEnableSound)
+        {
+            SoundManager.PlaySound();
+        }
         ImGui::Checkbox("Gravity", &bEnableGravity);
         if (bEnableGravity)
         {
@@ -285,6 +299,11 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLine
                     PrimitiveList[UBall::TotalNumBalls - 1] = NewBall;
                     TargetNumBalls++;
                 }
+            }
+
+            if (ImGui::IsMouseClicked(ImGuiMouseButton_Right) && !io.WantCaptureMouse)
+            {
+
             }
 
             // 마우스 왼쪽 클릭 풀 때
