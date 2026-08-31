@@ -71,6 +71,9 @@
     <ClCompile Include="USoundManager.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="CollisionManager.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="ImGui\imconfig.h">
@@ -148,6 +151,9 @@
     <ClInclude Include="..\..\GameTechLabWeek1\inc\fmod_output.h">
       <Filter>inc</Filter>
     </ClInclude>
+    <ClInclude Include="CollisionManager.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <None Include="ImGui\imgui.ini">
@@ -162,5 +168,6 @@
     <None Include="..\..\GameTechLabWeek1\inc\fmod_errors.cs">
       <Filter>inc</Filter>
     </None>
+    <None Include="packages.config" />
   </ItemGroup>
 </Project>

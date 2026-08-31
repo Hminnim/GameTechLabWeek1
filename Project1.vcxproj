@@ -136,6 +136,7 @@
     </FxCompile>
   </ItemGroup>
   <ItemGroup>
+    <ClCompile Include="CollisionManager.cpp" />
     <ClCompile Include="GameTimer.cpp" />
     <ClCompile Include="ImGui\imgui.cpp">
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">NotUsing</PrecompiledHeader>
@@ -174,6 +175,7 @@
     <ClInclude Include="..\..\GameTechLabWeek1\inc\fmod_dsp_effects.h" />
     <ClInclude Include="..\..\GameTechLabWeek1\inc\fmod_errors.h" />
     <ClInclude Include="..\..\GameTechLabWeek1\inc\fmod_output.h" />
+    <ClInclude Include="CollisionManager.h" />
     <ClInclude Include="GameTimer.h" />
     <ClInclude Include="ImGui\imconfig.h" />
     <ClInclude Include="ImGui\imgui.h" />

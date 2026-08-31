@@ -61,6 +61,7 @@ void IncreaseCapacity()
 
 int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLine, int nShowCmd)
 {
+    // SoundManager 초기화 및 재생할 음원 파일 설정
     USoundManager SoundManager;
     SoundManager.Init();
 	SoundManager.LoadSound("Resources/AlarmSound.wav");
@@ -131,6 +132,7 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLine
 	// Main Loop (Quit Message가 들어오기 전까지 아래 Loop를 무한히 실행하게 됨)
     while (bIsExit == false)
     {
+		// SoundManager 업데이트
         SoundManager.Update();
         DeltaTime = Timer.GetDeltaTime();
 
@@ -409,6 +411,7 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLine
     renderer.ReleaseConstantBuffer();
     renderer.ReleaseShader();
     renderer.Release();
+	SoundManager.Release();
 
     // Primitive 메모리 해제
     int CurrrentBallCount = UBall::TotalNumBalls;
