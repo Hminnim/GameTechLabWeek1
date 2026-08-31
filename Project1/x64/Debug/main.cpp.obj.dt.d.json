@@ -1,7 +1,7 @@
 {
     "Version": "1.2",
     "Data": {
-        "Source": "c:\\users\\jungle\\documents\\github\\kraftonjunglegametechlab\\week 0\\main.cpp",
+        "Source": "c:\\users\\jungle\\documents\\github\\gametechlabweek1\\main.cpp",
         "ProvidedModule": "",
         "Includes": [
             "c:\\program files (x86)\\windows kits\\10\\include\\10.0.26100.0\\um\\windows.h",
@@ -253,11 +253,11 @@
             "c:\\program files (x86)\\windows kits\\10\\include\\10.0.26100.0\\um\\d3dcompiler.h",
             "c:\\program files (x86)\\windows kits\\10\\include\\10.0.26100.0\\um\\d3d11shader.h",
             "c:\\program files (x86)\\windows kits\\10\\include\\10.0.26100.0\\um\\d3d12shader.h",
-            "c:\\users\\jungle\\documents\\github\\kraftonjunglegametechlab\\week 0\\imgui\\imgui.h",
-            "c:\\users\\jungle\\documents\\github\\kraftonjunglegametechlab\\week 0\\imgui\\imconfig.h",
+            "c:\\users\\jungle\\documents\\github\\gametechlabweek1\\imgui\\imgui.h",
+            "c:\\users\\jungle\\documents\\github\\gametechlabweek1\\imgui\\imconfig.h",
             "c:\\program files (x86)\\windows kits\\10\\include\\10.0.26100.0\\ucrt\\float.h",
             "c:\\program files (x86)\\windows kits\\10\\include\\10.0.26100.0\\ucrt\\assert.h",
-            "c:\\users\\jungle\\documents\\github\\kraftonjunglegametechlab\\week 0\\imgui\\imgui_internal.h",
+            "c:\\users\\jungle\\documents\\github\\gametechlabweek1\\imgui\\imgui_internal.h",
             "c:\\program files (x86)\\windows kits\\10\\include\\10.0.26100.0\\ucrt\\stdio.h",
             "c:\\program files (x86)\\windows kits\\10\\include\\10.0.26100.0\\ucrt\\corecrt_wstdio.h",
             "c:\\program files (x86)\\windows kits\\10\\include\\10.0.26100.0\\ucrt\\corecrt_stdio_config.h",
@@ -274,9 +274,12 @@
             "c:\\program files\\microsoft visual studio\\18\\insiders\\vc\\tools\\msvc\\14.51.36231\\include\\mmintrin.h",
             "c:\\program files (x86)\\windows kits\\10\\include\\10.0.26100.0\\ucrt\\malloc.h",
             "c:\\program files\\microsoft visual studio\\18\\insiders\\vc\\tools\\msvc\\14.51.36231\\include\\zmmintrin.h",
-            "c:\\users\\jungle\\documents\\github\\kraftonjunglegametechlab\\week 0\\imgui\\imgui_impl_dx11.h",
-            "c:\\users\\jungle\\documents\\github\\kraftonjunglegametechlab\\week 0\\imgui\\imgui_impl_win32.h",
-            "c:\\users\\jungle\\documents\\github\\kraftonjunglegametechlab\\week 0\\sphere.h"
+            "c:\\users\\jungle\\documents\\github\\gametechlabweek1\\imgui\\imgui_impl_dx11.h",
+            "c:\\users\\jungle\\documents\\github\\gametechlabweek1\\imgui\\imgui_impl_win32.h",
+            "c:\\users\\jungle\\documents\\github\\gametechlabweek1\\urenderer.h",
+            "c:\\users\\jungle\\documents\\github\\gametechlabweek1\\mathtypes.h",
+            "c:\\program files (x86)\\windows kits\\10\\include\\10.0.26100.0\\ucrt\\math.h",
+            "c:\\users\\jungle\\documents\\github\\gametechlabweek1\\sphere.h"
         ],
         "ImportedModules": [],
         "ImportedHeaderUnits": []
