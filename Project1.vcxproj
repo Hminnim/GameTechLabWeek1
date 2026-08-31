@@ -165,6 +165,7 @@
     <ClCompile Include="URenderer .cpp" />
     <ClCompile Include="UResourceManager.cpp" />
     <ClCompile Include="USoundManager.cpp" />
+    <ClCompile Include="UWindow.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\..\GameTechLabWeek1\inc\fmod.h" />
@@ -193,6 +194,7 @@
     <ClInclude Include="URenderer.h" />
     <ClInclude Include="UResourceManager.h" />
     <ClInclude Include="USoundManager.h" />
+    <ClInclude Include="UWindow.h" />
   </ItemGroup>
   <ItemGroup>
     <None Include="..\..\GameTechLabWeek1\inc\fmod.cs" />
