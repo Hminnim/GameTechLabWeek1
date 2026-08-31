@@ -4,10 +4,26 @@
 class UPrimitive
 {
 public:
+    FVector Location;
+    FVector Velocity;
+    FVector Rotation;
+    FVector AngularVelocity;
+
+    float Radius;
+    float Mass;
+
+    float Elastic;
+    float GNumber;
+
+    float Inertia;
+
+    // States
+    bool bEnableAngularVelocity;
+
+public:
     virtual ~UPrimitive() {}
     virtual void Render(URenderer& Renderer) = 0;
     virtual void Update(float DeltaTime) = 0;
-    virtual void ResolveCollision(UPrimitive* OtherPrimitive) = 0;
     virtual void ApplyGravity(float DeltaTime) = 0;
     virtual void SetGNumber(float NewG) = 0;
     virtual void SetElastic(float NewElastic) = 0;
