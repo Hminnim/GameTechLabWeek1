@@ -159,15 +159,12 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLine
             {
                 // 충돌 처리
                 CollisionMan.ResolveCollision(CurrentBall, PrimitiveList[j]);                
-
-                if(bEnableReverseMagnetism)
-                {
-                    CurrentBall->ApplyReverseMagnetism(PrimitiveList[j], DeltaTime, CurrentMagneticForce);
-                }
             }
         }
 
-        /*if (SelectedBall != nullptr && ImGui::IsMouseDown(ImGuiMouseButton_Left) && bEnableMagnetism && bActiveMagnetism)
+
+
+        if (SelectedBall != nullptr && bEnableReverseMagnetism && bActiveMagnetism)
         {
 
             for (int j = 0; j < UBall::TotalNumBalls; j++)
@@ -178,7 +175,7 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLine
                 }
             }
             bActiveMagnetism = false;
-        }*/
+        }
 
       
 
@@ -283,6 +280,7 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLine
 
                     PrimitiveList[UBall::TotalNumBalls - 1] = NewBall;
                     TargetNumBalls++;
+					SelectedBall = NewBall;
                 }
             }
 
