@@ -110,7 +110,6 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLine
     bool bEnableAirResistance = false;
     bool bEnableMouseInteractMode = false;
     bool bEnableAngularVelocity = false;
-    bool bEnableSound = false;
 
     // Values
     float CurrentElastic = 1.0f;
@@ -218,8 +217,7 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLine
         // 이후 ImGui UI 컨트롤 추가는 ImGui::NewFrame()과 ImGui::Render() 사이인 여기에 위치합니다.
         ImGui::Begin("Jungle Property Window");
         ImGui::Text("Hello Jungle World!");
-        ImGui::Checkbox("Sound", &bEnableSound);
-        if (bEnableSound)
+        if (ImGui::Button("Sound"))
         {
             SoundManager.PlaySound("TestSound");
         }
