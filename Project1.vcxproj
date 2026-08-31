@@ -162,6 +162,7 @@
     <ClCompile Include="main.cpp" />
     <ClCompile Include="pch.cpp" />
     <ClCompile Include="UBall.cpp" />
+    <ClCompile Include="UInputManager.cpp" />
     <ClCompile Include="URenderer .cpp" />
     <ClCompile Include="UResourceManager.cpp" />
     <ClCompile Include="USoundManager.cpp" />
@@ -190,6 +191,7 @@
     <ClInclude Include="pch.h" />
     <ClInclude Include="Sphere.h" />
     <ClInclude Include="UBall.h" />
+    <ClInclude Include="UInputManager.h" />
     <ClInclude Include="UPrimitive.h" />
     <ClInclude Include="URenderer.h" />
     <ClInclude Include="UResourceManager.h" />
