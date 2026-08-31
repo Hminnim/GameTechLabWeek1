@@ -32,6 +32,8 @@ UBall::UBall()
     Rotation.x = ((rand() % 200) - 100) * 0.01f;
     Rotation.y = ((rand() % 200) - 100) * 0.01f;
     Rotation.z = ((rand() % 200) - 100) * 0.01f;
+
+    m_textureKey = "Resources/test.png";
 }
 
 UBall::~UBall()
