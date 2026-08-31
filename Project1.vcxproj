@@ -164,6 +164,7 @@
     <ClCompile Include="UBall.cpp" />
     <ClCompile Include="URenderer .cpp" />
     <ClCompile Include="UResourceManager.cpp" />
+    <ClCompile Include="UWindow.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="CollisionManager.h" />
@@ -183,8 +184,10 @@
     <ClInclude Include="UPrimitive.h" />
     <ClInclude Include="URenderer.h" />
     <ClInclude Include="UResourceManager.h" />
+    <ClInclude Include="UWindow.h" />
   </ItemGroup>
   <ItemGroup>
+    <None Include="cpp.hint" />
     <None Include="ImGui\imgui.ini" />
     <None Include="packages.config" />
   </ItemGroup>
