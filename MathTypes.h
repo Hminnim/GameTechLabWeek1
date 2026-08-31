@@ -1,10 +1,10 @@
 #pragma once
-#include <math.h>
+#include "pch.h"
 
 struct FVertexSimple
 {
     float x, y, z;    // Position
-    float r, g, b, a; // Color
+	float U, v;
 };
 
 // Structure for a 3D vector

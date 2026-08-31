@@ -1,20 +1,6 @@
-#pragma once
+ï»¿#pragma once
 
-#include <windows.h>
-
-// D3D »ç¿ë¿¡ ÇÊ¿äÇÑ ¶óÀÌºê·¯¸®µéÀ» ¸µÅ©ÇÕ´Ï´Ù.
-#pragma comment(lib, "user32")
-#pragma comment(lib, "d3d11")
-#pragma comment(lib, "d3dcompiler")
-
-// D3D »ç¿ë¿¡ ÇÊ¿äÇÑ Çì´õÆÄÀÏµéÀ» Æ÷ÇÔÇÕ´Ï´Ù.
-#include <d3d11.h>
-#include <d3dcompiler.h>
-
-#include "ImGui/imgui.h"
-#include "ImGui/imgui_internal.h"
-#include "ImGui/imgui_impl_dx11.h"
-#include "imGui/imgui_impl_win32.h"
+#include "pch.h"
 
 #include "URenderer.h"
 #include "UBall.h"
@@ -22,7 +8,7 @@
 
 extern LRESULT ImGui_ImplWin32_WndProcHandler(HWND hwnd, UINT msg, WPARAM wParam, LPARAM lParam);
 
-// °¢Á¾ ¸Ş½ÃÁö¸¦ Ã³¸®ÇÒ ÇÔ¼ö
+// ê°ì¢… ë©”ì‹œì§€ë¥¼ ì²˜ë¦¬í•  í•¨ìˆ˜
 LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
 {
     if (ImGui_ImplWin32_WndProcHandler(hWnd, message, wParam, lParam))
@@ -52,7 +38,7 @@ void IncreaseCapacity()
 {
     if (UBall::TotalNumBalls >= ListCapacity)
     {
-        // µÎ¹è·Î
+        // ë‘ë°°ë¡œ
         int newCapacity = ListCapacity * 2;
         UPrimitive** newList = new UPrimitive * [newCapacity];
 
@@ -73,24 +59,24 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLine
 	WCHAR WindowClass[] = L"JungleWindowClass";
 	WCHAR Title[] = L"Game Tech Lab";
 
-	// °¢Á¾ ¸Ş½ÃÁö¸¦ Ã³¸®ÇÒ ÇÔ¼öÀÎ WndProcÀÇ ÇÔ¼ö Æ÷ÀÎÅÍ¸¦ WindowClass ±¸Á¶Ã¼¿¡ ³Ö´Â´Ù.
+	// ê°ì¢… ë©”ì‹œì§€ë¥¼ ì²˜ë¦¬í•  í•¨ìˆ˜ì¸ WndProcì˜ í•¨ìˆ˜ í¬ì¸í„°ë¥¼ WindowClass êµ¬ì¡°ì²´ì— ë„£ëŠ”ë‹¤.
 	WNDCLASSW wndclass = { 0, WndProc, 0, 0, 0, 0, 0, 0, 0, WindowClass };
 
-	// À©µµ¿ì Å¬·¡½º µî·Ï
+	// ìœˆë„ìš° í´ë˜ìŠ¤ ë“±ë¡
 	RegisterClassW(&wndclass);
 
-	// 1024 x 1024 Å©±â¿¡ À©µµ¿ì »ı¼º
+	// 1024 x 1024 í¬ê¸°ì— ìœˆë„ìš° ìƒì„±
 	HWND hWnd = CreateWindowExW(0, WindowClass, Title, WS_POPUP | WS_VISIBLE | WS_OVERLAPPEDWINDOW,
 		CW_USEDEFAULT, CW_USEDEFAULT, 1024, 1024,
 		nullptr, nullptr, hInstance, nullptr);
 
-    // Renderer Class¸¦ »ı¼ºÇÕ´Ï´Ù.
+    // Renderer Classë¥¼ ìƒì„±í•©ë‹ˆë‹¤.
     URenderer renderer;
     renderer.Create(hWnd);
     renderer.CreateShader();
     renderer.CreateConstantBuffer();
 
-    // ImGui¸¦ »ı¼ºÇÕ´Ï´Ù.
+    // ImGuië¥¼ ìƒì„±í•©ë‹ˆë‹¤.
     IMGUI_CHECKVERSION();
     ImGui::CreateContext();
     ImGuiIO& io = ImGui::GetIO();
@@ -128,7 +114,7 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLine
 
     bool bActiveMagnetism = true;
     bool bIsExit = false;
-	// Main Loop (Quit Message°¡ µé¾î¿À±â Àü±îÁö ¾Æ·¡ Loop¸¦ ¹«ÇÑÈ÷ ½ÇÇàÇÏ°Ô µÊ)
+	// Main Loop (Quit Messageê°€ ë“¤ì–´ì˜¤ê¸° ì „ê¹Œì§€ ì•„ë˜ Loopë¥¼ ë¬´í•œíˆ ì‹¤í–‰í•˜ê²Œ ë¨)
     while (bIsExit == false)
     {
         
@@ -136,12 +122,12 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLine
 
         MSG msg;
 
-        // Ã³¸®ÇÒ ¸Ş½ÃÁö°¡ ´õ ÀÌ»ó ¾øÀ»¶§ ±îÁö ¼öÇà
+        // ì²˜ë¦¬í•  ë©”ì‹œì§€ê°€ ë” ì´ìƒ ì—†ì„ë•Œ ê¹Œì§€ ìˆ˜í–‰
         while (PeekMessage(&msg, nullptr, 0, 0, PM_REMOVE))
         {
-            // Å° ÀÔ·Â ¸Ş½ÃÁö¸¦ ¹ø¿ª
+            // í‚¤ ì…ë ¥ ë©”ì‹œì§€ë¥¼ ë²ˆì—­
             TranslateMessage(&msg);
-            // ¸Ş½ÃÁö¸¦ ÀûÀıÇÑ À©µµ¿ì ÇÁ·Î½ÃÀú¿¡ Àü´Ş, ¸Ş½ÃÁö°¡ À§¿¡¼­ µî·ÏÇÑ WndProc À¸·Î Àü´Ş
+            // ë©”ì‹œì§€ë¥¼ ì ì ˆí•œ ìœˆë„ìš° í”„ë¡œì‹œì €ì— ì „ë‹¬, ë©”ì‹œì§€ê°€ ìœ„ì—ì„œ ë“±ë¡í•œ WndProc ìœ¼ë¡œ ì „ë‹¬
             DispatchMessage(&msg);
 
             if (msg.message == WM_QUIT)
@@ -151,7 +137,7 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLine
             }
         }
         ////////////////////////////////////////////
-        // ¸Å¹ø ½ÇÇàµÇ´Â ÄÚµå¸¦ ¿©±â¿¡ Ãß°¡ÇÕ´Ï´Ù.
+        // ë§¤ë²ˆ ì‹¤í–‰ë˜ëŠ” ì½”ë“œë¥¼ ì—¬ê¸°ì— ì¶”ê°€í•©ë‹ˆë‹¤.
         for (int i = 0; i < UBall::TotalNumBalls; i++)
         {
             UBall* CurrentBall = (UBall*)PrimitiveList[i];
@@ -170,7 +156,7 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLine
 
             for (int j = i + 1; j < UBall::TotalNumBalls; j++)
             {
-                // Ãæµ¹ Ã³¸®
+                // ì¶©ëŒ ì²˜ë¦¬
                 CurrentBall->ResolveCollision(PrimitiveList[j]);
 
                 if(bEnableReverseMagnetism)
@@ -212,7 +198,7 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLine
         ImGui_ImplWin32_NewFrame();
         ImGui::NewFrame();
 
-        // ÀÌÈÄ ImGui UI ÄÁÆ®·Ñ Ãß°¡´Â ImGui::NewFrame()°ú ImGui::Render() »çÀÌÀÎ ¿©±â¿¡ À§Ä¡ÇÕ´Ï´Ù.
+        // ì´í›„ ImGui UI ì»¨íŠ¸ë¡¤ ì¶”ê°€ëŠ” ImGui::NewFrame()ê³¼ ImGui::Render() ì‚¬ì´ì¸ ì—¬ê¸°ì— ìœ„ì¹˜í•©ë‹ˆë‹¤.
         ImGui::Begin("Jungle Property Window");
         ImGui::Text("Hello Jungle World!");
 
@@ -236,58 +222,58 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLine
         {
             ImGui::SliderFloat("Air Resistance Force", &CurrentAirResistance, 0.0f, 1.0f);
         }
-        // ¸¶¿ì½º »óÈ£ÀÛ¿ë ¸ğµå(°ø ²ø°í °¡±â, ¸¶¿ì½º ÁÂÇ¥¿¡ ¼ÒÈ¯)
+        // ë§ˆìš°ìŠ¤ ìƒí˜¸ì‘ìš© ëª¨ë“œ(ê³µ ëŒê³  ê°€ê¸°, ë§ˆìš°ìŠ¤ ì¢Œí‘œì— ì†Œí™˜)
         ImGui::Checkbox("Mouse Interact Mode", &bEnableMouseInteractMode);
         if (bEnableMouseInteractMode)
         {
             POINT MousePos;
-            GetCursorPos(&MousePos);            // ¸ğ´ÏÅÍ È­¸é ±âÁØ ¸¶¿ì½º ÁÂÇ¥
-            ScreenToClient(hWnd, &MousePos);    // hWnd(ÇöÀçÃ¢)ÀÇ ¿ŞÂÊ »ó´Ü ±âÁØÀ¸·Î ÁÂÇ¥ º¯È¯
+            GetCursorPos(&MousePos);            // ëª¨ë‹ˆí„° í™”ë©´ ê¸°ì¤€ ë§ˆìš°ìŠ¤ ì¢Œí‘œ
+            ScreenToClient(hWnd, &MousePos);    // hWnd(í˜„ì¬ì°½)ì˜ ì™¼ìª½ ìƒë‹¨ ê¸°ì¤€ìœ¼ë¡œ ì¢Œí‘œ ë³€í™˜
 
-            // È­¸é Å©±â 1024x1024
+            // í™”ë©´ í¬ê¸° 1024x1024
             float Width = 1024.0f;
             float Height = 1024.0f;
 
-            // ¸¶¿ì½º ÁÂÇ¥¸¦ ½ºÅ©¸° »çÀÌÁî·Î ³ª´²¼­ 0~1 »çÀÌÀÇ ºñÀ²·Î ¸¸µê
-            // ¹üÀ§¸¦ 2·Î ´Ã¸®°í -1À» ÇØ¼­ ndc ¹üÀ§·Î ¸¸µë
+            // ë§ˆìš°ìŠ¤ ì¢Œí‘œë¥¼ ìŠ¤í¬ë¦° ì‚¬ì´ì¦ˆë¡œ ë‚˜ëˆ ì„œ 0~1 ì‚¬ì´ì˜ ë¹„ìœ¨ë¡œ ë§Œë“¦
+            // ë²”ìœ„ë¥¼ 2ë¡œ ëŠ˜ë¦¬ê³  -1ì„ í•´ì„œ ndc ë²”ìœ„ë¡œ ë§Œë“¬
             float NdcX = (float)MousePos.x / Width * 2.0f - 1.0f;
             float NdcY = -((float)MousePos.y / Height * 2.0f - 1.0f);
 
-            // ¸¶¿ì½º ¿ŞÂÊ Å¬¸¯ ÇßÀ»¶§
+            // ë§ˆìš°ìŠ¤ ì™¼ìª½ í´ë¦­ í–ˆì„ë•Œ
             if (ImGui::IsMouseClicked(ImGuiMouseButton_Left) && !io.WantCaptureMouse)
             {
                 bool bHitBall = false;
 
-                // ¸¶¿ì½º Ä¿¼­°¡ °ø ¾È¿¡ ÀÖ´ÂÁö
+                // ë§ˆìš°ìŠ¤ ì»¤ì„œê°€ ê³µ ì•ˆì— ìˆëŠ”ì§€
                 for (int i = 0; i < UBall::TotalNumBalls; i++)
                 {
                     UBall* ball = (UBall*)PrimitiveList[i];
 
-                    // °øÀÇ À§Ä¡¿Í ¸¶¿ì½º ÁÂÇ¥ »çÀÌÀÇ °Å¸®
+                    // ê³µì˜ ìœ„ì¹˜ì™€ ë§ˆìš°ìŠ¤ ì¢Œí‘œ ì‚¬ì´ì˜ ê±°ë¦¬
                     float dx = ball->Location.x - NdcX;
                     float dy = ball->Location.y - NdcY;
 
-                    // µÎ °Å¸®°¡ ÇØ´ç °øÀÇ ¹İÁö¸§ º¸´Ù ÂªÀ» ¶§
+                    // ë‘ ê±°ë¦¬ê°€ í•´ë‹¹ ê³µì˜ ë°˜ì§€ë¦„ ë³´ë‹¤ ì§§ì„ ë•Œ
                     if (dx * dx + dy * dy < ball->Radius * ball->Radius)
                     {
                         SelectedBall = ball;
                         bHitBall = true;
 
-                        // °øÀº ÀâÈùµíÀÌ ¸ØÃß±â
+                        // ê³µì€ ì¡íŒë“¯ì´ ë©ˆì¶”ê¸°
                         ball->Velocity = FVector(0, 0, 0);
 
                         break;
                     }
                 }
 
-                // ¸¶¿ì½º Ä¿¼­¿¡ °øÀÌ ¾È ÀâÇûÀ» ¶§(ÇØ´ç ÁÂÇ¥¿¡ ¼ÒÈ¯)
+                // ë§ˆìš°ìŠ¤ ì»¤ì„œì— ê³µì´ ì•ˆ ì¡í˜”ì„ ë•Œ(í•´ë‹¹ ì¢Œí‘œì— ì†Œí™˜)
                 if (bHitBall == false)
                 {
                     IncreaseCapacity();
 
                     UBall* NewBall = new UBall();
 
-                    // ¸¶¿ì½º Ä¿¼­ À§Ä¡·Î
+                    // ë§ˆìš°ìŠ¤ ì»¤ì„œ ìœ„ì¹˜ë¡œ
                     NewBall->Location.x = NdcX;
                     NewBall->Location.y = NdcY;
 
@@ -296,27 +282,27 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLine
                 }
             }
 
-            // ¸¶¿ì½º ¿ŞÂÊ Å¬¸¯ Ç® ¶§
+            // ë§ˆìš°ìŠ¤ ì™¼ìª½ í´ë¦­ í’€ ë•Œ
             if (ImGui::IsMouseReleased(ImGuiMouseButton_Left))
             {
-                // ÀâÀº °ø ÇØÁ¦
+                // ì¡ì€ ê³µ í•´ì œ
                 SelectedBall = nullptr;
             }
 
-            // ÀâÀº °øÀÌ ÀÖ°í ¸¶¿ì½º ¿ŞÂÊ Å¬¸¯À» À¯Áö ÇßÀ» ¶§
+            // ì¡ì€ ê³µì´ ìˆê³  ë§ˆìš°ìŠ¤ ì™¼ìª½ í´ë¦­ì„ ìœ ì§€ í–ˆì„ ë•Œ
             if (SelectedBall != nullptr && ImGui::IsMouseDown(ImGuiMouseButton_Left))
             {
-                // ¸¶¿ì½º À§Ä¡·Î °¡´Â º¤ÅÍ ±¸ÇÏ±â
+                // ë§ˆìš°ìŠ¤ ìœ„ì¹˜ë¡œ ê°€ëŠ” ë²¡í„° êµ¬í•˜ê¸°
                 FVector TargetPos(NdcX, NdcY, 0.0f);
                 FVector Dir = TargetPos - SelectedBall->Location;
 
-                // ²ø·Á°¡´Â Èû
+                // ëŒë ¤ê°€ëŠ” í˜
                 float SpringForce = 150.0f;
 
-                // ¼Óµµ ´õÇÏ±â
+                // ì†ë„ ë”í•˜ê¸°
                 SelectedBall->Velocity += Dir * SpringForce * DeltaTime;
 
-                // °¡±îÈ÷ °¡¸é ¼­¼­È÷ ÁÙÀÌ±â (Damping)
+                // ê°€ê¹Œíˆ ê°€ë©´ ì„œì„œíˆ ì¤„ì´ê¸° (Damping)
                 SelectedBall->Velocity.x *= 0.9f;
                 SelectedBall->Velocity.y *= 0.9f;
             }
@@ -325,7 +311,7 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLine
         ImGui::Checkbox("Angular Velocity", &bEnableAngularVelocity);
 
         ImGui::InputInt("Number of Balls", &TargetNumBalls);
-        // ÃÖ¼Ò 1°³
+        // ìµœì†Œ 1ê°œ
         if (TargetNumBalls < 1)
         {
             TargetNumBalls = 1;
@@ -336,21 +322,21 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLine
         ImGui::Render();
         ImGui_ImplDX11_RenderDrawData(ImGui::GetDrawData());
 
-        // º¯°æµÈ BallÀÇ ¼ıÀÚ Àû¿ë
-        // Áõ°¡ ½ÃÅ³ ¶§
+        // ë³€ê²½ëœ Ballì˜ ìˆ«ì ì ìš©
+        // ì¦ê°€ ì‹œí‚¬ ë•Œ
         while (UBall::TotalNumBalls < TargetNumBalls)
         {
             IncreaseCapacity();
             UBall* NewBall = new UBall();
             PrimitiveList[UBall::TotalNumBalls - 1] = NewBall;
         }
-        // °¨¼Ò ½ÃÅ³ ¶§
+        // ê°ì†Œ ì‹œí‚¬ ë•Œ
         while (UBall::TotalNumBalls > TargetNumBalls)
         {
             int RemoveIndex = rand() % UBall::TotalNumBalls;
             UPrimitive* BallToDelete = PrimitiveList[RemoveIndex];
 
-            // »èÁ¦µÇ´Â °øÀÌ ¼±ÅÃµÈ °øÀÌ¸é ¼±ÅÃ ÇØÁ¦ ½ÃÅ°±â
+            // ì‚­ì œë˜ëŠ” ê³µì´ ì„ íƒëœ ê³µì´ë©´ ì„ íƒ í•´ì œ ì‹œí‚¤ê¸°
             if (BallToDelete == SelectedBall)
             {
                 SelectedBall = nullptr;
@@ -362,7 +348,7 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLine
             delete BallToDelete;
         }
 
-        // ImGui·Î º¯°æÇÑ °ªµé Àû¿ë
+        // ImGuië¡œ ë³€ê²½í•œ ê°’ë“¤ ì ìš©
         for (int i = 0; i < UBall::TotalNumBalls; i++)
         {
             UBall* CurrentBall = (UBall*)PrimitiveList[i];
@@ -384,23 +370,23 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLine
             CurrentBall->SetEnableAngularMomentum(bEnableAngularVelocity);
         }
 
-        // ÇöÀç È­¸é¿¡ º¸¿©Áö´Â ¹öÆÛ¿Í ±×¸®±â ÀÛ¾÷À» À§ÇÑ ¹öÆÛ¸¦ ¼­·Î ±³È¯ÇÕ´Ï´Ù.
+        // í˜„ì¬ í™”ë©´ì— ë³´ì—¬ì§€ëŠ” ë²„í¼ì™€ ê·¸ë¦¬ê¸° ì‘ì—…ì„ ìœ„í•œ ë²„í¼ë¥¼ ì„œë¡œ êµí™˜í•©ë‹ˆë‹¤.
         renderer.SwapBuffer();
     }
 
-    // ¿©±â¿¡¼­ ImGui ¼Ò¸ê
+    // ì—¬ê¸°ì—ì„œ ImGui ì†Œë©¸
     ImGui_ImplDX11_Shutdown();
     ImGui_ImplWin32_Shutdown();
     ImGui::DestroyContext();
 
-    // ¼Ò¸êÇÏ´Â ÄÚµå¸¦ ¿©±â¿¡ Ãß°¡ÇÕ´Ï´Ù.
+    // ì†Œë©¸í•˜ëŠ” ì½”ë“œë¥¼ ì—¬ê¸°ì— ì¶”ê°€í•©ë‹ˆë‹¤.
     renderer.ReleaseVertexBuffer(VertexBufferSphere);
 
     renderer.ReleaseConstantBuffer();
     renderer.ReleaseShader();
     renderer.Release();
 
-    // Primitive ¸Ş¸ğ¸® ÇØÁ¦
+    // Primitive ë©”ëª¨ë¦¬ í•´ì œ
     int CurrrentBallCount = UBall::TotalNumBalls;
     for (int i = 0; i < CurrrentBallCount; i++)
     {
