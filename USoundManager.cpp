@@ -1,10 +1,6 @@
 #include "pch.h"
 #include "USoundManager.h"
 
-FMOD::System* SoundSystem = nullptr;
-FMOD::Sound* SoundEffect = nullptr;
-FMOD::Channel* SoundChannel = nullptr;
-
 bool USoundManager::Init()
 {
 	FMOD_RESULT result;
@@ -28,11 +24,12 @@ void USoundManager::Update() {
 	}
 }
 
-bool USoundManager::LoadSound(const char* filename)
+bool USoundManager::LoadSound(std::string soundName, const char* filename)
 {
 	if (!SoundSystem)
 		return false;
 	FMOD_RESULT result = SoundSystem->createSound(filename, FMOD_DEFAULT, nullptr, &SoundEffect);
+	SoundMap.insert({ soundName, SoundEffect });
 	if (result != FMOD_OK)
 	{
 		return false;
@@ -40,16 +37,25 @@ bool USoundManager::LoadSound(const char* filename)
 	return true;
 }
 
-void USoundManager::PlaySound()
+void USoundManager::PlaySound(std::string soundName)
 {
-	if (SoundSystem && SoundEffect)
+	auto it = SoundMap.find(soundName);
+	if (it != SoundMap.end())
 	{
-		SoundSystem->playSound(SoundEffect, nullptr, false, &SoundChannel);
+		SoundSystem->playSound(it->second, nullptr, false, &SoundChannel);
 	}
 }
 
 void USoundManager::Release()
 {
+	for (auto& pair : SoundMap)
+	{
+		if (pair.second)
+		{
+			pair.second->release();
+		}
+	}
+	SoundMap.clear();
 	if (SoundEffect)
 	{
 		SoundEffect->release();

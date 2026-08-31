@@ -10,10 +10,14 @@
 
 class USoundManager
 {
+	FMOD::System* SoundSystem = nullptr;
+	FMOD::Sound* SoundEffect = nullptr;
+	FMOD::Channel* SoundChannel = nullptr;
+	std::unordered_map<std::string, FMOD::Sound*> SoundMap;
 public:
 	virtual bool Init();
 	virtual void Update();
-	virtual bool LoadSound(const char* filename);
-	virtual void PlaySound();
+	virtual bool LoadSound(std::string soundName, const char* filename);
+	virtual void PlaySound(std::string soundName);
 	virtual void Release();
 };

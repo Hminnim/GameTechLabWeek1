@@ -64,7 +64,7 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLine
     // SoundManager 초기화 및 재생할 음원 파일 설정
     USoundManager SoundManager;
     SoundManager.Init();
-	SoundManager.LoadSound("Resources/AlarmSound.wav");
+	SoundManager.LoadSound("TestSound", "Resources/AlarmSound.wav");
     
     WCHAR WindowClass[] = L"JungleWindowClass";
 	WCHAR Title[] = L"Game Tech Lab";
@@ -221,7 +221,7 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLine
         ImGui::Checkbox("Sound", &bEnableSound);
         if (bEnableSound)
         {
-            SoundManager.PlaySound();
+            SoundManager.PlaySound("TestSound");
         }
         ImGui::Checkbox("Gravity", &bEnableGravity);
         if (bEnableGravity)
