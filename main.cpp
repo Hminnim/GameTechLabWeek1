@@ -119,7 +119,7 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLine
 
 	// Resource Manager
     UResourceManager resourceMgr(renderer.Device);
-    ID3D11ShaderResourceView* testTexture = resourceMgr.GetTexture("Resources/circle1.png");
+    ID3D11ShaderResourceView* testTexture = resourceMgr.GetTexture("Resources/test.jpg");
     if (!testTexture) {
         OutputDebugStringA("Texture Load Failed!\n");
         assert(false);
