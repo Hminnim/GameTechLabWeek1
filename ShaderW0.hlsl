@@ -7,16 +7,19 @@ cbuffer constants : register(b0)
     float Pad;
 }
 
+Texture2D g_Texture : register(t0);
+SamplerState g_Sampler : register(s0);
+
 struct VS_INPUT
 {
     float4 position : POSITION; // Input position from vertex buffer
-    float4 color : COLOR; // Input color from vertex buffer
+    float2 UV : TEXCOORD0;
 };
 
 struct PS_INPUT
 {
     float4 position : SV_POSITION; // Transformed position to pass to the pixel shader
-    float4 color : COLOR; // Color to pass to the pixel shader
+    float2 UV : TEXCOORD0;
 };
 
 float3x3 GetRotateX(float rad)
@@ -40,23 +43,21 @@ PS_INPUT mainVS(VS_INPUT input)
     PS_INPUT output;
     
     float3 pos = input.position.xyz;
-    
     pos *= Scale;
-    
     pos = mul(pos, GetRotateX(Rotation.x));
     pos = mul(pos, GetRotateY(Rotation.y));
     pos = mul(pos, GetRotateZ(Rotation.z));
-    
     pos += Offset;
     
     output.position = float4(pos, 1.0f);
-    output.color = input.color;
+    output.UV = input.UV;
     
     return output;
 }
 
 float4 mainPS(PS_INPUT input) : SV_TARGET
 {
-    // Output the color directly
-    return input.color;
+    float4 texColor = g_Texture.Sample(g_Sampler, input.UV);
+    
+    return texColor;
 }
