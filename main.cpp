@@ -110,7 +110,7 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLine
     // States
     bool bEnableChangeElastic = false;
     bool bEnableGravity = true;
-    bool bEnableMagnetism = false;
+    bool bEnableReverseMagnetism = false;
     bool bEnableAirResistance = false;
     bool bEnableMouseInteractMode = false;
     bool bEnableAngularVelocity = false;
@@ -126,6 +126,7 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLine
     GameTimer Timer;
     float DeltaTime = 0.0f;
 
+    bool bActiveMagnetism = true;
     bool bIsExit = false;
 	// Main Loop (Quit Message가 들어오기 전까지 아래 Loop를 무한히 실행하게 됨)
     while (bIsExit == false)
@@ -149,7 +150,6 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLine
                 break;
             }
         }
-
         ////////////////////////////////////////////
         // 매번 실행되는 코드를 여기에 추가합니다.
         for (int i = 0; i < UBall::TotalNumBalls; i++)
@@ -173,13 +173,27 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLine
                 // 충돌 처리
                 CurrentBall->ResolveCollision(PrimitiveList[j]);
 
-                // 자력 처리
-                if (bEnableMagnetism)
+                if(bEnableReverseMagnetism)
                 {
-                    CurrentBall->ApplyMagnetism(PrimitiveList[j], DeltaTime, CurrentMagneticForce);
+                    CurrentBall->ApplyReverseMagnetism(PrimitiveList[j], DeltaTime, CurrentMagneticForce);
                 }
             }
         }
+
+        /*if (SelectedBall != nullptr && ImGui::IsMouseDown(ImGuiMouseButton_Left) && bEnableMagnetism && bActiveMagnetism)
+        {
+
+            for (int j = 0; j < UBall::TotalNumBalls; j++)
+            {
+                if (PrimitiveList[j] != SelectedBall)
+                {
+                    SelectedBall->ApplyReverseMagnetism(PrimitiveList[j], DeltaTime, CurrentMagneticForce);
+                }
+            }
+            bActiveMagnetism = false;
+        }*/
+
+      
 
 
         renderer.Prepare();
@@ -212,8 +226,8 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLine
         {
             ImGui::SliderFloat("Elasticity", &CurrentElastic, 0.0f, 1.1f);
         }
-        ImGui::Checkbox("Magnetism", &bEnableMagnetism);
-        if (bEnableMagnetism)
+        ImGui::Checkbox("Reverse Magnetism", &bEnableReverseMagnetism);
+        if (bEnableReverseMagnetism)
         {
             ImGui::SliderFloat("Magnetic Force", &CurrentMagneticForce, 0.0f, 0.5f);
         }

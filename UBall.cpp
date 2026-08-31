@@ -190,7 +190,7 @@ void UBall::SetElastic(float NewElastic)
     Elastic = NewElastic;
 }
 
-void UBall::ApplyMagnetism(UPrimitive* OtherPrimitive, float DeltaTime, float MagneticForce)
+void UBall::ApplyReverseMagnetism(UPrimitive* OtherPrimitive, float DeltaTime, float MagneticForce)
 {
     UBall* Other = dynamic_cast<UBall*>(OtherPrimitive);
     if (!Other)
@@ -215,10 +215,11 @@ void UBall::ApplyMagnetism(UPrimitive* OtherPrimitive, float DeltaTime, float Ma
         FVector ForceVector = Normal * Force;
 
         // 질량이 가벼울 수록 빠르게 접근 F = ma
-        Velocity += (ForceVector / Mass) * DeltaTime;
-        Other->Velocity -= (ForceVector / Other->Mass) * DeltaTime; // 작용 반작용
+        Velocity -= (ForceVector / Mass);
+        Other->Velocity += (ForceVector / Other->Mass); // 작용 반작용
     }
 }
+
 void UBall::ApplyAirResistance(float DeltaTime, float AirResistance)
 {
     float LinearSpeed = Velocity.Length();
