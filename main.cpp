@@ -3,6 +3,7 @@
 #include "pch.h"
 
 #include "URenderer.h"
+#include "CollisionManager.h"
 #include "UBall.h"
 #include "GameTimer.h"
 
@@ -112,6 +113,9 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLine
     GameTimer Timer;
     float DeltaTime = 0.0f;
 
+    // Collision Manager
+    CollisionManager CollisionMan;
+
     bool bIsExit = false;
 	// Main Loop (Quit Message가 들어오기 전까지 아래 Loop를 무한히 실행하게 됨)
     while (bIsExit == false)
@@ -157,7 +161,7 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLine
             for (int j = i + 1; j < UBall::TotalNumBalls; j++)
             {
                 // 충돌 처리
-                CurrentBall->ResolveCollision(PrimitiveList[j]);
+                CollisionMan.ResolveCollision(CurrentBall, PrimitiveList[j]);                
 
                 // 자력 처리
                 if (bEnableMagnetism)
