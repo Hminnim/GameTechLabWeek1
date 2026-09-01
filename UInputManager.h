@@ -31,7 +31,7 @@ public:
 	void OnMouseMove(long x, long y);
 
 	bool IsKeyDown(unsigned long InKeyType) const { return mKeyState[InKeyType] == EKeyState::Down; }
-	bool IsKeyPress(unsigned long InKeyType) const { return mKeyState[InKeyType] == EKeyState::Down; }
+	bool IsKeyPress(unsigned long InKeyType) const { return mKeyState[InKeyType] == EKeyState::Press; }
 	bool IsKeyUp(unsigned long InKeyType) const { return mKeyState[InKeyType] == EKeyState::Up; }
 
 	POINT GetMousePos() const { return MousePos; }
