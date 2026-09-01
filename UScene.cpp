@@ -3,15 +3,13 @@
 #include "UScene.h"
 #include "UPrimitive.h"
 #include "UBall.h"
+#include "USceneManager.h"
+#include "UInputManager.h"
 
 
 void UScene::Render(URenderer& renderer)
 {
-    // Game World Object
-    for (auto* primitive : _primitives)
-        primitive->Render(renderer);
-
-	renderer.m_spriteBatch->Begin();
+	renderer.BeginSprite();
 
     // UI
     for (auto* ui : _uis)
@@ -21,7 +19,11 @@ void UScene::Render(URenderer& renderer)
     for (auto* button : _buttons)
         button->Render(renderer);
 
-	renderer.m_spriteBatch->End();
+	renderer.EndSprite();
+
+    // Game World Object
+    for (auto* primitive : _primitives)
+        primitive->Render(renderer);
 }
 
 void UScene::HandleClick(float mouseX, float mouseY)
@@ -36,6 +38,23 @@ void UScene::Update(float Deltatime)
     {
         primitive->Update(Deltatime, _primitives);
     }
+
+    if (UInputManager::GetInstance().IsKeyDown(VK_LBUTTON)) {
+        float mouseX = UInputManager::GetInstance().GetMousePos().x;
+        float mouseY = UInputManager::GetInstance().GetMousePos().y;
+
+        for (int i = _uis.size() - 1; i >= 0; --i) {
+
+            UUI* ui = _uis[i];
+
+            UButton* btn = dynamic_cast<UButton*>(ui);
+
+            if (btn != nullptr && btn->HitTest(mouseX, mouseY)) {
+                btn->OnClick();
+                break;
+            }
+        }
+    }
 }
 
 //////////////////
@@ -43,23 +62,23 @@ void UScene::Update(float Deltatime)
 //////////////////
 void UTitleScene::Initialize()
 {
-	AddPrimitive(new UBall("sphere", "Resources/test.png"));
-    AddPrimitive(new UBall("sphere", "Resources/test.png"));
-    AddPrimitive(new UBall("sphere", "Resources/test.png"));
-    AddPrimitive(new UBall("sphere", "Resources/test.png"));
-    AddPrimitive(new UBall("sphere", "Resources/test.png"));
-
     UUI* temp = new UUI();
     temp->Init("Resources/Title.png", 0, 0, 2040, 1400);
 	AddUI(temp);
 
-	UUI* temp2 = new UButton();
+    UButton* temp2 = new UButton();
 	temp2->Init("Resources/button_start.png", 400, 700, 400, 400);
     AddUI(temp2);
+    temp2->SetOnClick([]() {
+        USceneManager::GetInstance().ChangeScene("InGame");
+    });
 
-	UUI* temp3 = new UButton();
+    UButton* temp3 = new UButton();
 	temp3->Init("Resources/button_exit.png", 1200, 700, 400, 400);
     AddUI(temp3);
+    temp3->SetOnClick([]() {
+        USceneManager::GetInstance().ChangeScene("GameOver");
+    });
 }
 
 void UTitleScene::Update(float deltaTime)
@@ -79,10 +98,20 @@ void UTitleScene::Render(URenderer& renderer)
 //////////////////
 void UInGameScene::Initialize()
 {
+    AddPrimitive(new UBall("sphere", "Resources/test.png"));
+    AddPrimitive(new UBall("sphere", "Resources/test.png"));
+    AddPrimitive(new UBall("sphere", "Resources/test.png"));
+    AddPrimitive(new UBall("sphere", "Resources/test.png"));
+    AddPrimitive(new UBall("sphere", "Resources/test.png"));
+
+    UUI* temp = new UUI();
+    temp->Init("Resources/background_blue.png", 0, 0, 2040, 1400);
+    AddUI(temp);
 }
 
 void UInGameScene::Update(float deltaTime)
 {
+    UScene::Update(deltaTime);
 }
 
 void UInGameScene::Render(URenderer& renderer)
@@ -97,10 +126,28 @@ void UInGameScene::Render(URenderer& renderer)
 ////////////////////
 void UGameOverScene::Initialize()
 {
+    UUI* temp = new UUI();
+    temp->Init("Resources/background_red_win.png", 0, 0, 2040, 1400);
+    AddUI(temp);
+
+    UButton* temp2 = new UButton();
+    temp2->Init("Resources/button_restart.png", 400, 700, 400, 400);
+    AddUI(temp2);
+    temp2->SetOnClick([]() {
+        USceneManager::GetInstance().ChangeScene("InGame");
+        });
+
+    UButton* temp3 = new UButton();
+    temp3->Init("Resources/button_exit.png", 1200, 700, 400, 400);
+    AddUI(temp3);
+    temp3->SetOnClick([]() {
+        USceneManager::GetInstance().ChangeScene("GameOver");
+        });
 }
 
 void UGameOverScene::Update(float deltaTime)
 {
+    UScene::Update(deltaTime);
 }
 
 void UGameOverScene::Render(URenderer& renderer)

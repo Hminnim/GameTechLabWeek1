@@ -100,7 +100,7 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLine
                 break;
             }
         }
-		    // SoundManager 업데이트
+		// SoundManager 업데이트
         SoundManager.Update();
         DeltaTime = Timer.GetDeltaTime();
         UInputManager::GetInstance().Update();
