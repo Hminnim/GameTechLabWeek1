@@ -110,7 +110,7 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLine
         USceneManager::GetInstance().Update(DeltaTime);
         renderer.Prepare();
         renderer.PrepareShader();
-		    USceneManager::GetInstance().Render(renderer);
+		USceneManager::GetInstance().Render(renderer);
 
 
         // ImGui
