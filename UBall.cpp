@@ -146,6 +146,16 @@ void UBall::ApplySelfDestruct()
     isSelfDestruct = true;
 }
 
+void UBall::ApplyEnableFreeze()
+{
+    bEnableFreeze = true;
+}
+
+void UBall::ApplySelfFreeze()
+{
+    isFreezed = true;
+}
+
 void UBall::ApplyAirResistance(float DeltaTime, float AirResistance)
 {
     float LinearSpeed = Velocity.Length();

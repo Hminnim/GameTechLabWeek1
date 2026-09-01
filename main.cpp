@@ -89,6 +89,7 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLine
     bool bEnableMouseInteractMode = false;
     bool bEnableAngularVelocity = false;
     bool bEnableSelfDestruct = false;
+    bool bEnableFreezeBall = false;
 
     // Values
     float CurrentElastic = 1.0f;
@@ -146,7 +147,7 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLine
         {
             UBall* CurrentBall = (UBall*)PrimitiveList[i];
 
-            if (bEnableGravity)
+            if (bEnableGravity && CurrentBall->isFreezed==false)
             {
                 CurrentBall->ApplyGravity(DeltaTime);
             }
@@ -156,6 +157,10 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLine
                 CurrentBall->ApplyAirResistance(DeltaTime, CurrentAirResistance);
             }
 
+            if (CurrentBall->isFreezed)
+            {
+                CurrentBall->Velocity = FVector(0, 0, 0);
+            }
             CurrentBall->Update(DeltaTime);
 
             for (int j = i + 1; j < UBall::TotalNumBalls; j++)
@@ -207,12 +212,19 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLine
             bActiveMagnetism = false;
         }
 
+        // 자폭 공 활성화
         if (SelectedBall != nullptr && bEnableSelfDestruct)
         {
             UBall* SelectBall = dynamic_cast<UBall*>(SelectedBall);
             SelectBall->isSelfDestruct = true;
         }
-      
+        
+        // 얼음 공 활성화
+        if (SelectedBall != nullptr && bEnableFreezeBall)
+        {
+            UBall* SelectBall = dynamic_cast<UBall*>(SelectedBall);
+            SelectBall->bEnableFreeze = true;
+        }
 
         renderer.Prepare();
         renderer.PrepareShader();
@@ -237,7 +249,8 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLine
         {
             SoundManager.PlaySound("TestSound");
         }
-        ImGui::Checkbox("SelfDestruct", &bEnableSelfDestruct);
+        ImGui::Checkbox("Self Destruct", &bEnableSelfDestruct);
+        ImGui::Checkbox("Freeze", &bEnableFreezeBall);
         ImGui::Checkbox("Gravity", &bEnableGravity);
         if (bEnableGravity)
         {
