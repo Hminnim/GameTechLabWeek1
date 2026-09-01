@@ -36,5 +36,5 @@ public:
     virtual void ApplySelfFreeze() = 0;
     virtual void ApplyAirResistance(float DeltaTime, float AirResistance) = 0;
     virtual void SetEnableAngularMomentum(bool bEnable) = 0;
-    virtual void Update(float DeltaTime, float ScreenWidth, float ScreenHeight, std::vector<UPrimitive*>&others) = 0;
+    virtual void Update(float DeltaTime, std::vector<UPrimitive*>& others) = 0;
 };

@@ -12,6 +12,7 @@
 #include "USceneManager.h"
 #include "UWindow.h"
 #include "UScene.h"
+#include "UGameSetting.h"
 
 int UBall::TotalNumBalls = 0;
 
@@ -26,11 +27,9 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLine
     // Window
     WCHAR WindowClass[] = L"JungleWindowClass";
 	WCHAR Title[] = L"Game Tech Lab";
-    int ScreenWidth = 2040;
-    int ScreenHeight = 1400;
 
     UWindow Window;
-    if (!Window.InitializedWindow(hInstance, WindowClass, Title, ScreenWidth, ScreenHeight))
+    if (!Window.InitializedWindow(hInstance, WindowClass, Title, UGameSetting::GetInstance().ScreendWidth, UGameSetting::GetInstance().ScreenHeight))
     {
         return -1;
     }

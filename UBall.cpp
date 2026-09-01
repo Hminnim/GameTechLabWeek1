@@ -2,6 +2,7 @@
 #include "pch.h"
 #include "UBall.h"
 #include "UResourceManager.h"
+#include "UGameSetting.h"
 
 CollisionManager CollisionMan;
 
@@ -56,7 +57,7 @@ void UBall::Render(URenderer& Renderer)
     Renderer.RenderPrimitive(m_vertexBuffer, m_numVertices);
 }
 
-void UBall::Update(float DeltaTime, float ScreendWidth, float ScreenHeight, std::vector<UPrimitive*>&others)
+void UBall::Update(float DeltaTime, std::vector<UPrimitive*>&others)
 {
     if (isFreezed)
     {
@@ -79,6 +80,9 @@ void UBall::Update(float DeltaTime, float ScreendWidth, float ScreenHeight, std:
     {
         Rotation += AngularVelocity * DeltaTime;
     }
+
+    int ScreendWidth = UGameSetting::GetInstance().ScreendWidth;
+    int ScreenHeight = UGameSetting::GetInstance().ScreenHeight;
 
     // 벽에 부딫칠때 감속 및 방향 전환
     if (Location.x < Radius)
