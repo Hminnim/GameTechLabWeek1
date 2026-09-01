@@ -70,11 +70,12 @@ void UBall::Update(float DeltaTime, std::vector<UPrimitive*>& others)
     // 마찰력 계수 적용
     if (Velocity.Length() > 1.0f) {
         FVector NormalizeFricVec = Velocity / Velocity.Length() * (-1.0f);
-        if (Velocity.Length() <= 10.0f * DeltaTime)
+        if (Velocity.Length() <= 300.0f * DeltaTime)
         {
             Velocity = FVector(0, 0, 0);
+            bEnableFreeze = false;
         }
-        else Velocity += NormalizeFricVec * 10.0f * DeltaTime;
+        else Velocity += NormalizeFricVec * 300.0f * DeltaTime;
     }
     if (bEnableAngularVelocity)
     {
@@ -112,7 +113,7 @@ void UBall::Update(float DeltaTime, std::vector<UPrimitive*>& others)
         if (other != this)
         {
             UBall* otherBall = dynamic_cast<UBall*>(other);
-            if (other != nullptr)
+            if (otherBall != nullptr)
             {
                 CollisionMan.ResolveCollision(this, otherBall);
             }
@@ -122,7 +123,7 @@ void UBall::Update(float DeltaTime, std::vector<UPrimitive*>& others)
     // 척력 발생시 주위 밀어냄
     if (isMagnetActivated && AlreadyActiveMag)
     {
-        float currentMagnetForce = 50000.0f;
+        float currentMagnetForce = 700000.0f;
         for (auto* other : others)
         {
             if (other != this)
@@ -139,7 +140,7 @@ void UBall::Update(float DeltaTime, std::vector<UPrimitive*>& others)
     // 자폭 적용된 공 충돌시 삭제 + 주변에 척력 적용
     if (this->isDestroyed)
     {
-        float currentMineForce = 80000.0f;
+        float currentMineForce = 300000.0f;
         for (auto* other : others)
         {
             if (other != this)
