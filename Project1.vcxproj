@@ -163,6 +163,7 @@
     <ClCompile Include="pch.cpp" />
     <ClCompile Include="UBall.cpp" />
     <ClCompile Include="UButton.cpp" />
+    <ClCompile Include="UGameLoopManager.cpp" />
     <ClCompile Include="UInputManager.cpp" />
     <ClCompile Include="URenderer .cpp" />
     <ClCompile Include="UResourceManager.cpp" />

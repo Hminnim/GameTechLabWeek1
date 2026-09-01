@@ -113,6 +113,17 @@ void URenderer::CreateRasterizerState()
     rasterizerdesc.CullMode = D3D11_CULL_BACK; // 백 페이스 컬링
 
     Device->CreateRasterizerState(&rasterizerdesc, &RasterizerState);
+
+    D3D11_DEPTH_STENCIL_DESC dsDesc = {};
+    dsDesc.DepthEnable = TRUE;
+    dsDesc.DepthWriteMask = D3D11_DEPTH_WRITE_MASK_ALL;
+    dsDesc.DepthFunc = D3D11_COMPARISON_LESS;
+    Device->CreateDepthStencilState(&dsDesc, &DefaultDepthStencilState);
+
+    D3D11_BLEND_DESC blendDesc = {};
+    blendDesc.RenderTarget[0].BlendEnable = FALSE;
+    blendDesc.RenderTarget[0].RenderTargetWriteMask = D3D11_COLOR_WRITE_ENABLE_ALL;
+    Device->CreateBlendState(&blendDesc, &DefaultBlendState);
 }
 
 // 래스터라이저 상태를 해제하는 함수
@@ -122,6 +133,18 @@ void URenderer::ReleaseRasterizerState()
     {
         RasterizerState->Release();
         RasterizerState = nullptr;
+    }
+    if (RasterizerState) 
+    { 
+        RasterizerState->Release(); RasterizerState = nullptr; 
+    }
+    if (DefaultDepthStencilState) 
+    { 
+        DefaultDepthStencilState->Release(); DefaultDepthStencilState = nullptr; 
+    }
+    if (DefaultBlendState) 
+    { 
+        DefaultBlendState->Release(); DefaultBlendState = nullptr; 
     }
 }
 
@@ -297,4 +320,28 @@ void URenderer::BindTexture(UINT slot, ID3D11ShaderResourceView* srv)
     {
         DeviceContext->PSSetShaderResources(slot, 1, &srv);
     }
+}
+
+void URenderer::BeginSprite()
+{
+    m_spriteBatch->Begin(
+        DirectX::SpriteSortMode_Deferred,
+        nullptr,                    // blendState (nullptr = AlphaBlend 기본값)
+        nullptr,                    // samplerState (nullptr = LinearClamp 기본값)
+        DefaultDepthStencilState,   // 우리가 만든 깊이 테스트 켜진 상태
+        RasterizerState             // 우리가 쓰는 래스터라이저 상태
+    );
+}
+
+void URenderer::EndSprite()
+{
+    m_spriteBatch->End();
+
+    // 깊이/블렌드/래스터라이저
+    DeviceContext->OMSetDepthStencilState(DefaultDepthStencilState, 0);
+    DeviceContext->OMSetBlendState(nullptr, nullptr, 0xFFFFFFFF);
+    DeviceContext->RSSetState(RasterizerState);
+
+    // SpriteBatch가 바꾼 셰이더 파이프라인도 원복
+    PrepareShader();
 }
