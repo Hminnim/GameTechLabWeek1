@@ -5,11 +5,18 @@
 class UResourceManager
 {
 public:
-	UResourceManager(ID3D11Device* device);
-	~UResourceManager();
+	static UResourceManager& GetInstance();
+
+	void Initialize(ID3D11Device* device);
+
+	UResourceManager(const UResourceManager&) = delete;
+	UResourceManager& operator=(const UResourceManager&) = delete;
 
 	ID3D11ShaderResourceView* GetTexture(const std::string& key);
 
+private:
+	UResourceManager() = default;
+	~UResourceManager() = default;
 private:
 	Microsoft::WRL::ComPtr<ID3D11Device> m_device;
 
