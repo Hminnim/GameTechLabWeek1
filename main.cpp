@@ -112,7 +112,6 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLine
         renderer.PrepareShader();
 		USceneManager::GetInstance().Render(renderer);
 
-
         // ImGui
         ImGui_ImplDX11_NewFrame();
         ImGui_ImplWin32_NewFrame();
