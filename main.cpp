@@ -92,11 +92,11 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLine
 
     UEffectManager::GetInstance().Init(renderer.DeviceContext);
     UEffectManager::GetInstance().PlayEffect(
-        "Resources/effect_test.png",
+        "Resources/shooting.png",
         { 500.0f, 500.0f },
-        2.0f,
         1.0f,
-        6
+        2.0f,
+        6                
     );
 
     ///////////////////////////////////////////////
@@ -232,6 +232,19 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLine
                     {
                         SelectedBall->Velocity = (SelectedBall->Velocity / SelectedBall->Velocity.Length()) * maxSpeed;
                     }
+
+                    // Shooting Effect 적용을 위한 발사각 계산
+                    float launchAngle = atan2f(SelectedBall->Velocity.y, SelectedBall->Velocity.x);
+
+                    UEffectManager::GetInstance().PlayEffect(
+                        "Resources/shooting.png",
+                        DirectX::XMFLOAT2(SelectedBall->Location.x, SelectedBall->Location.y),
+                        0.25f,
+                        1.5f,
+                        6,
+                        false,
+                        launchAngle
+                    );
                 }
 
                 UGameManager::GetInstance().CurrentTurnState = ETurnState::BallMoving;
@@ -251,6 +264,36 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLine
         MousePointValue[0] = UInputManager::GetInstance().GetMousePos().x;
         MousePointValue[1] = UInputManager::GetInstance().GetMousePos().y;
         ImGui::InputInt2("Mouse Point", MousePointValue);
+
+        ImGui::Separator();
+        ImGui::Text("=== Game Manager Status ===");
+
+        // 1. 현재 턴 가져오기
+        EPlayer currentTurn = UGameManager::GetInstance().CurrentPlayerTurn;
+        if (currentTurn == EPlayer::Red)
+        {
+            // Red 턴이면 빨간색 텍스트
+            ImGui::TextColored(ImVec4(1.0f, 0.3f, 0.3f, 1.0f), "[ Turn : RED Player ]");
+        }
+        else
+        {
+            // Blue 턴이면 파란색 텍스트
+            ImGui::TextColored(ImVec4(0.3f, 0.6f, 1.0f, 1.0f), "[ Turn : BLUE Player ]");
+        }
+
+        // 2. 현재 상태 가져오기
+        ETurnState currentState = UGameManager::GetInstance().CurrentTurnState;
+        const char* stateStr = "Unknown";
+        switch (currentState)
+        {
+        case ETurnState::WaitInput:  stateStr = "Waiting for Input..."; break;
+        case ETurnState::BallMoving: stateStr = "Balls are Moving!";    break;
+        case ETurnState::GameOver:   stateStr = "Game Over!";           break;
+        }
+
+        // 노란색 텍스트로 현재 상태 출력
+        ImGui::TextColored(ImVec4(1.0f, 1.0f, 0.0f, 1.0f), "State: %s", stateStr);
+        ImGui::Separator();
 
         ImGui::End();
 
