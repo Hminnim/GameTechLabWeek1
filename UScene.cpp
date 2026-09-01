@@ -6,13 +6,15 @@
 #include "USceneManager.h"
 #include "UInputManager.h"
 #include "UGameSetting.h"
-
+#include "UMap.h"
 
 void UScene::Render(URenderer& renderer)
 {
     renderer.BeginSprite();
     if (_background)
         _background->Render(renderer);
+	if (_map)
+		_map->Render(renderer);
     renderer.EndSprite();
 
     // Game World Object
@@ -72,17 +74,17 @@ void UTitleScene::Initialize()
     temp->Init("Resources/Title.png", 0, 0, UGameSetting::GetInstance().ScreendWidth, UGameSetting::GetInstance().ScreenHeight);
 	AddUI(temp);
 
-    UButton* temp2 = new UButton();
-	temp2->Init("Resources/button_start.png", 400, 700, 400, 400);
-    AddUI(temp2);
-    temp2->SetOnClick([]() {
+    UButton* startbtn = new UButton();
+	startbtn->Init("Resources/button_start.png", 400, 700, 400, 400);
+    AddUI(startbtn);
+    startbtn->SetOnClick([]() {
         USceneManager::GetInstance().ChangeScene("InGame");
     });
 
-    UButton* temp3 = new UButton();
-	temp3->Init("Resources/button_exit.png", 1200, 700, 400, 400);
-    AddUI(temp3);
-    temp3->SetOnClick([]() {
+    UButton* exitbtn = new UButton();
+	exitbtn->Init("Resources/button_exit.png", 1200, 700, 400, 400);
+    AddUI(exitbtn);
+    exitbtn->SetOnClick([]() {
         USceneManager::GetInstance().ChangeScene("GameOver");
     });
 }
@@ -110,9 +112,13 @@ void UInGameScene::Initialize()
     AddPrimitive(new UBall("sphere", "Resources/blue.png"));
     AddPrimitive(new UBall("sphere", "Resources/blue.png"));
 
-    UUI* temp = new UUI();
-    temp->Init("Resources/background_blue.png", 0, 0, UGameSetting::GetInstance().ScreendWidth, UGameSetting::GetInstance().ScreenHeight);
-    SetBackground(temp);
+    UMap* map = new UMap();
+    map->Init("Resources/map.png", 300, 100, UGameSetting::GetInstance().ScreendWidth - 600, UGameSetting::GetInstance().ScreenHeight - 200);
+    SetMap(map);
+
+    UUI* background = new UUI();
+    background->Init("Resources/background_blue.png", 0, 0, UGameSetting::GetInstance().ScreendWidth, UGameSetting::GetInstance().ScreenHeight);
+    SetBackground(background);
 
 }
 

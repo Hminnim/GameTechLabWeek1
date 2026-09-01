@@ -3,6 +3,7 @@
 #include <vector>
 #include "UUI.h"
 #include "UButton.h"
+#include "UMap.h"
 
 
 class UPrimitive;
@@ -22,6 +23,7 @@ class UScene
         void AddButton(UButton* button) { _buttons.push_back(button); }
 
 		void SetBackground(UUI* background) { _background = background; }
+		void SetMap(UUI* map) { _map = map; }
 
         virtual void Update(float deltaTime);
 
