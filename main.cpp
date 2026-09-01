@@ -112,6 +112,7 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLine
         SoundManager.Update();
         DeltaTime = Timer.GetDeltaTime();
 
+        UInputManager::GetInstance().Update();
 		USceneManager::GetInstance().Update(DeltaTime);
 
         MSG msg;
