@@ -25,8 +25,8 @@ UBall::UBall()
     Location.z = 0.0f;
 
     // 랜덤 속도
-    Velocity.x = ((rand() % 200) - 100) * 0.005f;
-    Velocity.y = ((rand() % 200) - 100) * 0.005f;
+    Velocity.x = 5.0f;
+    Velocity.y = 5.0f;
     Velocity.z = 0.0f;
 
     // 랜덤 Rotation
@@ -50,8 +50,15 @@ void UBall::Render(URenderer& Renderer)
 }
 
 void UBall::Update(float DeltaTime)
-{
+{ 
+    // 마찰력 계수 적용
     Location += Velocity * DeltaTime;
+    FVector NormalizeFricVec = Velocity / Velocity.Length() * (-1.0f);
+    if (Velocity.Length() <= 2.0f * DeltaTime)
+    {
+        Velocity = FVector(0, 0, 0);
+    }
+    Velocity += NormalizeFricVec * 2.0f * DeltaTime;
 
     if (bEnableAngularVelocity)
     {
@@ -130,16 +137,19 @@ void UBall::ApplyReverseMagnetism(UPrimitive* OtherPrimitive, float DeltaTime, f
         FVector ForceVector = Normal * Force;
 
         // 질량이 가벼울 수록 빠르게 접근 F = ma
-        Velocity -= (ForceVector / Mass);
         Other->Velocity += (ForceVector / Other->Mass); // 작용 반작용
     }
 }
 
-void UBall::ApplySizeScaling(float Scale)
+void UBall::ApplySizeScaling(float scale)
 {
-    Radius *= Scale;
+    Radius *= scale;
 }
 
+void UBall::ApplyMassScaling(float scale)
+{
+    Mass *= scale;
+}
 
 void UBall::ApplySelfDestruct() 
 {

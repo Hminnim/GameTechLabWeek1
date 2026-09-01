@@ -13,6 +13,7 @@ public:
     bool bEnableFreeze = false;
     bool isFreezed = false;
     bool isSelfDestruct = false;
+    bool isMagnetActivated = true;
 
     UBall();
     virtual ~UBall();
@@ -24,6 +25,7 @@ public:
     virtual void SetTexture(ID3D11ShaderResourceView* srv);
     virtual void ApplyReverseMagnetism(UPrimitive* OtherPrimitive, float DeltaTime, float MagneticForce) override;
     virtual void ApplySizeScaling(float scale) override;
+    virtual void ApplyMassScaling(float scale) override;
     virtual void ApplySelfDestruct() override;
     virtual void ApplyEnableFreeze() override;
     virtual void ApplySelfFreeze() override;

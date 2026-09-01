@@ -20,6 +20,7 @@ struct FVector
     FVector operator/(float s) const { return FVector(x / s, y / s, z / s); }
     void operator+=(const FVector& v) { x += v.x; y += v.y; z += v.z; }
     void operator-=(const FVector& v) { x -= v.x; y -= v.y; z -= v.z; }
+    void operator*=(const FVector& v) { x *= v.x; y *= v.y; z *= v.z; }
 
     float LengthSquared() const
     {

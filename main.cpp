@@ -37,8 +37,7 @@ void IncreaseCapacity()
 }
 
 
-int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLine, int nShowCmd)
-{
+int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLine, int nShowCmd){
     // SoundManager 초기화 및 재생할 음원 파일 설정
     USoundManager SoundManager;
     SoundManager.Init();
@@ -96,6 +95,8 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLine
     bool bEnableAngularVelocity = false;
     bool bEnableSelfDestruct = false;
     bool bEnableFreezeBall = false;
+    bool bEnableSizeScaling = false;
+    bool bEnableMassScaling = false;
 
     // Values
     float CurrentElastic = 1.0f;
@@ -205,7 +206,7 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLine
         }
 
         // 척력 적용된 공에 1회 척력 적용
-        if (SelectedBall != nullptr && bEnableReverseMagnetism && bActiveMagnetism)
+        if (SelectedBall != nullptr && bEnableReverseMagnetism && SelectedBall->isMagnetActivated)
         {
 
             for (int j = 0; j < UBall::TotalNumBalls; j++)
@@ -215,7 +216,7 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLine
                     SelectedBall->ApplyReverseMagnetism(PrimitiveList[j], DeltaTime, CurrentMagneticForce);
                 }
             }
-            bActiveMagnetism = false;
+            SelectedBall->isMagnetActivated = false;
         }
 
         // 자폭 공 활성화
@@ -231,6 +232,21 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLine
             UBall* SelectBall = dynamic_cast<UBall*>(SelectedBall);
             SelectBall->bEnableFreeze = true;
         }
+
+        // 사이즈 공 활성화
+        if (SelectedBall != nullptr && bEnableSizeScaling)
+        {
+            UBall* SelectBall = dynamic_cast<UBall*>(SelectedBall);
+            SelectBall->ApplySizeScaling(1.5);
+        }
+
+        if (SelectedBall != nullptr && bEnableMassScaling)
+        {
+            UBall* SelectBall = dynamic_cast<UBall*>(SelectedBall);
+            SelectBall->ApplyMassScaling(3);
+        }
+
+
 
         renderer.Prepare();
         renderer.PrepareShader();
@@ -267,6 +283,8 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLine
         }
         ImGui::Checkbox("Self Destruct", &bEnableSelfDestruct);
         ImGui::Checkbox("Freeze", &bEnableFreezeBall);
+        ImGui::Checkbox("Size up", &bEnableSizeScaling);
+        ImGui::Checkbox("Mass up", &bEnableMassScaling);
         ImGui::Checkbox("Gravity", &bEnableGravity);
         if (bEnableGravity)
         {
