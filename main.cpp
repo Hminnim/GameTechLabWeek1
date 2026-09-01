@@ -8,6 +8,7 @@
 #include "GameTimer.h"
 #include "UResourceManager.h"
 #include "USoundManager.h"
+#include "UInputManager.h"
 
 #include "UWindow.h"
 
@@ -325,6 +326,14 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLine
         {
             TargetNumBalls = 1;
         }
+
+        // 마우스 값 보기
+        bool bIsLeftDown = UInputManager::GetInstance().IsKeyDown(VK_LBUTTON);
+        ImGui::Checkbox("Mouse Left", &bIsLeftDown);
+        int MousePointValue[2] = { 0, };
+        MousePointValue[0] = UInputManager::GetInstance().GetMousePos().x;
+        MousePointValue[1] = UInputManager::GetInstance().GetMousePos().y;
+        ImGui::InputInt2("Mouse Point", MousePointValue);
 
         ImGui::End();
 
