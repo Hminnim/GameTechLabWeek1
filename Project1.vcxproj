@@ -167,6 +167,7 @@
     <ClCompile Include="URenderer .cpp" />
     <ClCompile Include="UResourceManager.cpp" />
     <ClCompile Include="UScene.cpp" />
+    <ClCompile Include="USceneManager.cpp" />
     <ClCompile Include="USoundManager.cpp" />
     <ClCompile Include="UUi.cpp" />
     <ClCompile Include="UWindow.cpp" />
@@ -201,6 +202,7 @@
     <ClInclude Include="URenderer.h" />
     <ClInclude Include="UResourceManager.h" />
     <ClInclude Include="UScene.h" />
+    <ClInclude Include="USceneManager.h" />
     <ClInclude Include="USoundManager.h" />
     <ClInclude Include="UUi.h" />
     <ClInclude Include="UWindow.h" />

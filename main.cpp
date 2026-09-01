@@ -9,8 +9,9 @@
 #include "UResourceManager.h"
 #include "USoundManager.h"
 #include "UInputManager.h"
-
+#include "USceneManager.h"
 #include "UWindow.h"
+#include "UScene.h"
 
 int UBall::TotalNumBalls = 0;
 
@@ -84,7 +85,7 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLine
     ListCapacity = 10;
     PrimitiveList = new UPrimitive * [ListCapacity];
     int TargetNumBalls = 1;
-    PrimitiveList[0] = new UBall();
+    PrimitiveList[0] = new UBall(VertexBufferSphere, NumVerticesSphere);
 
     // States
     bool bEnableChangeElastic = false;
@@ -122,6 +123,12 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLine
     }
     renderer.DeviceContext->PSSetShaderResources(0, 1, &testTexture);
 
+    // Scene Manager
+    USceneManager::GetInstance().AddScene("Title", new UScene());
+	USceneManager::GetInstance().AddScene("InGame", new UScene());
+	USceneManager::GetInstance().AddScene("GameOver", new UScene());
+    USceneManager::GetInstance().ChangeScene("Title");
+
     bool bIsExit = false;
 
 	// Main Loop (Quit Message가 들어오기 전까지 아래 Loop를 무한히 실행하게 됨)
@@ -130,6 +137,8 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLine
 		// SoundManager 업데이트
         SoundManager.Update();
         DeltaTime = Timer.GetDeltaTime();
+
+		USceneManager::GetInstance().Update(DeltaTime);
 
         MSG msg;
 
@@ -251,12 +260,15 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLine
         renderer.Prepare();
         renderer.PrepareShader();
 
-        for (int i = 0; i < UBall::TotalNumBalls; i++)
-        {
-            UBall* ball = (UBall*)PrimitiveList[i];
-            ball->Render(renderer);
-            renderer.RenderPrimitive(VertexBufferSphere, NumVerticesSphere);
-        }
+		USceneManager::GetInstance().Render(renderer);
+
+        // >> 삭제 예정
+        //for (int i = 0; i < UBall::TotalNumBalls; i++)
+        //{
+        //    UBall* ball = (UBall*)PrimitiveList[i];
+        //    ball->Render(renderer);
+        //    renderer.RenderPrimitive(VertexBufferSphere, NumVerticesSphere);
+        //}
 
         renderer.m_spriteBatch->Begin();
 
@@ -267,7 +279,7 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLine
         }
 
         renderer.m_spriteBatch->End();
-
+        //  << 삭제 예정
 
         // ImGui
         ImGui_ImplDX11_NewFrame();
@@ -350,7 +362,7 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLine
                 {
                     IncreaseCapacity();
 
-                    UBall* NewBall = new UBall();
+                    UBall* NewBall = new UBall(VertexBufferSphere, NumVerticesSphere);
 
                     // 마우스 커서 위치로
                     NewBall->Location.x = NdcX;
@@ -420,7 +432,7 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLine
         while (UBall::TotalNumBalls < TargetNumBalls)
         {
             IncreaseCapacity();
-            UBall* NewBall = new UBall();
+            UBall* NewBall = new UBall(VertexBufferSphere, NumVerticesSphere);
             PrimitiveList[UBall::TotalNumBalls - 1] = NewBall;
         }
         // 감소 시킬 때
