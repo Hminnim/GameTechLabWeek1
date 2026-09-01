@@ -278,6 +278,12 @@ void URenderer::UpdateConstant(FVector Offset, float scale, FVector Rotation)
             constants->Offset = Offset;
             constants->Scale = scale;
             constants->Rotation = Rotation;
+
+            // 화면 비율 구하고 전달
+            if (ViewportInfo.Height > 0.0f)
+            {
+                constants->AspectRatio = ViewportInfo.Width / ViewportInfo.Height;
+            }
         }
         DeviceContext->Unmap(ConstantBuffer, 0);
     }
