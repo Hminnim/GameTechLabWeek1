@@ -282,3 +282,11 @@ void URenderer::UpdateConstant(FVector Offset, float scale, FVector Rotation)
         DeviceContext->Unmap(ConstantBuffer, 0);
     }
 }
+
+void URenderer::BindTexture(UINT slot, ID3D11ShaderResourceView* srv)
+{
+    if (srv)
+    {
+        DeviceContext->PSSetShaderResources(slot, 1, &srv);
+    }
+}

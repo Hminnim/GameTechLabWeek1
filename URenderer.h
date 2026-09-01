@@ -55,4 +55,5 @@ public:
     void CreateConstantBuffer();
     void ReleaseConstantBuffer();
     void UpdateConstant(FVector Offset, float scale, FVector Rotation);
+	void BindTexture(UINT slot, ID3D11ShaderResourceView* srv);
 };

@@ -1,15 +1,15 @@
 #include "pch.h"
 #include "UResourceManager.h"
 
-UResourceManager::UResourceManager(ID3D11Device* device)
-	: m_device(device)
+UResourceManager& UResourceManager::GetInstance()
 {
-
+    static UResourceManager instance;
+    return instance;
 }
 
-UResourceManager::~UResourceManager()
+void UResourceManager::Initialize(ID3D11Device* device)
 {
-
+    m_device = device;
 }
 
 ID3D11ShaderResourceView* UResourceManager::GetTexture(const std::string& key)
@@ -19,7 +19,7 @@ ID3D11ShaderResourceView* UResourceManager::GetTexture(const std::string& key)
         return m_textures[key].Get();
 
     std::wstring wKey(key.begin(), key.end());
-
+    OutputDebugStringW(wKey.c_str());
     // 텍스처 생성
     HRESULT hr = DirectX::CreateWICTextureFromFile(
         m_device.Get(),                         
@@ -30,7 +30,9 @@ ID3D11ShaderResourceView* UResourceManager::GetTexture(const std::string& key)
 
     if (FAILED(hr))
     {
-        // 로드 실패 시 에러 처리 (예: nullptr 반환 등)
+        _com_error err(hr);
+
+        OutputDebugStringW(err.ErrorMessage());
         return nullptr;
     }
 
