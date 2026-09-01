@@ -3,7 +3,7 @@
 #include "UBall.h"
 #include "UResourceManager.h"
 
-UBall::UBall()
+UBall::UBall(const std::string& meshKey, const std::string& textureKey)
 {
     TotalNumBalls++;
 
@@ -35,8 +35,11 @@ UBall::UBall()
     Rotation.y = ((rand() % 200) - 100) * 100.0f;
     Rotation.z = ((rand() % 200) - 100) * 100.0f;
 
-    m_textureKey = "Resources/test.png";
-	m_textureView = UResourceManager::GetInstance().GetTexture(m_textureKey);
+    m_vertexBuffer = UResourceManager::GetInstance().GetVertexBuffer(meshKey);
+	m_numVertices = UResourceManager::GetInstance().GetNumVertices(meshKey);
+
+    m_textureKey = textureKey;
+	m_textureView = UResourceManager::GetInstance().GetTexture(textureKey);
 }
 
 UBall::~UBall()
@@ -48,6 +51,7 @@ void UBall::Render(URenderer& Renderer)
 {
     Renderer.UpdateConstant(Location, Radius, Rotation);
 	Renderer.BindTexture(0, m_textureView);
+    Renderer.RenderPrimitive(m_vertexBuffer, m_numVertices);
 }
 
 void UBall::Update(float DeltaTime, float ScreendWidth, float ScreenHeight)

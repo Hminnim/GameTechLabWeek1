@@ -7,15 +7,18 @@ class UBall : public UPrimitive
 public:
     static int TotalNumBalls;
 
-    std::string m_textureKey;
-	ID3D11ShaderResourceView* m_textureView;
+    std::string                 m_textureKey;
+	ID3D11ShaderResourceView*   m_textureView;
+
+	ID3D11Buffer*   m_vertexBuffer;
+	UINT            m_numVertices;
 
     bool bEnableFreeze = false;
     bool isFreezed = false;
     bool isSelfDestruct = false;
     bool isMagnetActivated = true;
 
-    UBall();
+    UBall(const std::string& meshKey, const std::string& textureKey);
     virtual ~UBall();
     virtual void Render(URenderer& Renderer) override;
     virtual void Update(float DeltaTime, float ScreendWidth, float ScreenHeight) override;
