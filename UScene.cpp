@@ -36,7 +36,7 @@ void UScene::Update(float Deltatime)
 {
     for (auto* primitive : _primitives)
     {
-        primitive->Update(Deltatime, 2040.0f, 1400.f,_primitives);
+        primitive->Update(Deltatime, _primitives);
     }
 
     if (UInputManager::GetInstance().IsKeyDown(VK_LBUTTON)) {

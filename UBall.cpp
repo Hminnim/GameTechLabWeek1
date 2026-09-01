@@ -2,6 +2,7 @@
 #include "pch.h"
 #include "UBall.h"
 #include "UResourceManager.h"
+#include "UGameSetting.h"
 
 CollisionManager CollisionMan;
 
@@ -56,7 +57,7 @@ void UBall::Render(URenderer& Renderer)
     Renderer.RenderPrimitive(m_vertexBuffer, m_numVertices);
 }
 
-void UBall::Update(float DeltaTime, float ScreendWidth, float ScreenHeight, std::vector<UPrimitive*>&others)
+void UBall::Update(float DeltaTime, std::vector<UPrimitive*>& others)
 {
     if (isFreezed)
     {
@@ -79,6 +80,9 @@ void UBall::Update(float DeltaTime, float ScreendWidth, float ScreenHeight, std:
     {
         Rotation += AngularVelocity * DeltaTime;
     }
+
+    int ScreendWidth = UGameSetting::GetInstance().ScreendWidth;
+    int ScreenHeight = UGameSetting::GetInstance().ScreenHeight;
 
     // 벽에 부딫칠때 감속 및 방향 전환
     if (Location.x < Radius)
@@ -103,7 +107,7 @@ void UBall::Update(float DeltaTime, float ScreendWidth, float ScreenHeight, std:
     }
 
     //충돌 처리
-    for (auto* other : others) 
+    for (auto* other : others)
     {
         if (other != this)
         {
@@ -114,7 +118,51 @@ void UBall::Update(float DeltaTime, float ScreendWidth, float ScreenHeight, std:
             }
         }
     }
+
+    // 척력 발생시 주위 밀어냄
+    if (isMagnetActivated && AlreadyActiveMag)
+    {
+        float currentMagnetForce = 50000.0f;
+        for (auto* other : others)
+        {
+            if (other != this)
+            {
+                if (other != nullptr)
+                {
+                    ApplyReverseMagnetism(other, DeltaTime, currentMagnetForce);
+                }
+            }
+        }
+        AlreadyActiveMag = false;
+    }
+
+    // 자폭 적용된 공 충돌시 삭제 + 주변에 척력 적용
+    if (this->isDestroyed)
+    {
+        float currentMineForce = 80000.0f;
+        for (auto* other : others)
+        {
+            if (other != this)
+            {
+                if (other != nullptr)
+                {
+                    ApplyReverseMagnetism(other, DeltaTime, currentMineForce);
+                }
+            }
+        }
+
+        for (auto it = others.begin();it != others.end();it++)
+        {
+            if (*it == this)
+            {
+                others.erase(it);
+                delete this;
+                return;
+            }
+        }
+    }
 }
+    
 
 void UBall::ApplyGravity(float DeltaTime)
 {
@@ -165,26 +213,6 @@ void UBall::ApplyReverseMagnetism(UPrimitive* OtherPrimitive, float DeltaTime, f
     }
 }
 
-void UBall::ApplySizeScaling(float scale)
-{
-    Radius *= scale;
-}
-
-void UBall::ApplyMassScaling(float scale)
-{
-    Mass *= scale;
-}
-
-void UBall::ApplySelfDestruct() 
-{
-    isSelfDestruct = true;
-}
-
-void UBall::ApplyEnableFreeze()
-{
-    bEnableFreeze = true;
-}
-
 void UBall::ApplySelfFreeze()
 {
     isFreezed = true;
@@ -211,4 +239,30 @@ void UBall::ApplyAirResistance(float DeltaTime, float AirResistance)
 void UBall::SetEnableAngularMomentum(bool bEnable)
 {
     bEnableAngularVelocity = bEnable;
+}
+
+void UBall::ApplySkill(USkillType skill)
+{
+    switch (skill)
+    {
+        case USkillType::Mine:
+             isSelfDestruct = true;
+             break;
+
+        case USkillType::Freeze:
+             bEnableFreeze = true;
+             break;
+
+        case USkillType::SizeScaling:
+             Radius *= 1.5;
+             break;
+
+        case USkillType::MassScaling:
+             Mass *= 1.5;
+             break;
+
+        case USkillType::ReverseMagnet:
+            isMagnetActivated = true;
+            break;
+    }
 }
