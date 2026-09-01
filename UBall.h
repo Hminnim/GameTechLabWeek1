@@ -18,7 +18,7 @@ public:
     bool isSelfDestruct = false;
     bool isMagnetActivated = true;
 
-    UBall(ID3D11Buffer* vertexBuffer, UINT numVertices);
+    UBall(const std::string& meshKey, const std::string& textureKey);
     virtual ~UBall();
     virtual void Render(URenderer& Renderer) override;
     virtual void Update(float DeltaTime) override;

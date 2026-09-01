@@ -3,7 +3,7 @@
 #include "UBall.h"
 #include "UResourceManager.h"
 
-UBall::UBall(ID3D11Buffer* vertexBuffer, UINT numVertices)
+UBall::UBall(const std::string& meshKey, const std::string& textureKey)
 {
     TotalNumBalls++;
 
@@ -34,12 +34,11 @@ UBall::UBall(ID3D11Buffer* vertexBuffer, UINT numVertices)
     Rotation.y = ((rand() % 200) - 100) * 0.01f;
     Rotation.z = ((rand() % 200) - 100) * 0.01f;
 
-	// Vertex Buffer 생성
-    m_vertexBuffer = vertexBuffer;
-	m_numVertices = numVertices;
+    m_vertexBuffer = UResourceManager::GetInstance().GetVertexBuffer(meshKey);
+	m_numVertices = UResourceManager::GetInstance().GetNumVertices(meshKey);
 
-    m_textureKey = "Resources/test.png";
-	m_textureView = UResourceManager::GetInstance().GetTexture(m_textureKey);
+    m_textureKey = textureKey;
+	m_textureView = UResourceManager::GetInstance().GetTexture(textureKey);
 }
 
 UBall::~UBall()

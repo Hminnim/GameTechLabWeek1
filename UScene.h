@@ -11,19 +11,19 @@ class UPrimitive;
 class UScene
 {   
     public:
-        void Initialize() {};
-        void Enter() {};
-        void Exit() {};
+        virtual void Initialize() {};
+        virtual void Enter() {};
+        virtual void Exit() {};
 
         // 객체 추가
         void AddPrimitive(UPrimitive* primitive) { _primitives.push_back(primitive); }
         void AddUI(UUI* ui) { _uis.push_back(ui); }
         void AddButton(UButton* button) { _buttons.push_back(button); }
 
-        void Update(float deltaTime) {};
+        virtual void Update(float deltaTime) {};
 
         // 렌더링 (순서: world -> ui -> button)
-        void Render(URenderer& renderer);
+        virtual void Render(URenderer& renderer);
 
         // 마우스 클릭 - 버튼 대응
         void HandleClick(float mouseX, float mouseY);
@@ -37,12 +37,27 @@ class UScene
 
 class UTitleScene : public UScene
 {
+public:
+	void Initialize() override;
+
+	void Update(float deltaTime) override;
+	void Render(URenderer& renderer) override;
 };
 
 class UInGameScene : public UScene
 {
+public:
+    void Initialize() override;
+
+	void Update(float deltaTime) override;
+	void Render(URenderer& renderer) override;
 };
 
 class UGameOverScene : public UScene
 {
+public:
+    void Initialize() override;
+
+	void Update(float deltaTime) override;
+	void Render(URenderer& renderer) override;
 };

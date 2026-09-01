@@ -66,8 +66,12 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLine
 
     renderer.m_spriteBatch = std::make_unique<DirectX::SpriteBatch>(renderer.DeviceContext);
 
+    // Buffer
+    ID3D11Buffer* VertexBufferSphere = renderer.CreateVertexBuffer(sphere_vertices, sizeof(sphere_vertices));
+    UINT NumVerticesSphere = sizeof(sphere_vertices) / sizeof(FVertexSimple);
+
     // Resource Manager
-    UResourceManager::GetInstance().Initialize(renderer.Device);
+    UResourceManager::GetInstance().Initialize(renderer.Device, VertexBufferSphere, NumVerticesSphere);
     ID3D11ShaderResourceView* testUITexture = UResourceManager::GetInstance().GetTexture("Resources/Title.png");
 
     // ImGui를 생성합니다.
@@ -76,10 +80,6 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLine
     ImGuiIO& io = ImGui::GetIO();
     ImGui_ImplWin32_Init((void*)hWnd);
     ImGui_ImplDX11_Init(renderer.Device, renderer.DeviceContext);
-
-    // Buffer
-    UINT NumVerticesSphere = sizeof(sphere_vertices) / sizeof(FVertexSimple);
-    ID3D11Buffer* VertexBufferSphere = renderer.CreateVertexBuffer(sphere_vertices, sizeof(sphere_vertices));
 
     // PrimitiveList
     ListCapacity = 10;
@@ -115,18 +115,19 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLine
     // Collision Manager
     CollisionManager CollisionMan;
 	
-    // Resource Manager
+    // Resource Manager test code >> 삭제예정
     ID3D11ShaderResourceView* testTexture = UResourceManager::GetInstance().GetTexture("Resources/test.jpg");
     if (!testTexture) {
         OutputDebugStringA("Texture Load Failed!\n");
         assert(false);
     }
     renderer.DeviceContext->PSSetShaderResources(0, 1, &testTexture);
+    // << 삭제예정
 
     // Scene Manager
-    USceneManager::GetInstance().AddScene("Title", new UScene());
-	USceneManager::GetInstance().AddScene("InGame", new UScene());
-	USceneManager::GetInstance().AddScene("GameOver", new UScene());
+    USceneManager::GetInstance().AddScene("Title", new UTitleScene());
+	USceneManager::GetInstance().AddScene("InGame", new UInGameScene());
+	USceneManager::GetInstance().AddScene("GameOver", new UGameOverScene());
     USceneManager::GetInstance().ChangeScene("Title");
 
     bool bIsExit = false;
