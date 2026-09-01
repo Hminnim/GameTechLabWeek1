@@ -60,25 +60,6 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLine
     ImGui_ImplWin32_Init((void*)hWnd);
     ImGui_ImplDX11_Init(renderer.Device, renderer.DeviceContext);
 
-    // States
-    bool bEnableChangeElastic = false;
-    bool bEnableGravity = true;
-    bool bEnableReverseMagnetism = false;
-    bool bEnableAirResistance = false;
-    bool bEnableMouseInteractMode = false;
-    bool bEnableAngularVelocity = false;
-    bool bEnableSelfDestruct = false;
-    bool bEnableFreezeBall = false;
-    bool bEnableSizeScaling = false;
-    bool bEnableMassScaling = false;
-
-    // Values
-    float CurrentElastic = 1.0f;
-    float CurrentGNumber = 1.0f;
-    float CurrentMagneticForce = 700000.0f;
-    float CurrentAirResistance = 0.5f;
-    UBall* SelectedBall = nullptr;
-
     // DeltaTime
     GameTimer Timer;
     float DeltaTime = 0.0f;
