@@ -10,6 +10,10 @@ public:
     std::string m_textureKey;
 	ID3D11ShaderResourceView* m_textureView;
 
+    bool bEnableFreeze = false;
+    bool isFreezed = false;
+    bool isSelfDestruct = false;
+
     UBall();
     virtual ~UBall();
     virtual void Render(URenderer& Renderer) override;
@@ -19,6 +23,8 @@ public:
     virtual void SetElastic(float NewElastic) override;
     virtual void SetTexture(ID3D11ShaderResourceView* srv);
     virtual void ApplyReverseMagnetism(UPrimitive* OtherPrimitive, float DeltaTime, float MagneticForce) override;
+    virtual void ApplySizeScaling(float scale) override;
+    virtual void ApplySelfDestruct() override;
     virtual void ApplyAirResistance(float DeltaTime, float AirResistance) override;
     virtual void SetEnableAngularMomentum(bool bEnable) override;
 };

@@ -1,16 +1,39 @@
 #include "pch.h"
 #include "CollisionManager.h"
 
-void CollisionManager::ResolveCollision(UPrimitive* TargetPrimitive, UPrimitive* OtherPrimitive)
+bool CollisionManager::DetectCollision(UPrimitive* TargetPrimitive, UPrimitive* OtherPrimitive)
 {
     // 충돌 감지
     FVector Delta = TargetPrimitive->Location - OtherPrimitive->Location;
     float DistSq = Delta.LengthSquared();
     float SumRadius = TargetPrimitive->Radius + OtherPrimitive->Radius;
 
+    if (DistSq < SumRadius * SumRadius) return true;
+    else return false;
+}
+
+void CollisionManager::ResolveCollision(UPrimitive* TargetPrimitive, UPrimitive* OtherPrimitive)
+{
+    FVector Delta = TargetPrimitive->Location - OtherPrimitive->Location;
+    float DistSq = Delta.LengthSquared();
+    float SumRadius = TargetPrimitive->Radius + OtherPrimitive->Radius;
+
+    UBall* TargetBall = dynamic_cast<UBall*>(TargetPrimitive);
+    UBall* OtherBall = dynamic_cast<UBall*>(OtherPrimitive);
+
     // 충돌 상태
-    if (DistSq < SumRadius * SumRadius)
+    if (DetectCollision(TargetPrimitive,OtherPrimitive))
     {
+        if (TargetBall->isSelfDestruct == true)
+        {
+            TargetPrimitive->isDestroyed = true;
+            return;
+        }
+        else if (OtherBall->isSelfDestruct == true)
+        {
+            OtherPrimitive->isDestroyed = true;
+            return;
+        }
         // 거리 계산
         float Dist = (float)sqrt(DistSq);
 
@@ -85,6 +108,6 @@ void CollisionManager::ResolveCollision(UPrimitive* TargetPrimitive, UPrimitive*
                 OtherPrimitive->AngularVelocity += R2.Cross(FrictionImpulse * -1.0f) / OtherPrimitive->Inertia; // 작용 반작용으로 반대 방향
             }
         }
-
     }
+    
 }
