@@ -101,7 +101,7 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLine
     // Values
     float CurrentElastic = 1.0f;
     float CurrentGNumber = 1.0f;
-    float CurrentMagneticForce = 0.1f;
+    float CurrentMagneticForce = 700000.0f;
     float CurrentAirResistance = 0.5f;
     UBall* SelectedBall = nullptr;
 
@@ -167,7 +167,9 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLine
             if (CurrentBall->isFreezed)
             {
                 CurrentBall->Velocity = FVector(0, 0, 0);
+                CurrentBall->Mass = 90000.0f;
             }
+
             CurrentBall->Update(DeltaTime, (float)ScreenWidth, (float)ScreenHeight);
 
             for (int j = i + 1; j < UBall::TotalNumBalls; j++)
@@ -240,6 +242,8 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLine
             SelectBall->ApplySizeScaling(1.5);
         }
 
+
+        // 질량 공 활성화
         if (SelectedBall != nullptr && bEnableMassScaling)
         {
             UBall* SelectBall = dynamic_cast<UBall*>(SelectedBall);

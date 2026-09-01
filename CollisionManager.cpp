@@ -1,8 +1,12 @@
 #include "pch.h"
 #include "CollisionManager.h"
 
+
 bool CollisionManager::DetectCollision(UPrimitive* TargetPrimitive, UPrimitive* OtherPrimitive)
 {
+    UBall* TargetBall = dynamic_cast<UBall*>(TargetPrimitive);
+    UBall* OtherBall = dynamic_cast<UBall*>(OtherPrimitive);
+
     // 충돌 감지
     FVector Delta = TargetPrimitive->Location - OtherPrimitive->Location;
     float DistSq = Delta.LengthSquared();
@@ -14,12 +18,12 @@ bool CollisionManager::DetectCollision(UPrimitive* TargetPrimitive, UPrimitive* 
 
 void CollisionManager::ResolveCollision(UPrimitive* TargetPrimitive, UPrimitive* OtherPrimitive)
 {
+    UBall* TargetBall = dynamic_cast<UBall*>(TargetPrimitive);
+    UBall* OtherBall = dynamic_cast<UBall*>(OtherPrimitive);
+    
     FVector Delta = TargetPrimitive->Location - OtherPrimitive->Location;
     float DistSq = Delta.LengthSquared();
     float SumRadius = TargetPrimitive->Radius + OtherPrimitive->Radius;
-
-    UBall* TargetBall = dynamic_cast<UBall*>(TargetPrimitive);
-    UBall* OtherBall = dynamic_cast<UBall*>(OtherPrimitive);
 
     // 충돌 상태
     if (DetectCollision(TargetPrimitive,OtherPrimitive))
@@ -68,6 +72,7 @@ void CollisionManager::ResolveCollision(UPrimitive* TargetPrimitive, UPrimitive*
         TargetPrimitive->Location += NormalVector * Overlap * M1Ratio;
         OtherPrimitive->Location -= NormalVector * Overlap * M2Ratio;
 
+            
         // Impulse 구하기
         FVector vRel = TargetPrimitive->Velocity - OtherPrimitive->Velocity;  // 상대 속도
         float VelAlongNormal = vRel.Dot(NormalVector);    // 법선 방향(충돌 축)의 속도 성분
@@ -88,6 +93,7 @@ void CollisionManager::ResolveCollision(UPrimitive* TargetPrimitive, UPrimitive*
         FVector NormalImpulse = NormalVector * jNormal;
 
         // 운동량 변화 적용 ( a = F / m)
+
         TargetPrimitive->Velocity += NormalImpulse / TargetPrimitive->Mass;
         OtherPrimitive->Velocity -= NormalImpulse / OtherPrimitive->Mass; // 작용 반장욕
 

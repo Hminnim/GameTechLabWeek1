@@ -51,16 +51,17 @@ void UBall::Render(URenderer& Renderer)
 }
 
 void UBall::Update(float DeltaTime, float ScreendWidth, float ScreenHeight)
-{ 
+{    
     // 마찰력 계수 적용
     Location += Velocity * DeltaTime;
-    FVector NormalizeFricVec = Velocity / Velocity.Length() * (-1.0f);
-    if (Velocity.Length() <= 2.0f * DeltaTime)
-    {
-        Velocity = FVector(0, 0, 0);
+    if (Velocity.Length() > 1.0f) {
+        FVector NormalizeFricVec = Velocity / Velocity.Length() * (-1.0f);
+        if (Velocity.Length() <= 3000.0f * DeltaTime)
+        {
+            Velocity = FVector(0, 0, 0);
+        }
+        else Velocity += NormalizeFricVec * 3000.0f * DeltaTime;
     }
-    Velocity += NormalizeFricVec * 2.0f * DeltaTime;
-
     if (bEnableAngularVelocity)
     {
         Rotation += AngularVelocity * DeltaTime;
@@ -73,22 +74,22 @@ void UBall::Update(float DeltaTime, float ScreendWidth, float ScreenHeight)
 
     if (Location.x < Radius)
     {
-        Velocity.x *= -1.0f * Elastic;
+        Velocity.x *= -0.9f * Elastic;
         Location.x = Radius;
     }
     if (Location.x > ScreendWidth - Radius)
     {
-        Velocity.x *= -1.0f * Elastic;
+        Velocity.x *= -0.9f * Elastic;
         Location.x = ScreendWidth - Radius;
     }
     if (Location.y < Radius)
     {
-        Velocity.y *= -1.0f * Elastic;
+        Velocity.y *= -0.9f * Elastic;
         Location.y = Radius;
     }
     if (Location.y > ScreenHeight - Radius)
     {
-        Velocity.y *= -1.0f * Elastic;
+        Velocity.y *= -0.9f * Elastic;
         Location.y = ScreenHeight - Radius;
     }
 }
@@ -125,14 +126,14 @@ void UBall::ApplyReverseMagnetism(UPrimitive* OtherPrimitive, float DeltaTime, f
     float DistSq = Delta.LengthSquared();       // 거리 제곱
 
     // 너무 가까히 말고 일정 거리 이내에서
-    if (DistSq > 0.001f && DistSq < 3.0f)
+    if (DistSq > 0.01f && DistSq < 250000.0f)
     {
         float Dist = (float)sqrt(DistSq);
 
         FVector Normal = Delta / Dist; // 법선 벡터
 
         // 거리에 비례해서 강한 힘
-        float Force = MagneticForce / DistSq;
+        float Force = MagneticForce;
 
         // 힘의 방향 벡터
         FVector ForceVector = Normal * Force;
