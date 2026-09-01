@@ -28,7 +28,10 @@ bool UGameManager::CanSelectBall(UBall* TargetBall)
 	{
 		return false;
 	}
-
+	if (TargetBall->isFreezed)
+	{
+		return false;
+	}
 	if (TargetBall->Owner == CurrentPlayerTurn)
 	{
 		return true;
@@ -62,6 +65,15 @@ void UGameManager::CheckTurnEnd(std::vector<UPrimitive*>& primitives)
 	// 모든 공이 멈췄을 때
 	if (bIsAllBallStopped)
 	{
+		for (auto* primitive : primitives)
+		{
+			UBall* ball = dynamic_cast<UBall*>(primitive);
+			if (ball && ball->Owner == CurrentPlayerTurn)
+			{
+				ball->isFreezed = false;
+			}
+		}
+		
 		CurrentPlayerTurn = (CurrentPlayerTurn == EPlayer::Red ? EPlayer::Blue : EPlayer::Red);
 		CurrentTurnState = ETurnState::WaitInput;
 	}
