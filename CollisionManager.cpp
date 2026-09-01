@@ -2,6 +2,7 @@
 #include "CollisionManager.h"
 #include "UBall.h"
 #include "UEffectManager.h"
+#include "USoundManager.h"
 
 CollisionManager::CollisionManager()
 {
@@ -104,6 +105,7 @@ void CollisionManager::ResolveCollision(UPrimitive* TargetPrimitive, UPrimitive*
             false,
             0.0f
         );
+		USoundManager::GetInstance().PlaySound("hit");
 
         // 선형 속도
         // 충격량 계산

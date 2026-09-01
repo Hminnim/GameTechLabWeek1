@@ -26,9 +26,9 @@ static bool bIsDragging = false;
 
 int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLine, int nShowCmd){
     // SoundManager 초기화 및 재생할 음원 파일 설정
-    USoundManager SoundManager;
-    SoundManager.Init();
-	SoundManager.LoadSound("TestSound", "Resources/AlarmSound.wav");
+    USoundManager::GetInstance().Init();
+    USoundManager::GetInstance().LoadAllSounds("Resources/Sounds/");
+	USoundManager::GetInstance().PlaySound("title2");
 
     // Window
     WCHAR WindowClass[] = L"JungleWindowClass";
@@ -124,7 +124,7 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLine
             }
         }
 		// SoundManager 업데이트
-        SoundManager.Update();
+        USoundManager::GetInstance().Update();
         DeltaTime = Timer.GetDeltaTime();
         UInputManager::GetInstance().Update();
 
@@ -253,10 +253,6 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLine
         }
         // main.cpp ImGui 창 안에서
      
-        if (ImGui::Button("Sound"))
-        {
-            SoundManager.PlaySound("TestSound");
-        }
         // 마우스 값 보기
         bool bIsLeftPress = UInputManager::GetInstance().IsKeyPress(VK_LBUTTON);
         ImGui::Checkbox("Mouse Left", &bIsLeftPress);
@@ -315,7 +311,7 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLine
     renderer.ReleaseConstantBuffer();
     renderer.ReleaseShader();
     renderer.Release();
-	SoundManager.Release();
+	USoundManager::GetInstance().Release();
 
 	return 0;
 }
