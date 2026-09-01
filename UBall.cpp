@@ -134,11 +134,15 @@ void UBall::ApplyReverseMagnetism(UPrimitive* OtherPrimitive, float DeltaTime, f
     }
 }
 
-void UBall::ApplySizeScaling(float Scale)
+void UBall::ApplySizeScaling(float scale)
 {
-    Radius *= Scale;
+    Radius *= scale;
 }
 
+void UBall::ApplyMassScaling(float scale)
+{
+    Mass *= scale;
+}
 
 void UBall::ApplySelfDestruct() 
 {

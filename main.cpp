@@ -96,6 +96,7 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLine
     bool bEnableSelfDestruct = false;
     bool bEnableFreezeBall = false;
     bool bEnableSizeScaling = false;
+    bool bEnableMassScaling = false;
 
     // Values
     float CurrentElastic = 1.0f;
@@ -239,6 +240,14 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLine
             SelectBall->ApplySizeScaling(1.5);
         }
 
+        if (SelectedBall != nullptr && bEnableMassScaling)
+        {
+            UBall* SelectBall = dynamic_cast<UBall*>(SelectedBall);
+            SelectBall->ApplyMassScaling(3);
+        }
+
+
+
         renderer.Prepare();
         renderer.PrepareShader();
 
@@ -274,7 +283,8 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLine
         }
         ImGui::Checkbox("Self Destruct", &bEnableSelfDestruct);
         ImGui::Checkbox("Freeze", &bEnableFreezeBall);
-        ImGui::Checkbox("Size Up", &bEnableSizeScaling);
+        ImGui::Checkbox("Size up", &bEnableSizeScaling);
+        ImGui::Checkbox("Mass up", &bEnableMassScaling);
         ImGui::Checkbox("Gravity", &bEnableGravity);
         if (bEnableGravity)
         {
