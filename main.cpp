@@ -228,6 +228,36 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLine
         MousePointValue[1] = UInputManager::GetInstance().GetMousePos().y;
         ImGui::InputInt2("Mouse Point", MousePointValue);
 
+        ImGui::Separator();
+        ImGui::Text("=== Game Manager Status ===");
+
+        // 1. 현재 턴 가져오기
+        EPlayer currentTurn = UGameManager::GetInstance().CurrentPlayerTurn;
+        if (currentTurn == EPlayer::Red)
+        {
+            // Red 턴이면 빨간색 텍스트
+            ImGui::TextColored(ImVec4(1.0f, 0.3f, 0.3f, 1.0f), "[ Turn : RED Player ]");
+        }
+        else
+        {
+            // Blue 턴이면 파란색 텍스트
+            ImGui::TextColored(ImVec4(0.3f, 0.6f, 1.0f, 1.0f), "[ Turn : BLUE Player ]");
+        }
+
+        // 2. 현재 상태 가져오기
+        ETurnState currentState = UGameManager::GetInstance().CurrentTurnState;
+        const char* stateStr = "Unknown";
+        switch (currentState)
+        {
+        case ETurnState::WaitInput:  stateStr = "Waiting for Input..."; break;
+        case ETurnState::BallMoving: stateStr = "Balls are Moving!";    break;
+        case ETurnState::GameOver:   stateStr = "Game Over!";           break;
+        }
+
+        // 노란색 텍스트로 현재 상태 출력
+        ImGui::TextColored(ImVec4(1.0f, 1.0f, 0.0f, 1.0f), "State: %s", stateStr);
+        ImGui::Separator();
+
         ImGui::End();
 
         ImGui::Render();
