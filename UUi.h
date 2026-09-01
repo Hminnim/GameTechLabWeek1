@@ -10,7 +10,7 @@ class UUI
         virtual ~UUI() = default;
 
         // virtual functions
-        virtual bool Init(URenderer& renderer, const std::wstring& texturePath, float x, float y, float width, float height);
+        virtual bool Init(const std::string& texturePath, float x, float y, float width, float height);
         virtual void Render(URenderer& renderer);
 
         // Setter
@@ -37,6 +37,7 @@ class UUI
         // mesh + srv
         ID3D11Buffer* _mesh = nullptr;
         ID3D11ShaderResourceView* _srv = nullptr;
+        std::string _textureKey;
 
         // false면 Render()에서 건너뜀 (일회성 사용)
         bool _isActive = true;
