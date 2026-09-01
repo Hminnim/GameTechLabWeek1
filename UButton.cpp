@@ -7,7 +7,7 @@ bool UButton::HitTest(float mouseX, float mouseY) const
 {
     // 비활성화 버튼이면 pass
     if (!IsActive())
-        return;
+        return false;
 
     // 활성화 버튼 영역 내 클릭이면 true
     return  mouseX >= GetX() && mouseX <= GetX() + GetWidth() &&
