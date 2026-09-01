@@ -12,6 +12,8 @@
 #include <d3d11.h>
 #include <d3dcompiler.h>
 
+#include <comdef.h>
+
 // IMGUI
 #include "ImGui/imgui.h"
 #include "ImGui/imgui_internal.h"

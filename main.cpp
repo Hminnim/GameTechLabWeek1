@@ -36,14 +36,13 @@ void IncreaseCapacity()
 }
 
 
-
 int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLine, int nShowCmd)
 {
     // SoundManager 초기화 및 재생할 음원 파일 설정
     USoundManager SoundManager;
     SoundManager.Init();
 	SoundManager.LoadSound("TestSound", "Resources/AlarmSound.wav");
-    
+
     WCHAR WindowClass[] = L"JungleWindowClass";
 	WCHAR Title[] = L"Game Tech Lab";
 
@@ -60,6 +59,13 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLine
     renderer.Create(hWnd);
     renderer.CreateShader();
     renderer.CreateConstantBuffer();
+
+    // Resource Manager
+    UResourceManager::GetInstance().Initialize(renderer.Device);
+
+    // ResourceManager는 FrameAdvance 루프 돌기 전에 모든 리소스에 대해서 한 번 저장한다?
+    // 프리미티브 갯수만큼 루프를 돌면서 PSSetShaderResources 호출
+    // 이 때, 인자는 해당 Ball의 GetTextureView()를 호출하여 가져온다
 
     // ImGui를 생성합니다.
     IMGUI_CHECKVERSION();
@@ -102,14 +108,6 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLine
     // Collision Manager
     CollisionManager CollisionMan;
 
-	  // Resource Manager
-    UResourceManager resourceMgr(renderer.Device);
-    ID3D11ShaderResourceView* testTexture = resourceMgr.GetTexture("Resources/test.jpg");
-    if (!testTexture) {
-        OutputDebugStringA("Texture Load Failed!\n");
-        assert(false);
-    }
-    renderer.DeviceContext->PSSetShaderResources(0, 1, &testTexture);
 
     bool bIsExit = false;
 
