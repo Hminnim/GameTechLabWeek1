@@ -235,24 +235,6 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLine
 
 		USceneManager::GetInstance().Render(renderer);
 
-        // >> 삭제 예정
-        //for (int i = 0; i < UBall::TotalNumBalls; i++)
-        //{
-        //    UBall* ball = (UBall*)PrimitiveList[i];
-        //    ball->Render(renderer);
-        //    renderer.RenderPrimitive(VertexBufferSphere, NumVerticesSphere);
-        //}
-
-        renderer.m_spriteBatch->Begin();
-
-        if (testUITexture)
-        {
-            RECT destRect = { 100, 100, 500, 300 };
-            renderer.m_spriteBatch->Draw(testUITexture, destRect);
-        }
-
-        renderer.m_spriteBatch->End();
-        //  << 삭제 예정
 
         // ImGui
         ImGui_ImplDX11_NewFrame();
