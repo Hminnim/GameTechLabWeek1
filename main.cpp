@@ -95,6 +95,7 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLine
     bool bEnableAngularVelocity = false;
     bool bEnableSelfDestruct = false;
     bool bEnableFreezeBall = false;
+    bool bEnableSizeScaling = false;
 
     // Values
     float CurrentElastic = 1.0f;
@@ -231,6 +232,13 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLine
             SelectBall->bEnableFreeze = true;
         }
 
+        // 사이즈 공 활성화
+        if (SelectedBall != nullptr && bEnableSizeScaling)
+        {
+            UBall* SelectBall = dynamic_cast<UBall*>(SelectedBall);
+            SelectBall->ApplySizeScaling(1.5);
+        }
+
         renderer.Prepare();
         renderer.PrepareShader();
 
@@ -266,6 +274,7 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLine
         }
         ImGui::Checkbox("Self Destruct", &bEnableSelfDestruct);
         ImGui::Checkbox("Freeze", &bEnableFreezeBall);
+        ImGui::Checkbox("Size Up", &bEnableSizeScaling);
         ImGui::Checkbox("Gravity", &bEnableGravity);
         if (bEnableGravity)
         {
