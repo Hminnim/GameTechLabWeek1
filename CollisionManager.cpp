@@ -24,16 +24,26 @@ void CollisionManager::ResolveCollision(UPrimitive* TargetPrimitive, UPrimitive*
     // 충돌 상태
     if (DetectCollision(TargetPrimitive,OtherPrimitive))
     {
-        if (TargetBall->isSelfDestruct == true)
+        if (TargetBall->isSelfDestruct)
         {
             TargetPrimitive->isDestroyed = true;
             return;
         }
-        else if (OtherBall->isSelfDestruct == true)
+        else if (OtherBall->isSelfDestruct)
         {
             OtherPrimitive->isDestroyed = true;
             return;
         }
+
+        if (TargetBall->bEnableFreeze)
+        {
+            OtherBall->isFreezed = true;
+        }
+        if (OtherBall->bEnableFreeze)
+        {
+            TargetBall->isFreezed = true;
+        }
+
         // 거리 계산
         float Dist = (float)sqrt(DistSq);
 

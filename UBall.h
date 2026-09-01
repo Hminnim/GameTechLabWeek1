@@ -25,6 +25,8 @@ public:
     virtual void ApplyReverseMagnetism(UPrimitive* OtherPrimitive, float DeltaTime, float MagneticForce) override;
     virtual void ApplySizeScaling(float scale) override;
     virtual void ApplySelfDestruct() override;
+    virtual void ApplyEnableFreeze() override;
+    virtual void ApplySelfFreeze() override;
     virtual void ApplyAirResistance(float DeltaTime, float AirResistance) override;
     virtual void SetEnableAngularMomentum(bool bEnable) override;
 };
