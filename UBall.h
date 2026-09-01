@@ -32,7 +32,7 @@ public:
 
     EPlayer Owner = EPlayer::Red;
  
-    UBall(const std::string& meshKey, const std::string& textureKey);
+    UBall(const std::string& meshKey, const EPlayer owner, const FVector startLocation);
     virtual ~UBall();
     virtual void Render(URenderer& Renderer) override;
     virtual void ApplyGravity(float DeltaTime) override;
