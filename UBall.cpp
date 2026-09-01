@@ -25,8 +25,8 @@ UBall::UBall()
     Location.z = 0.0f;
 
     // 랜덤 속도
-    Velocity.x = ((rand() % 200) - 100) * 0.005f;
-    Velocity.y = ((rand() % 200) - 100) * 0.005f;
+    Velocity.x = 5.0f;
+    Velocity.y = 5.0f;
     Velocity.z = 0.0f;
 
     // 랜덤 Rotation
@@ -50,8 +50,15 @@ void UBall::Render(URenderer& Renderer)
 }
 
 void UBall::Update(float DeltaTime)
-{
+{ 
+    // 마찰력 계수 적용
     Location += Velocity * DeltaTime;
+    FVector NormalizeFricVec = Velocity / Velocity.Length() * (-1.0f);
+    if (Velocity.Length() <= 2.0f * DeltaTime)
+    {
+        Velocity = FVector(0, 0, 0);
+    }
+    Velocity += NormalizeFricVec * 2.0f * DeltaTime;
 
     if (bEnableAngularVelocity)
     {
