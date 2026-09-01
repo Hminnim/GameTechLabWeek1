@@ -26,3 +26,4 @@
 #include <string>
 
 #include <WICTextureLoader.h>
+#include <SpriteBatch.h>
