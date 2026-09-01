@@ -26,7 +26,7 @@ public:
     bool bEnableFreeze = false;
     bool isFreezed = false;
     bool isSelfDestruct = false;
-    bool isMagnetActivated = true;
+    bool isMagnetActivated = false;
     bool AlreadyActiveMag = true;
  
     UBall(const std::string& meshKey, const std::string& textureKey);
