@@ -15,7 +15,7 @@ void UEffectManager::Release()
 }
 
 void UEffectManager::PlayEffect(const std::string& textureKey, const DirectX::XMFLOAT2& position, 
-                            float duration, float scale, int frameCount, bool fadeOut)
+                            float duration, float scale, int frameCount, bool fadeOut, float rotation)
 {
     ID3D11ShaderResourceView* srv = UResourceManager::GetInstance().GetTexture(textureKey);
     if (!srv) {
@@ -41,6 +41,7 @@ void UEffectManager::PlayEffect(const std::string& textureKey, const DirectX::XM
     effect.Texture = srv;
     effect.Position = position;
     effect.Scale = scale;
+    effect.Rotation = rotation;
     effect.Duration = duration;
     effect.ElapsedTime = 0.0f;
     effect.FrameCount = frameCount;
@@ -113,7 +114,7 @@ void UEffectManager::Render()
             effect.Position,
             &sourceRECT,
             DirectX::Colors::White,
-            0.0f,                       // NO rotation
+            effect.Rotation,                       // NO rotation
             origin,
             effect.Scale
 
