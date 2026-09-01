@@ -60,33 +60,11 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLine
     ImGui_ImplWin32_Init((void*)hWnd);
     ImGui_ImplDX11_Init(renderer.Device, renderer.DeviceContext);
 
-    // States
-    bool bEnableChangeElastic = false;
-    bool bEnableGravity = true;
-    bool bEnableReverseMagnetism = false;
-    bool bEnableAirResistance = false;
-    bool bEnableMouseInteractMode = false;
-    bool bEnableAngularVelocity = false;
-    bool bEnableSelfDestruct = false;
-    bool bEnableFreezeBall = false;
-    bool bEnableSizeScaling = false;
-    bool bEnableMassScaling = false;
-
-    // Values
-    float CurrentElastic = 1.0f;
-    float CurrentGNumber = 1.0f;
-    float CurrentMagneticForce = 700000.0f;
-    float CurrentAirResistance = 0.5f;
-    UBall* SelectedBall = nullptr;
-
     // DeltaTime
     GameTimer Timer;
     float DeltaTime = 0.0f;
 
     bool bActiveMagnetism = true;
-
-    // Collision Manager
-    CollisionManager CollisionMan;
 	
     // Resource Manager test code >> 삭제예정
     ID3D11ShaderResourceView* testTexture = UResourceManager::GetInstance().GetTexture("Resources/test.jpg");
@@ -108,14 +86,7 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLine
 	// Main Loop (Quit Message가 들어오기 전까지 아래 Loop를 무한히 실행하게 됨)
     while (bIsExit == false)
     {
-		// SoundManager 업데이트
-        SoundManager.Update();
-        DeltaTime = Timer.GetDeltaTime();
-
-		USceneManager::GetInstance().Update(DeltaTime);
-
         MSG msg;
-
         // 처리할 메시지가 더 이상 없을때 까지 수행
         while (PeekMessage(&msg, nullptr, 0, 0, PM_REMOVE))
         {
@@ -130,12 +101,17 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLine
                 break;
             }
         }
-       
+		// SoundManager 업데이트
+        SoundManager.Update();
+        DeltaTime = Timer.GetDeltaTime();
+        UInputManager::GetInstance().Update();
+
+        ////////////////////////////////////////////
+        // 매번 실행되는 코드를 여기에 추가합니다.
         renderer.Prepare();
         renderer.PrepareShader();
 
 		USceneManager::GetInstance().Render(renderer);
-        USceneManager::GetInstance().Update(DeltaTime);
 
         renderer.m_spriteBatch->Begin();
 
@@ -160,35 +136,9 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLine
         {
             SoundManager.PlaySound("TestSound");
         }
-        ImGui::Checkbox("Self Destruct", &bEnableSelfDestruct);
-        ImGui::Checkbox("Freeze", &bEnableFreezeBall);
-        ImGui::Checkbox("Size up", &bEnableSizeScaling);
-        ImGui::Checkbox("Mass up", &bEnableMassScaling);
-        ImGui::Checkbox("Gravity", &bEnableGravity);
-        if (bEnableGravity)
-        {
-            ImGui::SliderFloat("G-Number", &CurrentGNumber, 0.0f, 5.0f);
-        }
-        ImGui::Checkbox("Elastic", &bEnableChangeElastic);
-        if (bEnableChangeElastic)
-        {
-            ImGui::SliderFloat("Elasticity", &CurrentElastic, 0.0f, 1.1f);
-        }
-        ImGui::Checkbox("Reverse Magnetism", &bEnableReverseMagnetism);
-        if (bEnableReverseMagnetism)
-        {
-            ImGui::SliderFloat("Magnetic Force", &CurrentMagneticForce, 0.0f, 0.5f);
-        }
-        ImGui::Checkbox("Air Resistance", &bEnableAirResistance);
-        if (bEnableAirResistance)
-        {
-            ImGui::SliderFloat("Air Resistance Force", &CurrentAirResistance, 0.0f, 1.0f);
-        }
-    
-
         // 마우스 값 보기
-        bool bIsLeftDown = UInputManager::GetInstance().IsKeyDown(VK_LBUTTON);
-        ImGui::Checkbox("Mouse Left", &bIsLeftDown);
+        bool bIsLeftPress = UInputManager::GetInstance().IsKeyPress(VK_LBUTTON);
+        ImGui::Checkbox("Mouse Left", &bIsLeftPress);
         int MousePointValue[2] = { 0, };
         MousePointValue[0] = UInputManager::GetInstance().GetMousePos().x;
         MousePointValue[1] = UInputManager::GetInstance().GetMousePos().y;
@@ -199,7 +149,6 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLine
         ImGui::Render();
         ImGui_ImplDX11_RenderDrawData(ImGui::GetDrawData());
 
-       
         // 현재 화면에 보여지는 버퍼와 그리기 작업을 위한 버퍼를 서로 교환합니다.
         renderer.SwapBuffer();
     }
