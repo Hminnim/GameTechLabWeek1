@@ -9,6 +9,10 @@ public:
 
     std::string m_textureKey;
 
+    bool bEnableFreeze = false;
+    bool isFreezed = false;
+    bool isSelfDestruct = false;
+
     UBall();
     virtual ~UBall();
     virtual void Render(URenderer& Renderer) override;
@@ -18,6 +22,7 @@ public:
     virtual void SetElastic(float NewElastic) override;
     virtual void ApplyReverseMagnetism(UPrimitive* OtherPrimitive, float DeltaTime, float MagneticForce) override;
     virtual void ApplySizeScaling(float scale) override;
+    virtual void ApplySelfDestruct() override;
     virtual void ApplyAirResistance(float DeltaTime, float AirResistance) override;
     virtual void SetEnableAngularMomentum(bool bEnable) override;
 };

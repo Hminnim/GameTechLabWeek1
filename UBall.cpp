@@ -4,8 +4,6 @@
 
 UBall::UBall()
 {
-	bool bEnableFreeze = false;
-    bool isFreezed = false;
     TotalNumBalls++;
 
     // 기본 값
@@ -129,6 +127,17 @@ void UBall::ApplyReverseMagnetism(UPrimitive* OtherPrimitive, float DeltaTime, f
     }
 }
 
+void UBall::ApplySizeScaling(float Scale)
+{
+    Radius *= Scale;
+}
+
+
+void UBall::ApplySelfDestruct() 
+{
+    isSelfDestruct = true;
+}
+
 void UBall::ApplyAirResistance(float DeltaTime, float AirResistance)
 {
     float LinearSpeed = Velocity.Length();
@@ -146,10 +155,6 @@ void UBall::ApplyAirResistance(float DeltaTime, float AirResistance)
     }
 }
 
-void UBall::ApplySizeScaling(float Scale)
-{
-    Radius *= Scale;
-}
 
 void UBall::SetEnableAngularMomentum(bool bEnable)
 {

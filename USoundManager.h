@@ -14,6 +14,7 @@ class USoundManager
 	FMOD::Sound* SoundEffect = nullptr;
 	FMOD::Channel* SoundChannel = nullptr;
 	std::unordered_map<std::string, FMOD::Sound*> SoundMap;
+
 public:
 	virtual bool Init();
 	virtual void Update();

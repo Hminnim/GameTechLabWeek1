@@ -85,6 +85,7 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLine
     bool bEnableAirResistance = false;
     bool bEnableMouseInteractMode = false;
     bool bEnableAngularVelocity = false;
+    bool bEnableSelfDestruct = false;
 
     // Values
     float CurrentElastic = 1.0f;
@@ -102,7 +103,7 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLine
     // Collision Manager
     CollisionManager CollisionMan;
 
-	  // Resource Manager
+	// Resource Manager
     UResourceManager resourceMgr(renderer.Device);
     ID3D11ShaderResourceView* testTexture = resourceMgr.GetTexture("Resources/test.jpg");
     if (!testTexture) {
@@ -162,8 +163,35 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLine
             }
         }
 
+        // 자폭 적용된 공 충돌시 삭제 + 주변에 척력 적용
+        for (int i = UBall::TotalNumBalls-1; i>=0 ; i--)
+        {
+            if (PrimitiveList[i]->isDestroyed)
+            {
+                UPrimitive* DestructBall = PrimitiveList[i];
+                UBall* DestructBustBall = dynamic_cast<UBall*>(DestructBall);
+                for (int j = 0; j < UBall::TotalNumBalls; j++)
+                {
+                    if (PrimitiveList[j] != DestructBustBall)
+                    {
+                        DestructBustBall->ApplyReverseMagnetism(PrimitiveList[j], DeltaTime, CurrentMagneticForce);
+                    }
+                }
+                if (DestructBall == SelectedBall)
+                {
+                    SelectedBall = nullptr;
+                }
 
+                PrimitiveList[i] = PrimitiveList[UBall::TotalNumBalls - 1];
+                PrimitiveList[UBall::TotalNumBalls - 1] = nullptr;
 
+                delete DestructBall;
+
+                TargetNumBalls--;
+            }
+        }
+
+        // 척력 적용된 공에 1회 척력 적용
         if (SelectedBall != nullptr && bEnableReverseMagnetism && bActiveMagnetism)
         {
 
@@ -177,8 +205,12 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLine
             bActiveMagnetism = false;
         }
 
+        if (SelectedBall != nullptr && bEnableSelfDestruct)
+        {
+            UBall* SelectBall = dynamic_cast<UBall*>(SelectedBall);
+            SelectBall->isSelfDestruct = true;
+        }
       
-
 
         renderer.Prepare();
         renderer.PrepareShader();
@@ -203,6 +235,7 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLine
         {
             SoundManager.PlaySound("TestSound");
         }
+        ImGui::Checkbox("SelfDestruct", &bEnableSelfDestruct);
         ImGui::Checkbox("Gravity", &bEnableGravity);
         if (bEnableGravity)
         {
@@ -299,7 +332,7 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLine
             // 잡은 공이 있고 마우스 왼쪽 클릭을 유지 했을 때
             if (SelectedBall != nullptr && ImGui::IsMouseDown(ImGuiMouseButton_Left))
             {
-                // 마우스 위치로 가는 벡터 구하기
+                // 마우스 위치로 가는 벡터 구하기7
                 FVector TargetPos(NdcX, NdcY, 0.0f);
                 FVector Dir = TargetPos - SelectedBall->Location;
 
