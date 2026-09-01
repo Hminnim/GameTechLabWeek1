@@ -13,6 +13,7 @@ public:
     bool bEnableFreeze = false;
     bool isFreezed = false;
     bool isSelfDestruct = false;
+    bool isMagnetActivated = true;
 
     UBall();
     virtual ~UBall();

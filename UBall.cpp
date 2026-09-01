@@ -130,7 +130,6 @@ void UBall::ApplyReverseMagnetism(UPrimitive* OtherPrimitive, float DeltaTime, f
         FVector ForceVector = Normal * Force;
 
         // 질량이 가벼울 수록 빠르게 접근 F = ma
-        Velocity -= (ForceVector / Mass);
         Other->Velocity += (ForceVector / Other->Mass); // 작용 반작용
     }
 }

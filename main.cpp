@@ -37,8 +37,7 @@ void IncreaseCapacity()
 }
 
 
-int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLine, int nShowCmd)
-{
+int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLine, int nShowCmd){
     // SoundManager 초기화 및 재생할 음원 파일 설정
     USoundManager SoundManager;
     SoundManager.Init();
@@ -205,7 +204,7 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLine
         }
 
         // 척력 적용된 공에 1회 척력 적용
-        if (SelectedBall != nullptr && bEnableReverseMagnetism && bActiveMagnetism)
+        if (SelectedBall != nullptr && bEnableReverseMagnetism && SelectedBall->isMagnetActivated)
         {
 
             for (int j = 0; j < UBall::TotalNumBalls; j++)
@@ -215,7 +214,7 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLine
                     SelectedBall->ApplyReverseMagnetism(PrimitiveList[j], DeltaTime, CurrentMagneticForce);
                 }
             }
-            bActiveMagnetism = false;
+            SelectedBall->isMagnetActivated = false;
         }
 
         // 자폭 공 활성화
