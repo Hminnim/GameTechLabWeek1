@@ -1,0 +1,43 @@
+#pragma once
+#include <string>
+
+// 모든 UI 요소(아이콘, 배경, 버튼 등) Base Class
+class UUI
+{
+    public:
+        virtual ~UUI() = default;
+
+        // virtual functions
+        virtual bool Init(ID3D11Device* device, const std::wstring& texturePath, float x, float y, float width, float height);
+        virtual void Render(ID3D11DeviceContext* context);
+
+        // Setter
+        void SetActive(bool active) { _isActive = active; }
+        
+        // Check the status (item or not)
+        bool IsActive() const { return _isActive; }
+
+        // Getter
+        float GetX() const { return _x; }
+        float GetY() const { return _y; }
+        float GetWidth() const { return _width; }
+        float GetHeight() const { return _height; }
+
+    protected:
+        // position
+        float _x = 0.0f;
+        float _y = 0.0f;
+
+        // scale
+        float _width = 0.0f;
+        float _height = 0.0f;
+
+        // mesh + srv
+        ID3D11Buffer* _mesh = nullptr;
+        ID3D11ShaderResourceView* _srv = nullptr;
+        UINT _stride = 0;
+        UINT _offset = 0;
+
+        // false면 Render()에서 건너뜀 (일회성 사용)
+        bool _isActive = true;
+};
