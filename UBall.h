@@ -27,8 +27,8 @@ public:
     bool isFreezed = false;
     bool isSelfDestruct = false;
     bool isMagnetActivated = true;
- \
-
+    bool AlreadyActiveMag = true;
+ 
     UBall(const std::string& meshKey, const std::string& textureKey);
     virtual ~UBall();
     virtual void Render(URenderer& Renderer) override;
@@ -37,10 +37,6 @@ public:
     virtual void SetElastic(float NewElastic) override;
     virtual void SetTexture(ID3D11ShaderResourceView* srv);
     virtual void ApplyReverseMagnetism(UPrimitive* OtherPrimitive, float DeltaTime, float MagneticForce) override;
-    virtual void ApplySizeScaling(float scale) override;
-    virtual void ApplyMassScaling(float scale) override;
-    virtual void ApplySelfDestruct() override;
-    virtual void ApplyEnableFreeze() override;
     virtual void ApplySelfFreeze() override;
     virtual void ApplyAirResistance(float DeltaTime, float AirResistance) override;
     virtual void SetEnableAngularMomentum(bool bEnable) override;
