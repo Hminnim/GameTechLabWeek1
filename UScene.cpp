@@ -32,11 +32,11 @@ void UScene::HandleClick(float mouseX, float mouseY)
 //////////////////
 void UTitleScene::Initialize()
 {
-	AddPrimitive(new UBall("Sphere", "Resources/test.png"));
-    AddPrimitive(new UBall("Sphere", "Resources/test.png"));
-    AddPrimitive(new UBall("Sphere", "Resources/test.png"));
-    AddPrimitive(new UBall("Sphere", "Resources/test.png"));
-    AddPrimitive(new UBall("Sphere", "Resources/test.png"));
+	AddPrimitive(new UBall("sphere", "Resources/test.png"));
+    AddPrimitive(new UBall("sphere", "Resources/test.png"));
+    AddPrimitive(new UBall("sphere", "Resources/test.png"));
+    AddPrimitive(new UBall("sphere", "Resources/test.png"));
+    AddPrimitive(new UBall("sphere", "Resources/test.png"));
 }
 
 void UTitleScene::Update(float deltaTime)
