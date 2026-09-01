@@ -101,20 +101,16 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLine
                 break;
             }
         }
-
 		// SoundManager 업데이트
         SoundManager.Update();
         DeltaTime = Timer.GetDeltaTime();
-
         UInputManager::GetInstance().Update();
-		USceneManager::GetInstance().Update(DeltaTime);
 
         ////////////////////////////////////////////
         // 매번 실행되는 코드를 여기에 추가합니다.
-
+        USceneManager::GetInstance().Update(DeltaTime);
         renderer.Prepare();
         renderer.PrepareShader();
-
 		USceneManager::GetInstance().Render(renderer);
 
         renderer.m_spriteBatch->Begin();
@@ -140,7 +136,6 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLine
         {
             SoundManager.PlaySound("TestSound");
         }
-
         // 마우스 값 보기
         bool bIsLeftPress = UInputManager::GetInstance().IsKeyPress(VK_LBUTTON);
         ImGui::Checkbox("Mouse Left", &bIsLeftPress);

@@ -1,6 +1,7 @@
 #pragma once
 
 #include "UPrimitive.h"
+#include "CollisionManager.h"
 
 class UBall : public UPrimitive
 {
@@ -21,7 +22,6 @@ public:
     UBall(const std::string& meshKey, const std::string& textureKey);
     virtual ~UBall();
     virtual void Render(URenderer& Renderer) override;
-    virtual void Update(float DeltaTime, float ScreendWidth, float ScreenHeight) override;
     virtual void ApplyGravity(float DeltaTime) override;
     virtual void SetGNumber(float NewG);
     virtual void SetElastic(float NewElastic) override;
@@ -34,4 +34,5 @@ public:
     virtual void ApplySelfFreeze() override;
     virtual void ApplyAirResistance(float DeltaTime, float AirResistance) override;
     virtual void SetEnableAngularMomentum(bool bEnable) override;
+    virtual void Update(float DeltaTime, float ScreenWidth, float ScreenHeight, std::vector<UPrimitive*>&others) override;
 };

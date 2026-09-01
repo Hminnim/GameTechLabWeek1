@@ -2,7 +2,6 @@
 #include "CollisionManager.h"
 #include "UBall.h"
 
-
 CollisionManager::CollisionManager()
 {
 }

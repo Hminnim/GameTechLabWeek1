@@ -1,5 +1,6 @@
 #pragma once
 #include "URenderer.h"
+#include "pch.h"
 
 class UPrimitive
 {
@@ -24,7 +25,6 @@ public:
 public:
     virtual ~UPrimitive() {}
     virtual void Render(URenderer& Renderer) = 0;
-    virtual void Update(float DeltaTime, float ScreendWidth, float ScreenHeight) = 0;
     virtual void ApplyGravity(float DeltaTime) = 0;
     virtual void SetGNumber(float NewG) = 0;
     virtual void SetElastic(float NewElastic) = 0;
@@ -36,4 +36,5 @@ public:
     virtual void ApplySelfFreeze() = 0;
     virtual void ApplyAirResistance(float DeltaTime, float AirResistance) = 0;
     virtual void SetEnableAngularMomentum(bool bEnable) = 0;
+    virtual void Update(float DeltaTime, float ScreenWidth, float ScreenHeight, std::vector<UPrimitive*>&others) = 0;
 };

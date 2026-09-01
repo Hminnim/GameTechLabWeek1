@@ -3,6 +3,8 @@
 #include "UBall.h"
 #include "UResourceManager.h"
 
+CollisionManager CollisionMan;
+
 UBall::UBall(const std::string& meshKey, const std::string& textureKey)
 {
     TotalNumBalls++;
@@ -54,28 +56,31 @@ void UBall::Render(URenderer& Renderer)
     Renderer.RenderPrimitive(m_vertexBuffer, m_numVertices);
 }
 
-void UBall::Update(float DeltaTime, float ScreendWidth, float ScreenHeight)
-{    
-    // 마찰력 계수 적용
+void UBall::Update(float DeltaTime, float ScreendWidth, float ScreenHeight, std::vector<UPrimitive*>&others)
+{
+    if (isFreezed)
+    {
+        Velocity = FVector(0, 0, 0);
+    }
+
+    //속도에 따른 위치 이동
     Location += Velocity * DeltaTime;
+
+    // 마찰력 계수 적용
     if (Velocity.Length() > 1.0f) {
         FVector NormalizeFricVec = Velocity / Velocity.Length() * (-1.0f);
-        if (Velocity.Length() <= 3000.0f * DeltaTime)
+        if (Velocity.Length() <= 10.0f * DeltaTime)
         {
             Velocity = FVector(0, 0, 0);
         }
-        else Velocity += NormalizeFricVec * 3000.0f * DeltaTime;
+        else Velocity += NormalizeFricVec * 10.0f * DeltaTime;
     }
     if (bEnableAngularVelocity)
     {
         Rotation += AngularVelocity * DeltaTime;
     }
 
-    // 각속도 서서히 멈추게
-    AngularVelocity.x *= 0.99f;
-    AngularVelocity.y *= 0.99f;
-    AngularVelocity.z *= 0.99f;
-
+    // 벽에 부딫칠때 감속 및 방향 전환
     if (Location.x < Radius)
     {
         Velocity.x *= -0.9f * Elastic;
@@ -95,6 +100,19 @@ void UBall::Update(float DeltaTime, float ScreendWidth, float ScreenHeight)
     {
         Velocity.y *= -0.9f * Elastic;
         Location.y = ScreenHeight - Radius;
+    }
+
+    //충돌 처리
+    for (auto* other : others) 
+    {
+        if (other != this)
+        {
+            UBall* otherBall = dynamic_cast<UBall*>(other);
+            if (other != nullptr)
+            {
+                CollisionMan.ResolveCollision(this, otherBall);
+            }
+        }
     }
 }
 
