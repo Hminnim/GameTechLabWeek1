@@ -328,7 +328,7 @@ void URenderer::BeginSprite()
         DirectX::SpriteSortMode_Deferred,
         nullptr,                    // blendState (nullptr = AlphaBlend 기본값)
         nullptr,                    // samplerState (nullptr = LinearClamp 기본값)
-        DefaultDepthStencilState,   // 우리가 만든 깊이 테스트 켜진 상태
+        nullptr,   // 우리가 만든 깊이 테스트 켜진 상태
         RasterizerState             // 우리가 쓰는 래스터라이저 상태
     );
 }
@@ -338,9 +338,9 @@ void URenderer::EndSprite()
     m_spriteBatch->End();
 
     // 깊이/블렌드/래스터라이저
-    DeviceContext->OMSetDepthStencilState(DefaultDepthStencilState, 0);
-    DeviceContext->OMSetBlendState(nullptr, nullptr, 0xFFFFFFFF);
-    DeviceContext->RSSetState(RasterizerState);
+    //DeviceContext->OMSetDepthStencilState(DefaultDepthStencilState, 0);
+    //DeviceContext->OMSetBlendState(nullptr, nullptr, 0xFFFFFFFF);
+    //DeviceContext->RSSetState(RasterizerState);
 
     // SpriteBatch가 바꾼 셰이더 파이프라인도 원복
     PrepareShader();

@@ -166,6 +166,7 @@
     <ClCompile Include="UEffectManager.cpp" />
     <ClCompile Include="UGameLoopManager.cpp" />
     <ClCompile Include="UInputManager.cpp" />
+    <ClCompile Include="UMap.cpp" />
     <ClCompile Include="URenderer .cpp" />
     <ClCompile Include="UResourceManager.cpp" />
     <ClCompile Include="UScene.cpp" />
@@ -200,6 +201,7 @@
     <ClInclude Include="UButton.h" />
     <ClInclude Include="UGameSetting.h" />
     <ClInclude Include="UInputManager.h" />
+    <ClInclude Include="UMap.h" />
     <ClInclude Include="UPrimitive.h" />
     <ClInclude Include="URenderer.h" />
     <ClInclude Include="UResourceManager.h" />

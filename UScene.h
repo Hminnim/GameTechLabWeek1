@@ -3,6 +3,7 @@
 #include <vector>
 #include "UUI.h"
 #include "UButton.h"
+#include "UMap.h"
 
 
 class UPrimitive;
@@ -22,6 +23,9 @@ class UScene
         void AddUI(UUI* ui) { _uis.push_back(ui); }
         void AddButton(UButton* button) { _buttons.push_back(button); }
 
+		void SetBackground(UUI* background) { _background = background; }
+		void SetMap(UUI* map) { _map = map; }
+
         virtual void Update(float deltaTime);
 
         // 렌더링 (순서: world -> ui -> button)
@@ -34,6 +38,8 @@ class UScene
         std::vector<UPrimitive*> _primitives;
         std::vector<UUI*> _uis;
         std::vector<UButton*> _buttons;
+        UUI* _background;
+        UUI* _map;
 
         std::unique_ptr<DirectX::SpriteBatch> m_spriteBatch;
 };

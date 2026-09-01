@@ -34,9 +34,9 @@ UBall::UBall(const std::string& meshKey, const std::string& textureKey)
     Velocity.z = 0.0f;
 
     // 랜덤 Rotation
-    Rotation.x = ((rand() % 200) - 100) * 100.0f;
-    Rotation.y = ((rand() % 200) - 100) * 100.0f;
-    Rotation.z = ((rand() % 200) - 100) * 100.0f;
+    Rotation.x = 1.57f;//((rand() % 200) - 100) * 100.0f;
+    Rotation.y = 0;//((rand() % 200) - 100) * 100.0f;
+    Rotation.z = 0;//((rand() % 200) - 100) * 100.0f;
 
     m_vertexBuffer = UResourceManager::GetInstance().GetVertexBuffer(meshKey);
 	m_numVertices = UResourceManager::GetInstance().GetNumVertices(meshKey);
