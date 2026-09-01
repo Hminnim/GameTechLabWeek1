@@ -5,6 +5,7 @@
 #include "UBall.h"
 #include "USceneManager.h"
 #include "UInputManager.h"
+#include "UGameSetting.h"
 
 
 void UScene::Render(URenderer& renderer)
@@ -63,7 +64,7 @@ void UScene::Update(float Deltatime)
 void UTitleScene::Initialize()
 {
     UUI* temp = new UUI();
-    temp->Init("Resources/Title.png", 0, 0, 2040, 1400);
+    temp->Init("Resources/Title.png", 0, 0, UGameSetting::GetInstance().ScreendWidth, UGameSetting::GetInstance().ScreenHeight);
 	AddUI(temp);
 
     UButton* temp2 = new UButton();
@@ -105,7 +106,7 @@ void UInGameScene::Initialize()
     AddPrimitive(new UBall("sphere", "Resources/test.png"));
 
     UUI* temp = new UUI();
-    temp->Init("Resources/background_blue.png", 0, 0, 2040, 1400);
+    temp->Init("Resources/background_blue.png", 0, 0, UGameSetting::GetInstance().ScreendWidth, UGameSetting::GetInstance().ScreenHeight);
     AddUI(temp);
 }
 
@@ -127,7 +128,7 @@ void UInGameScene::Render(URenderer& renderer)
 void UGameOverScene::Initialize()
 {
     UUI* temp = new UUI();
-    temp->Init("Resources/background_red_win.png", 0, 0, 2040, 1400);
+    temp->Init("Resources/background_red_win.png", 0, 0, UGameSetting::GetInstance().ScreendWidth, UGameSetting::GetInstance().ScreenHeight);
     AddUI(temp);
 
     UButton* temp2 = new UButton();
