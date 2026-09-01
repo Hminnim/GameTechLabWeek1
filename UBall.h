@@ -3,6 +3,15 @@
 #include "UPrimitive.h"
 #include "CollisionManager.h"
 
+enum class USkillType
+{
+    ReverseMagnet,
+    Mine,
+    Freeze,
+    SizeScaling,
+    MassScaling
+};
+
 class UBall : public UPrimitive
 {
 public:
@@ -18,6 +27,7 @@ public:
     bool isFreezed = false;
     bool isSelfDestruct = false;
     bool isMagnetActivated = true;
+ \
 
     UBall(const std::string& meshKey, const std::string& textureKey);
     virtual ~UBall();
@@ -35,4 +45,5 @@ public:
     virtual void ApplyAirResistance(float DeltaTime, float AirResistance) override;
     virtual void SetEnableAngularMomentum(bool bEnable) override;
     virtual void Update(float DeltaTime, float ScreenWidth, float ScreenHeight, std::vector<UPrimitive*>&others) override;
+    virtual void ApplySkill(USkillType Skill);
 };

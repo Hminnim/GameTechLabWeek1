@@ -114,6 +114,22 @@ void UBall::Update(float DeltaTime, float ScreendWidth, float ScreenHeight, std:
             }
         }
     }
+
+    if (isMagnetActivated)
+    {
+        float currentMagnetForce = 1000.0f;
+        for (auto* other : others)
+        {
+            if (other != this)
+            {
+                UBall* otherBall = dynamic_cast<UBall*>(other);
+                if (other != nullptr)
+                {
+                    ApplyReverseMagnetism(other, DeltaTime, )
+                }
+            }
+        }
+    }
 }
 
 void UBall::ApplyGravity(float DeltaTime)
@@ -165,26 +181,6 @@ void UBall::ApplyReverseMagnetism(UPrimitive* OtherPrimitive, float DeltaTime, f
     }
 }
 
-void UBall::ApplySizeScaling(float scale)
-{
-    Radius *= scale;
-}
-
-void UBall::ApplyMassScaling(float scale)
-{
-    Mass *= scale;
-}
-
-void UBall::ApplySelfDestruct() 
-{
-    isSelfDestruct = true;
-}
-
-void UBall::ApplyEnableFreeze()
-{
-    bEnableFreeze = true;
-}
-
 void UBall::ApplySelfFreeze()
 {
     isFreezed = true;
@@ -211,4 +207,22 @@ void UBall::ApplyAirResistance(float DeltaTime, float AirResistance)
 void UBall::SetEnableAngularMomentum(bool bEnable)
 {
     bEnableAngularVelocity = bEnable;
+}
+
+void UBall::ApplySkill(USkillType skill)
+{
+    switch (skill)
+    {
+        case USkillType::Mine:
+             isSelfDestruct = true;
+             break;
+        case USkillType::Freeze:
+             bEnableFreeze = true;
+        case USkillType::SizeScaling:
+             Radius *= 1.5;
+        case USkillType::MassScaling:
+             Mass *= 1.5;
+        case USkillType::ReverseMagnet:
+            isMagnetActivated = true;
+    }
 }
