@@ -12,27 +12,28 @@ UBall::UBall(const std::string& meshKey, const std::string& textureKey)
     GNumber = 1.0f;
     bEnableAngularVelocity = false;
 
-    // 랜덤 크기, 질량
-    Radius = (0.09f + (rand() % 100) / 100.0f) * 0.1f;
-    Mass = Radius * 10.0f;
-
     // 꽉찬 구의 관성 모멘트
     Inertia = 0.4f * Mass * Radius * Radius;
 
+    // 임시로 테스트용 크기,위치 속도 설정
+   // 랜덤 크기, 질량
+    Radius = (0.09f + (rand() % 100) / 100.0f) * 100.0f;
+    Mass = Radius * 10.0f;
+
     // 랜덤 위치
-    Location.x = ((rand() % 200) - 100) * 0.01f;
-    Location.y = ((rand() % 200) - 100) * 0.01f;
+    Location.x = rand() % 1000 + 50.0f;
+    Location.y = rand() % 1000 + 50.0f;
     Location.z = 0.0f;
 
     // 랜덤 속도
-    Velocity.x = 5.0f;
-    Velocity.y = 5.0f;
+    Velocity.x = ((rand() % 200) - 100) * 10.0f;
+    Velocity.y = ((rand() % 200) - 100) * 10.0f;
     Velocity.z = 0.0f;
 
     // 랜덤 Rotation
-    Rotation.x = ((rand() % 200) - 100) * 0.01f;
-    Rotation.y = ((rand() % 200) - 100) * 0.01f;
-    Rotation.z = ((rand() % 200) - 100) * 0.01f;
+    Rotation.x = ((rand() % 200) - 100) * 100.0f;
+    Rotation.y = ((rand() % 200) - 100) * 100.0f;
+    Rotation.z = ((rand() % 200) - 100) * 100.0f;
 
     m_vertexBuffer = UResourceManager::GetInstance().GetVertexBuffer(meshKey);
 	m_numVertices = UResourceManager::GetInstance().GetNumVertices(meshKey);
@@ -53,17 +54,18 @@ void UBall::Render(URenderer& Renderer)
     Renderer.RenderPrimitive(m_vertexBuffer, m_numVertices);
 }
 
-void UBall::Update(float DeltaTime)
-{ 
+void UBall::Update(float DeltaTime, float ScreendWidth, float ScreenHeight)
+{    
     // 마찰력 계수 적용
     Location += Velocity * DeltaTime;
-    FVector NormalizeFricVec = Velocity / Velocity.Length() * (-1.0f);
-    if (Velocity.Length() <= 2.0f * DeltaTime)
-    {
-        Velocity = FVector(0, 0, 0);
+    if (Velocity.Length() > 1.0f) {
+        FVector NormalizeFricVec = Velocity / Velocity.Length() * (-1.0f);
+        if (Velocity.Length() <= 3000.0f * DeltaTime)
+        {
+            Velocity = FVector(0, 0, 0);
+        }
+        else Velocity += NormalizeFricVec * 3000.0f * DeltaTime;
     }
-    Velocity += NormalizeFricVec * 2.0f * DeltaTime;
-
     if (bEnableAngularVelocity)
     {
         Rotation += AngularVelocity * DeltaTime;
@@ -74,31 +76,31 @@ void UBall::Update(float DeltaTime)
     AngularVelocity.y *= 0.99f;
     AngularVelocity.z *= 0.99f;
 
-    if (Location.x < -1.0f + Radius)
+    if (Location.x < Radius)
     {
-        Velocity.x *= -1.0f * Elastic;
-        Location.x = -1.0f + Radius;
+        Velocity.x *= -0.9f * Elastic;
+        Location.x = Radius;
     }
-    if (Location.x > 1.0f - Radius)
+    if (Location.x > ScreendWidth - Radius)
     {
-        Velocity.x *= -1.0f * Elastic;
-        Location.x = 1.0f - Radius;
+        Velocity.x *= -0.9f * Elastic;
+        Location.x = ScreendWidth - Radius;
     }
-    if (Location.y < -1.0f + Radius)
+    if (Location.y < Radius)
     {
-        Velocity.y *= -1.0f * Elastic;
-        Location.y = -1.0f + Radius;
+        Velocity.y *= -0.9f * Elastic;
+        Location.y = Radius;
     }
-    if (Location.y > 1.0f - Radius)
+    if (Location.y > ScreenHeight - Radius)
     {
-        Velocity.y *= -1.0f * Elastic;
-        Location.y = 1.0f - Radius;
+        Velocity.y *= -0.9f * Elastic;
+        Location.y = ScreenHeight - Radius;
     }
 }
 
 void UBall::ApplyGravity(float DeltaTime)
 {
-    Velocity.y -= 9.8f * GNumber * DeltaTime;
+    Velocity.y += 9800.0f * GNumber * DeltaTime;
 }
 
 void UBall::SetGNumber(float NewG)
@@ -128,14 +130,14 @@ void UBall::ApplyReverseMagnetism(UPrimitive* OtherPrimitive, float DeltaTime, f
     float DistSq = Delta.LengthSquared();       // 거리 제곱
 
     // 너무 가까히 말고 일정 거리 이내에서
-    if (DistSq > 0.001f && DistSq < 3.0f)
+    if (DistSq > 0.01f && DistSq < 250000.0f)
     {
         float Dist = (float)sqrt(DistSq);
 
         FVector Normal = Delta / Dist; // 법선 벡터
 
         // 거리에 비례해서 강한 힘
-        float Force = MagneticForce / DistSq;
+        float Force = MagneticForce;
 
         // 힘의 방향 벡터
         FVector ForceVector = Normal * Force;

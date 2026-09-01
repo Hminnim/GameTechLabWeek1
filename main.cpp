@@ -75,7 +75,7 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLine
     // Values
     float CurrentElastic = 1.0f;
     float CurrentGNumber = 1.0f;
-    float CurrentMagneticForce = 0.1f;
+    float CurrentMagneticForce = 700000.0f;
     float CurrentAirResistance = 0.5f;
     UBall* SelectedBall = nullptr;
 
@@ -132,7 +132,7 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLine
         }
         ////////////////////////////////////////////
         // 매번 실행되는 코드를 여기에 추가합니다.
-        
+      
         //for (int i = 0; i < UBall::TotalNumBalls; i++)
         //{
         //    UBall* CurrentBall = (UBall*)PrimitiveList[i];
@@ -228,7 +228,6 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLine
         //    UBall* SelectBall = dynamic_cast<UBall*>(SelectedBall);
         //    SelectBall->ApplyMassScaling(3);
         //}
-
 
 
         renderer.Prepare();

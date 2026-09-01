@@ -279,11 +279,13 @@ void URenderer::UpdateConstant(FVector Offset, float scale, FVector Rotation)
             constants->Scale = scale;
             constants->Rotation = Rotation;
 
-            // 화면 비율 구하고 전달
-            if (ViewportInfo.Height > 0.0f)
-            {
-                constants->AspectRatio = ViewportInfo.Width / ViewportInfo.Height;
-            }
+            DirectX::XMMATRIX ProjMatrix = DirectX::XMMatrixOrthographicOffCenterLH(
+                0.0f, ViewportInfo.Width,
+                ViewportInfo.Height, 0.0f,
+                0.0f, 1.0f
+            );
+
+            constants->Projection = DirectX::XMMatrixTranspose(ProjMatrix);
         }
         DeviceContext->Unmap(ConstantBuffer, 0);
     }
