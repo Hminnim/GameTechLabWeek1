@@ -65,9 +65,6 @@ void UGameManager::CheckTurnEnd(std::vector<UPrimitive*>& primitives)
 	// 모든 공이 멈췄을 때
 	if (bIsAllBallStopped)
 	{
-		CurrentPlayerTurn = (CurrentPlayerTurn == EPlayer::Red ? EPlayer::Blue : EPlayer::Red);
-		CurrentTurnState = ETurnState::WaitInput;
-
 		for (auto* primitive : primitives)
 		{
 			UBall* ball = dynamic_cast<UBall*>(primitive);
@@ -76,6 +73,9 @@ void UGameManager::CheckTurnEnd(std::vector<UPrimitive*>& primitives)
 				ball->isFreezed = false;
 			}
 		}
+		
+		CurrentPlayerTurn = (CurrentPlayerTurn == EPlayer::Red ? EPlayer::Blue : EPlayer::Red);
+		CurrentTurnState = ETurnState::WaitInput;
 	}
 }
 
