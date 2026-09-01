@@ -13,10 +13,15 @@
 #include "UWindow.h"
 #include "UScene.h"
 #include "UGameSetting.h"
+#include "UEffectManager.h"
+
 
 int UBall::TotalNumBalls = 0;
 
 int ListCapacity = 0;
+
+static UBall* SelectedBall = nullptr;
+static bool bIsDragging = false;
 
 int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLine, int nShowCmd){
     // SoundManager 초기화 및 재생할 음원 파일 설정
@@ -80,6 +85,23 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLine
 	USceneManager::GetInstance().AddScene("GameOver", new UGameOverScene());
     USceneManager::GetInstance().ChangeScene("Title");
 
+    ///////////////////////////////////////////////
+    //////////////////EFFECT TEST//////////////////
+    ///////////////////////////////////////////////
+
+    UEffectManager::GetInstance().Init(renderer.DeviceContext);
+    UEffectManager::GetInstance().PlayEffect(
+        "Resources/effect_test.png",
+        { 500.0f, 500.0f },
+        2.0f,
+        1.0f,
+        6
+    );
+
+    ///////////////////////////////////////////////
+    //////////////////EFFECT TEST//////////////////
+    ///////////////////////////////////////////////
+
     bool bIsExit = false;
 
 	// Main Loop (Quit Message가 들어오기 전까지 아래 Loop를 무한히 실행하게 됨)
@@ -108,10 +130,38 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLine
         ////////////////////////////////////////////
         // 매번 실행되는 코드를 여기에 추가합니다.
         USceneManager::GetInstance().Update(DeltaTime);
+        
+        UEffectManager::GetInstance().Update(DeltaTime); // EFFECT TEST
+
         renderer.Prepare();
         renderer.PrepareShader();
 		USceneManager::GetInstance().Render(renderer);
 
+        if (UInputManager::GetInstance().IsKeyDown(VK_LBUTTON) && !ImGui::GetIO().WantCaptureMouse)
+        {
+            POINT mouse = UInputManager::GetInstance().GetMousePos();
+            if (USceneManager::GetInstance().GetCurrentScene())
+            {
+                auto& primitives = USceneManager::GetInstance().GetCurrentScene()->GetPrimitives();
+                for (auto* prim : primitives)
+                {
+                    UBall* ball = dynamic_cast<UBall*>(prim);
+                    if (ball)
+                    {
+                        float dx = ball->Location.x - (float)mouse.x;
+                        float dy = ball->Location.y - (float)mouse.y;
+                        if (dx * dx + dy * dy < ball->Radius * ball->Radius)
+                        {
+                            SelectedBall = ball;
+                            bIsDragging = true; // ⭐ 드래그 조준 시작!
+                            SelectedBall->Velocity = FVector(0, 0, 0); // 조준할 땐 공을 정지
+                            break;
+                        }
+                    }
+                }
+            }
+        }
+        UEffectManager::GetInstance().Render(); // EFFECT TEST
 
         // ImGui
         ImGui_ImplDX11_NewFrame();
@@ -121,6 +171,48 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLine
         // 이후 ImGui UI 컨트롤 추가는 ImGui::NewFrame()과 ImGui::Render() 사이인 여기에 위치합니다.
         ImGui::Begin("Jungle Property Window");
         ImGui::Text("Hello Jungle World!");
+        if (SelectedBall != nullptr)
+        {
+            ImGui::TextColored(ImVec4(0, 1, 0, 1), "[ Ball Selected! ]");
+            ImGui::Text("Radius: %.1f | Mass: %.1f", SelectedBall->Radius, SelectedBall->Mass);
+            ImGui::Separator();
+            // 💥 5가지 코어 스킬 발동 버튼!
+            if (ImGui::Button("1. 자폭 (Mine)"))       SelectedBall->ApplySkill(USkillType::Mine);
+            if (ImGui::Button("2. 빙결 (Freeze)"))     SelectedBall->ApplySkill(USkillType::Freeze);
+            if (ImGui::Button("3. 거대화 (SizeUp)"))   SelectedBall->ApplySkill(USkillType::SizeScaling);
+            if (ImGui::Button("4. 질량증가 (MassUp)")) SelectedBall->ApplySkill(USkillType::MassScaling);
+            if (ImGui::Button("5. 척력파 (Magnet)"))   SelectedBall->ApplySkill(USkillType::ReverseMagnet);
+            if (ImGui::Button("선택 해제 (Deselect)")) SelectedBall = nullptr;
+        }
+        else
+        {
+            ImGui::TextColored(ImVec4(1, 1, 0, 1), "Click a ball to select!");
+        }
+        if (bIsDragging && UInputManager::GetInstance().IsKeyUp(VK_LBUTTON))
+        {
+            if (SelectedBall != nullptr)
+            {
+                POINT mouse = UInputManager::GetInstance().GetMousePos();
+                // 💥 당긴 방향의 반대 방향으로 발사 벡터 계산 (새총 원리)
+                FVector launchVec(SelectedBall->Location.x - (float)mouse.x, SelectedBall->Location.y - (float)mouse.y, 0.0f);
+
+                float pullDistance = launchVec.Length();
+                if (pullDistance > 5.0f)
+                {
+                    float launchPower = 8.0f; // 파워 배율 (조절 가능)
+                    SelectedBall->Velocity = launchVec * launchPower;
+                    // 너무 세게 날아가지 않도록 최대 속도 제한 (최대 3000 px/s)
+                    float maxSpeed = 3000.0f;
+                    if (SelectedBall->Velocity.Length() > maxSpeed)
+                    {
+                        SelectedBall->Velocity = (SelectedBall->Velocity / SelectedBall->Velocity.Length()) * maxSpeed;
+                    }
+                }
+            }
+            bIsDragging = false; // 드래그 종료
+        }
+        // main.cpp ImGui 창 안에서
+     
         if (ImGui::Button("Sound"))
         {
             SoundManager.PlaySound("TestSound");

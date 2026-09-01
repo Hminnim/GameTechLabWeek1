@@ -7,7 +7,7 @@ class USceneManager
 {
 public:
     static USceneManager& GetInstance();
-
+    UScene* GetCurrentScene() { return m_currentScene; }
     void Initialize() {};
 
     void AddScene(const std::string& name, UScene* scene);

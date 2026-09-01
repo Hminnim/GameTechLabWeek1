@@ -27,7 +27,7 @@ public:
     bool bEnableFreeze = false;
     bool isFreezed = false;
     bool isSelfDestruct = false;
-    bool isMagnetActivated = true;
+    bool isMagnetActivated = false;
     bool AlreadyActiveMag = true;
 
     EPlayer Owner = EPlayer::Red;
