@@ -16,6 +16,8 @@ public:
     // 렌더링에 필요한 리소스 및 상태를 관리하기 위한 변수들
     ID3D11Texture2D* FrameBuffer = nullptr; // 화면 출력용 텍스처
     ID3D11RenderTargetView* FrameBufferRTV = nullptr; // 텍스처를 렌더 타겟으로 사용하는 뷰
+    ID3D11DepthStencilState* DefaultDepthStencilState = nullptr;
+    ID3D11BlendState* DefaultBlendState = nullptr;
     ID3D11RasterizerState* RasterizerState = nullptr; // 래스터라이저 상태(컬링, 채우기 모드 등 정의)
     ID3D11Buffer* ConstantBuffer = nullptr; // 쉐이더에 데이터를 전달하기 위한 상수 버퍼
 
@@ -60,4 +62,6 @@ public:
     void ReleaseConstantBuffer();
     void UpdateConstant(FVector Offset, float scale, FVector Rotation);
 	void BindTexture(UINT slot, ID3D11ShaderResourceView* srv);
+    void BeginSprite();
+    void EndSprite();
 };

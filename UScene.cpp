@@ -9,11 +9,7 @@
 
 void UScene::Render(URenderer& renderer)
 {
-    // Game World Object
-    for (auto* primitive : _primitives)
-        primitive->Render(renderer);
-
-	renderer.m_spriteBatch->Begin();
+	renderer.BeginSprite();
 
     // UI
     for (auto* ui : _uis)
@@ -23,7 +19,11 @@ void UScene::Render(URenderer& renderer)
     for (auto* button : _buttons)
         button->Render(renderer);
 
-	renderer.m_spriteBatch->End();
+	renderer.EndSprite();
+
+    // Game World Object
+    for (auto* primitive : _primitives)
+        primitive->Render(renderer);
 }
 
 void UScene::HandleClick(float mouseX, float mouseY)
@@ -103,10 +103,15 @@ void UInGameScene::Initialize()
     AddPrimitive(new UBall("sphere", "Resources/test.png"));
     AddPrimitive(new UBall("sphere", "Resources/test.png"));
     AddPrimitive(new UBall("sphere", "Resources/test.png"));
+
+    UUI* temp = new UUI();
+    temp->Init("Resources/background_blue.png", 0, 0, 2040, 1400);
+    AddUI(temp);
 }
 
 void UInGameScene::Update(float deltaTime)
 {
+    UScene::Update(deltaTime);
 }
 
 void UInGameScene::Render(URenderer& renderer)
@@ -142,6 +147,7 @@ void UGameOverScene::Initialize()
 
 void UGameOverScene::Update(float deltaTime)
 {
+    UScene::Update(deltaTime);
 }
 
 void UGameOverScene::Render(URenderer& renderer)
