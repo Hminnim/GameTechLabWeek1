@@ -8,6 +8,7 @@ public:
     static int TotalNumBalls;
 
     std::string m_textureKey;
+	ID3D11ShaderResourceView* m_textureView;
 
     bool bEnableFreeze = false;
     bool isFreezed = false;
@@ -20,6 +21,7 @@ public:
     virtual void ApplyGravity(float DeltaTime) override;
     virtual void SetGNumber(float NewG);
     virtual void SetElastic(float NewElastic) override;
+    virtual void SetTexture(ID3D11ShaderResourceView* srv);
     virtual void ApplyReverseMagnetism(UPrimitive* OtherPrimitive, float DeltaTime, float MagneticForce) override;
     virtual void ApplySizeScaling(float scale) override;
     virtual void ApplySelfDestruct() override;

@@ -1,6 +1,7 @@
 #pragma once
 #include "pch.h"
 #include "UBall.h"
+#include "UResourceManager.h"
 
 UBall::UBall()
 {
@@ -34,6 +35,7 @@ UBall::UBall()
     Rotation.z = ((rand() % 200) - 100) * 0.01f;
 
     m_textureKey = "Resources/test.png";
+	m_textureView = UResourceManager::GetInstance().GetTexture(m_textureKey);
 }
 
 UBall::~UBall()
@@ -44,6 +46,7 @@ UBall::~UBall()
 void UBall::Render(URenderer& Renderer)
 {
     Renderer.UpdateConstant(Location, Radius, Rotation);
+	Renderer.BindTexture(0, m_textureView);
 }
 
 void UBall::Update(float DeltaTime)
@@ -95,6 +98,11 @@ void UBall::SetGNumber(float NewG)
 void UBall::SetElastic(float NewElastic)
 {
     Elastic = NewElastic;
+}
+
+void UBall::SetTexture(ID3D11ShaderResourceView* srv)
+{
+	m_textureView = srv;
 }
 
 void UBall::ApplyReverseMagnetism(UPrimitive* OtherPrimitive, float DeltaTime, float MagneticForce)

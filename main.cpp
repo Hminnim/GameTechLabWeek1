@@ -8,6 +8,7 @@
 #include "GameTimer.h"
 #include "UResourceManager.h"
 #include "USoundManager.h"
+#include "UInputManager.h"
 
 #include "UWindow.h"
 
@@ -36,14 +37,13 @@ void IncreaseCapacity()
 }
 
 
-
 int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLine, int nShowCmd)
 {
     // SoundManager 초기화 및 재생할 음원 파일 설정
     USoundManager SoundManager;
     SoundManager.Init();
 	SoundManager.LoadSound("TestSound", "Resources/AlarmSound.wav");
-    
+
     WCHAR WindowClass[] = L"JungleWindowClass";
 	WCHAR Title[] = L"Game Tech Lab";
 
@@ -60,6 +60,9 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLine
     renderer.Create(hWnd);
     renderer.CreateShader();
     renderer.CreateConstantBuffer();
+
+    // Resource Manager
+    UResourceManager::GetInstance().Initialize(renderer.Device);
 
     // ImGui를 생성합니다.
     IMGUI_CHECKVERSION();
@@ -102,8 +105,8 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLine
 
     // Collision Manager
     CollisionManager CollisionMan;
-
-	// Resource Manager
+	
+    // Resource Manager
     UResourceManager resourceMgr(renderer.Device);
     ID3D11ShaderResourceView* testTexture = resourceMgr.GetTexture("Resources/test.jpg");
     if (!testTexture) {
@@ -356,6 +359,14 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLine
         {
             TargetNumBalls = 1;
         }
+
+        // 마우스 값 보기
+        bool bIsLeftDown = UInputManager::GetInstance().IsKeyDown(VK_LBUTTON);
+        ImGui::Checkbox("Mouse Left", &bIsLeftDown);
+        int MousePointValue[2] = { 0, };
+        MousePointValue[0] = UInputManager::GetInstance().GetMousePos().x;
+        MousePointValue[1] = UInputManager::GetInstance().GetMousePos().y;
+        ImGui::InputInt2("Mouse Point", MousePointValue);
 
         ImGui::End();
 
