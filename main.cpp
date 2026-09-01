@@ -44,11 +44,14 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLine
     SoundManager.Init();
 	SoundManager.LoadSound("TestSound", "Resources/AlarmSound.wav");
 
+    // Window
     WCHAR WindowClass[] = L"JungleWindowClass";
 	WCHAR Title[] = L"Game Tech Lab";
+    int ScreenWidth = 2040;
+    int ScreenHeight = 1400;
 
     UWindow Window;
-    if (!Window.InitializedWindow(hInstance, WindowClass, Title, 1024, 1024))
+    if (!Window.InitializedWindow(hInstance, WindowClass, Title, ScreenWidth, ScreenHeight))
     {
         return -1;
     }
@@ -91,6 +94,7 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLine
     bool bEnableAirResistance = false;
     bool bEnableMouseInteractMode = false;
     bool bEnableAngularVelocity = false;
+    bool bEnableSelfDestruct = false;
 
     // Values
     float CurrentElastic = 1.0f;
@@ -107,7 +111,14 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLine
 
     // Collision Manager
     CollisionManager CollisionMan;
-
+	
+    // Resource Manager
+    ID3D11ShaderResourceView* testTexture = UResourceManager::GetInstance().GetTexture("Resources/test.jpg");
+    if (!testTexture) {
+        OutputDebugStringA("Texture Load Failed!\n");
+        assert(false);
+    }
+    renderer.DeviceContext->PSSetShaderResources(0, 1, &testTexture);
 
     bool bIsExit = false;
 
@@ -157,15 +168,39 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLine
             {
                 // 충돌 처리
                 CollisionMan.ResolveCollision(CurrentBall, PrimitiveList[j]);                
-
-                if(bEnableReverseMagnetism)
-                {
-                    CurrentBall->ApplyReverseMagnetism(PrimitiveList[j], DeltaTime, CurrentMagneticForce);
-                }
             }
         }
 
-        /*if (SelectedBall != nullptr && ImGui::IsMouseDown(ImGuiMouseButton_Left) && bEnableMagnetism && bActiveMagnetism)
+        // 자폭 적용된 공 충돌시 삭제 + 주변에 척력 적용
+        for (int i = UBall::TotalNumBalls-1; i>=0 ; i--)
+        {
+            if (PrimitiveList[i]->isDestroyed)
+            {
+                UPrimitive* DestructBall = PrimitiveList[i];
+                UBall* DestructBustBall = dynamic_cast<UBall*>(DestructBall);
+                for (int j = 0; j < UBall::TotalNumBalls; j++)
+                {
+                    if (PrimitiveList[j] != DestructBustBall)
+                    {
+                        DestructBustBall->ApplyReverseMagnetism(PrimitiveList[j], DeltaTime, CurrentMagneticForce);
+                    }
+                }
+                if (DestructBall == SelectedBall)
+                {
+                    SelectedBall = nullptr;
+                }
+
+                PrimitiveList[i] = PrimitiveList[UBall::TotalNumBalls - 1];
+                PrimitiveList[UBall::TotalNumBalls - 1] = nullptr;
+
+                delete DestructBall;
+
+                TargetNumBalls--;
+            }
+        }
+
+        // 척력 적용된 공에 1회 척력 적용
+        if (SelectedBall != nullptr && bEnableReverseMagnetism && bActiveMagnetism)
         {
 
             for (int j = 0; j < UBall::TotalNumBalls; j++)
@@ -176,10 +211,14 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLine
                 }
             }
             bActiveMagnetism = false;
-        }*/
+        }
 
+        if (SelectedBall != nullptr && bEnableSelfDestruct)
+        {
+            UBall* SelectBall = dynamic_cast<UBall*>(SelectedBall);
+            SelectBall->isSelfDestruct = true;
+        }
       
-
 
         renderer.Prepare();
         renderer.PrepareShader();
@@ -214,6 +253,7 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLine
         {
             SoundManager.PlaySound("TestSound");
         }
+        ImGui::Checkbox("SelfDestruct", &bEnableSelfDestruct);
         ImGui::Checkbox("Gravity", &bEnableGravity);
         if (bEnableGravity)
         {
@@ -242,14 +282,10 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLine
             GetCursorPos(&MousePos);            // 모니터 화면 기준 마우스 좌표
             ScreenToClient(hWnd, &MousePos);    // hWnd(현재창)의 왼쪽 상단 기준으로 좌표 변환
 
-            // 화면 크기 1024x1024
-            float Width = 1024.0f;
-            float Height = 1024.0f;
-
             // 마우스 좌표를 스크린 사이즈로 나눠서 0~1 사이의 비율로 만듦
             // 범위를 2로 늘리고 -1을 해서 ndc 범위로 만듬
-            float NdcX = (float)MousePos.x / Width * 2.0f - 1.0f;
-            float NdcY = -((float)MousePos.y / Height * 2.0f - 1.0f);
+            float NdcX = (float)MousePos.x / (float)ScreenWidth * 2.0f - 1.0f;
+            float NdcY = -((float)MousePos.y / (float)ScreenHeight * 2.0f - 1.0f);
 
             // 마우스 왼쪽 클릭 했을때
             if (ImGui::IsMouseClicked(ImGuiMouseButton_Left) && !io.WantCaptureMouse)
@@ -291,6 +327,7 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLine
 
                     PrimitiveList[UBall::TotalNumBalls - 1] = NewBall;
                     TargetNumBalls++;
+					SelectedBall = NewBall;
                 }
             }
 
@@ -309,7 +346,7 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLine
             // 잡은 공이 있고 마우스 왼쪽 클릭을 유지 했을 때
             if (SelectedBall != nullptr && ImGui::IsMouseDown(ImGuiMouseButton_Left))
             {
-                // 마우스 위치로 가는 벡터 구하기
+                // 마우스 위치로 가는 벡터 구하기7
                 FVector TargetPos(NdcX, NdcY, 0.0f);
                 FVector Dir = TargetPos - SelectedBall->Location;
 
