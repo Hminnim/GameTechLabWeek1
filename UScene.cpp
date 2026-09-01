@@ -10,6 +10,15 @@
 
 void UScene::Render(URenderer& renderer)
 {
+    renderer.BeginSprite();
+    if (_background)
+        _background->Render(renderer);
+    renderer.EndSprite();
+
+    // Game World Object
+    for (auto* primitive : _primitives)
+        primitive->Render(renderer);
+
 	renderer.BeginSprite();
 
     // UI
@@ -21,10 +30,6 @@ void UScene::Render(URenderer& renderer)
         button->Render(renderer);
 
 	renderer.EndSprite();
-
-    // Game World Object
-    for (auto* primitive : _primitives)
-        primitive->Render(renderer);
 }
 
 void UScene::HandleClick(float mouseX, float mouseY)
@@ -99,15 +104,16 @@ void UTitleScene::Render(URenderer& renderer)
 //////////////////
 void UInGameScene::Initialize()
 {
-    AddPrimitive(new UBall("sphere", "Resources/test.png"));
-    AddPrimitive(new UBall("sphere", "Resources/test.png"));
-    AddPrimitive(new UBall("sphere", "Resources/test.png"));
-    AddPrimitive(new UBall("sphere", "Resources/test.png"));
-    AddPrimitive(new UBall("sphere", "Resources/test.png"));
+    AddPrimitive(new UBall("sphere", "Resources/red.png"));
+    AddPrimitive(new UBall("sphere", "Resources/red.png"));
+    AddPrimitive(new UBall("sphere", "Resources/blue.png"));
+    AddPrimitive(new UBall("sphere", "Resources/blue.png"));
+    AddPrimitive(new UBall("sphere", "Resources/blue.png"));
 
     UUI* temp = new UUI();
     temp->Init("Resources/background_blue.png", 0, 0, UGameSetting::GetInstance().ScreendWidth, UGameSetting::GetInstance().ScreenHeight);
-    AddUI(temp);
+    SetBackground(temp);
+
 }
 
 void UInGameScene::Update(float deltaTime)
