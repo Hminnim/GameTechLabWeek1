@@ -74,6 +74,22 @@ void UBall::Update(float DeltaTime, std::vector<UPrimitive*>& others)
         {
             Velocity = FVector(0, 0, 0);
             bEnableFreeze = false;
+            // 척력 발생시 주위 밀어냄
+            if (isMagnetActivated && notActiveMag)
+            {
+                float currentMagnetForce = 700000.0f;
+                for (auto* other : others)
+                {
+                    if (other != this)
+                    {
+                        if (other != nullptr)
+                        {
+                            ApplyReverseMagnetism(other, DeltaTime, currentMagnetForce);
+                        }
+                    }
+                }
+                notActiveMag = false;
+            }
         }
         else Velocity += NormalizeFricVec * 300.0f * DeltaTime;
     }
@@ -118,23 +134,6 @@ void UBall::Update(float DeltaTime, std::vector<UPrimitive*>& others)
                 CollisionMan.ResolveCollision(this, otherBall);
             }
         }
-    }
-
-    // 척력 발생시 주위 밀어냄
-    if (isMagnetActivated && AlreadyActiveMag)
-    {
-        float currentMagnetForce = 700000.0f;
-        for (auto* other : others)
-        {
-            if (other != this)
-            {
-                if (other != nullptr)
-                {
-                    ApplyReverseMagnetism(other, DeltaTime, currentMagnetForce);
-                }
-            }
-        }
-        AlreadyActiveMag = false;
     }
 
     // 자폭 적용된 공 충돌시 삭제 + 주변에 척력 적용
