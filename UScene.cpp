@@ -45,6 +45,7 @@ void UTitleScene::Update(float deltaTime)
 
 void UTitleScene::Render(URenderer& renderer)
 {
+    UScene::Render(renderer);
 }
 
 
