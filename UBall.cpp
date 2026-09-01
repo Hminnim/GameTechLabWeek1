@@ -67,7 +67,7 @@ void UBall::Update(float DeltaTime, std::vector<UPrimitive*>& others)
     Location += Velocity * DeltaTime;
 
     // 마찰력 계수 적용
-    if (Velocity.Length() > 1.0f) {
+    if (Velocity.Length() > 0.0f) {
         FVector NormalizeFricVec = Velocity / Velocity.Length() * (-1.0f);
         if (Velocity.Length() <= 300.0f * DeltaTime)
         {

@@ -153,14 +153,39 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLine
                         float dy = ball->Location.y - (float)mouse.y;
                         if (dx * dx + dy * dy < ball->Radius * ball->Radius)
                         {
-                            SelectedBall = ball;
-                            bIsDragging = true; // ⭐ 드래그 조준 시작!
-                            SelectedBall->Velocity = FVector(0, 0, 0); // 조준할 땐 공을 정지
+                            SelectedBall = ball; // 선택만!
                             break;
                         }
                     }
                 }
             }
+        }
+        // 2. 우클릭 드래그: 발사 조작 (스킬 걸고 나서 쏘기!)
+        if (SelectedBall != nullptr && UInputManager::GetInstance().IsKeyDown(VK_RBUTTON) && !ImGui::GetIO().WantCaptureMouse)
+        {
+            bIsDragging = true;
+            SelectedBall->Velocity = FVector(0, 0, 0);
+        }
+        if (bIsDragging && UInputManager::GetInstance().IsKeyUp(VK_RBUTTON))
+        {
+            if (SelectedBall != nullptr)
+            {
+                POINT mouse = UInputManager::GetInstance().GetMousePos();
+                FVector launchVec(SelectedBall->Location.x - (float)mouse.x, SelectedBall->Location.y - (float)mouse.y, 0.0f);
+                float pullDistance = launchVec.Length();
+                if (pullDistance > 5.0f)
+                {
+                    float launchPower = 8.0f;
+                    SelectedBall->Velocity = launchVec * launchPower;
+                    float maxSpeed = 3000.0f;
+                    if (SelectedBall->Velocity.Length() > maxSpeed)
+                    {
+                        SelectedBall->Velocity = (SelectedBall->Velocity / SelectedBall->Velocity.Length()) * maxSpeed;
+                    }
+                }
+                UGameManager::GetInstance().CurrentTurnState = ETurnState::BallMoving;
+            }
+            bIsDragging = false;
         }
         UEffectManager::GetInstance().Render(); // EFFECT TEST
 
@@ -194,7 +219,6 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLine
             if (SelectedBall != nullptr)
             {
                 POINT mouse = UInputManager::GetInstance().GetMousePos();
-                // 💥 당긴 방향의 반대 방향으로 발사 벡터 계산 (새총 원리)
                 FVector launchVec(SelectedBall->Location.x - (float)mouse.x, SelectedBall->Location.y - (float)mouse.y, 0.0f);
 
                 float pullDistance = launchVec.Length();

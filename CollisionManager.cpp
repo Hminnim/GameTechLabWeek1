@@ -46,7 +46,7 @@ void CollisionManager::ResolveCollision(UPrimitive* TargetPrimitive, UPrimitive*
             OtherPrimitive->isDestroyed = true;
             return;
         }
-
+        
         if (TargetBall->bEnableFreeze)
         {
             OtherBall->isFreezed = true;
@@ -80,7 +80,8 @@ void CollisionManager::ResolveCollision(UPrimitive* TargetPrimitive, UPrimitive*
         TargetPrimitive->Location += NormalVector * Overlap * M1Ratio;
         OtherPrimitive->Location -= NormalVector * Overlap * M2Ratio;
 
-            
+ 
+
         // Impulse 구하기
         FVector vRel = TargetPrimitive->Velocity - OtherPrimitive->Velocity;  // 상대 속도
         float VelAlongNormal = vRel.Dot(NormalVector);    // 법선 방향(충돌 축)의 속도 성분
