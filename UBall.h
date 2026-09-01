@@ -18,7 +18,7 @@ public:
     UBall();
     virtual ~UBall();
     virtual void Render(URenderer& Renderer) override;
-    virtual void Update(float DeltaTime) override;
+    virtual void Update(float DeltaTime, float ScreendWidth, float ScreenHeight) override;
     virtual void ApplyGravity(float DeltaTime) override;
     virtual void SetGNumber(float NewG);
     virtual void SetElastic(float NewElastic) override;

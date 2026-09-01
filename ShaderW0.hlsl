@@ -4,7 +4,8 @@ cbuffer constants : register(b0)
     float3 Offset;
     float Scale;
     float3 Rotation;
-    float AspectRatio;
+    float Pad;
+    matrix Projection;
 }
 
 Texture2D g_Texture : register(t0);
@@ -48,13 +49,8 @@ PS_INPUT mainVS(VS_INPUT input)
     pos = mul(pos, GetRotateY(Rotation.y));
     pos = mul(pos, GetRotateZ(Rotation.z));
     pos += Offset;
-    
-    if(AspectRatio > 0.0f)
-    {
-        pos.x /= AspectRatio;
-    }
-    
-    output.position = float4(pos, 1.0f);
+
+    output.position = mul(float4(pos, 1.0f), Projection);
     output.UV = input.UV;
     
     return output;

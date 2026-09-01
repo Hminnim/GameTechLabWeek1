@@ -34,7 +34,9 @@ public:
         FVector Offset;
         float Scale;
         FVector Rotation;
-        float AspectRatio;
+        float Pad;
+
+        DirectX::XMMATRIX Projection;
     };
 
 public:
