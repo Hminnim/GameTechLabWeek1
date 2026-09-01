@@ -107,8 +107,7 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLine
     CollisionManager CollisionMan;
 	
     // Resource Manager
-    UResourceManager resourceMgr(renderer.Device);
-    ID3D11ShaderResourceView* testTexture = resourceMgr.GetTexture("Resources/test.jpg");
+    ID3D11ShaderResourceView* testTexture = UResourceManager::GetInstance().GetTexture("Resources/test.jpg");
     if (!testTexture) {
         OutputDebugStringA("Texture Load Failed!\n");
         assert(false);
