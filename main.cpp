@@ -15,6 +15,7 @@
 #include "UGameSetting.h"
 #include "UEffectManager.h"
 
+#include "UGameManager.h"
 
 int UBall::TotalNumBalls = 0;
 
@@ -146,7 +147,7 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLine
                 for (auto* prim : primitives)
                 {
                     UBall* ball = dynamic_cast<UBall*>(prim);
-                    if (ball)
+                    if (ball && UGameManager::GetInstance().CanSelectBall(ball))
                     {
                         float dx = ball->Location.x - (float)mouse.x;
                         float dy = ball->Location.y - (float)mouse.y;
@@ -208,6 +209,8 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLine
                         SelectedBall->Velocity = (SelectedBall->Velocity / SelectedBall->Velocity.Length()) * maxSpeed;
                     }
                 }
+
+                UGameManager::GetInstance().CurrentTurnState = ETurnState::BallMoving;
             }
             bIsDragging = false; // 드래그 종료
         }

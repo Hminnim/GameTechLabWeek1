@@ -47,6 +47,8 @@ void UScene::Update(float Deltatime)
         primitive->Update(Deltatime, _primitives);
     }
 
+    UGameManager::GetInstance().Update(_primitives);
+
     if (UInputManager::GetInstance().IsKeyDown(VK_LBUTTON)) {
         float mouseX = UInputManager::GetInstance().GetMousePos().x;
         float mouseY = UInputManager::GetInstance().GetMousePos().y;
@@ -118,6 +120,7 @@ void UInGameScene::Initialize()
         FVector(1485.0f, 1090.0f,0.0f)
     };
 
+    // Ball 소환
     for (FVector& spawnPos : RedSpawnPoints)
     {
         AddPrimitive(new UBall("sphere", EPlayer::Red, spawnPos));
@@ -126,6 +129,8 @@ void UInGameScene::Initialize()
     {
         AddPrimitive(new UBall("sphere", EPlayer::Blue, spawnPos));
     }
+
+    UGameManager::GetInstance().InitGame();
 
     UMap* map = new UMap();
     map->Init("Resources/map.png", 300, 100, UGameSetting::GetInstance().ScreendWidth - 600, UGameSetting::GetInstance().ScreenHeight - 200);
