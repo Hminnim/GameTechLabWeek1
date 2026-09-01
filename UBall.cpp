@@ -95,7 +95,7 @@ void UBall::Update(float DeltaTime, float ScreendWidth, float ScreenHeight)
 
 void UBall::ApplyGravity(float DeltaTime)
 {
-    Velocity.y -= 9.8f * GNumber * DeltaTime;
+    Velocity.y += 9800.0f * GNumber * DeltaTime;
 }
 
 void UBall::SetGNumber(float NewG)
