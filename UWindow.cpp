@@ -52,6 +52,11 @@ LRESULT UWindow::StaticWndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lP
         UInputManager::GetInstance().OnMouseMove(x, y);
         break;
 
+    // Resize
+    case WM_SIZE:
+
+        break;
+
     case WM_DESTROY:
         PostQuitMessage(0);
         break;

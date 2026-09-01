@@ -27,12 +27,14 @@ public:
     ID3D11InputLayout* SimpleInputLayout;
     unsigned int Stride;
 
+    std::unique_ptr<DirectX::SpriteBatch> m_spriteBatch;
+
     struct FConstants
     {
         FVector Offset;
         float Scale;
         FVector Rotation;
-        float Pad;
+        float AspectRatio;
     };
 
 public:
