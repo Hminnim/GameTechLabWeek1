@@ -12,6 +12,7 @@ class UPrimitive;
 class UScene
 {   
     public:
+        const std::vector<UPrimitive*>& GetPrimitives() const { return _primitives; }
         virtual void Initialize() {};
         virtual void Enter() {};
         virtual void Exit() {};
