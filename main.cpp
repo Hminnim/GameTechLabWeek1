@@ -63,10 +63,6 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLine
     // Resource Manager
     UResourceManager::GetInstance().Initialize(renderer.Device);
 
-    // ResourceManager는 FrameAdvance 루프 돌기 전에 모든 리소스에 대해서 한 번 저장한다?
-    // 프리미티브 갯수만큼 루프를 돌면서 PSSetShaderResources 호출
-    // 이 때, 인자는 해당 Ball의 GetTextureView()를 호출하여 가져온다
-
     // ImGui를 생성합니다.
     IMGUI_CHECKVERSION();
     ImGui::CreateContext();
