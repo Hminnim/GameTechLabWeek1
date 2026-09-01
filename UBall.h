@@ -44,6 +44,7 @@ public:
     virtual void ApplySelfFreeze() override;
     virtual void ApplyAirResistance(float DeltaTime, float AirResistance) override;
     virtual void SetEnableAngularMomentum(bool bEnable) override;
-    virtual void Update(float DeltaTime, float ScreenWidth, float ScreenHeight, std::vector<UPrimitive*>&others) override;
     virtual void ApplySkill(USkillType Skill);
+    virtual void Update(float DeltaTime, std::vector<UPrimitive*>& others) override;
+
 };

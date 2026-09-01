@@ -33,6 +33,8 @@ class UScene
         std::vector<UPrimitive*> _primitives;
         std::vector<UUI*> _uis;
         std::vector<UButton*> _buttons;
+
+        std::unique_ptr<DirectX::SpriteBatch> m_spriteBatch;
 };
 
 

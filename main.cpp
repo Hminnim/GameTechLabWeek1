@@ -12,6 +12,7 @@
 #include "USceneManager.h"
 #include "UWindow.h"
 #include "UScene.h"
+#include "UGameSetting.h"
 
 int UBall::TotalNumBalls = 0;
 
@@ -26,11 +27,9 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLine
     // Window
     WCHAR WindowClass[] = L"JungleWindowClass";
 	WCHAR Title[] = L"Game Tech Lab";
-    int ScreenWidth = 2040;
-    int ScreenHeight = 1400;
 
     UWindow Window;
-    if (!Window.InitializedWindow(hInstance, WindowClass, Title, ScreenWidth, ScreenHeight))
+    if (!Window.InitializedWindow(hInstance, WindowClass, Title, UGameSetting::GetInstance().ScreendWidth, UGameSetting::GetInstance().ScreenHeight))
     {
         return -1;
     }
@@ -101,7 +100,7 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLine
                 break;
             }
         }
-		// SoundManager 업데이트
+		    // SoundManager 업데이트
         SoundManager.Update();
         DeltaTime = Timer.GetDeltaTime();
         UInputManager::GetInstance().Update();
@@ -111,18 +110,8 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLine
         USceneManager::GetInstance().Update(DeltaTime);
         renderer.Prepare();
         renderer.PrepareShader();
-		USceneManager::GetInstance().Render(renderer);
+		    USceneManager::GetInstance().Render(renderer);
 
-        renderer.m_spriteBatch->Begin();
-
-        if (testUITexture)
-        {
-            RECT destRect = { 100, 100, 500, 300 };
-            renderer.m_spriteBatch->Draw(testUITexture, destRect);
-        }
-
-        renderer.m_spriteBatch->End();
-        //  << 삭제 예정
 
         // ImGui
         ImGui_ImplDX11_NewFrame();
