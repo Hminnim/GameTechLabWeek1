@@ -1,6 +1,6 @@
 #include "pch.h"
 #include "CollisionManager.h"
-
+#include "UBall.h"
 
 bool CollisionManager::DetectCollision(UPrimitive* TargetPrimitive, UPrimitive* OtherPrimitive)
 {

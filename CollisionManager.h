@@ -1,7 +1,6 @@
 #pragma once
 
 #include "UPrimitive.h"
-#include "UBall.h"
 
 class CollisionManager
 {
