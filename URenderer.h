@@ -32,7 +32,7 @@ public:
         FVector Offset;
         float Scale;
         FVector Rotation;
-        float Pad;
+        float AspectRatio;
     };
 
 public:

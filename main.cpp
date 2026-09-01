@@ -44,11 +44,14 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLine
     SoundManager.Init();
 	SoundManager.LoadSound("TestSound", "Resources/AlarmSound.wav");
 
+    // Window
     WCHAR WindowClass[] = L"JungleWindowClass";
 	WCHAR Title[] = L"Game Tech Lab";
+    int ScreenWidth = 2040;
+    int ScreenHeight = 1400;
 
     UWindow Window;
-    if (!Window.InitializedWindow(hInstance, WindowClass, Title, 1024, 1024))
+    if (!Window.InitializedWindow(hInstance, WindowClass, Title, ScreenWidth, ScreenHeight))
     {
         return -1;
     }
@@ -266,14 +269,10 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLine
             GetCursorPos(&MousePos);            // 모니터 화면 기준 마우스 좌표
             ScreenToClient(hWnd, &MousePos);    // hWnd(현재창)의 왼쪽 상단 기준으로 좌표 변환
 
-            // 화면 크기 1024x1024
-            float Width = 1024.0f;
-            float Height = 1024.0f;
-
             // 마우스 좌표를 스크린 사이즈로 나눠서 0~1 사이의 비율로 만듦
             // 범위를 2로 늘리고 -1을 해서 ndc 범위로 만듬
-            float NdcX = (float)MousePos.x / Width * 2.0f - 1.0f;
-            float NdcY = -((float)MousePos.y / Height * 2.0f - 1.0f);
+            float NdcX = (float)MousePos.x / (float)ScreenWidth * 2.0f - 1.0f;
+            float NdcY = -((float)MousePos.y / (float)ScreenHeight * 2.0f - 1.0f);
 
             // 마우스 왼쪽 클릭 했을때
             if (ImGui::IsMouseClicked(ImGuiMouseButton_Left) && !io.WantCaptureMouse)
