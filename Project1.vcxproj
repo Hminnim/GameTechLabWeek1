@@ -199,6 +199,7 @@
     <ClInclude Include="Sphere.h" />
     <ClInclude Include="UBall.h" />
     <ClInclude Include="UButton.h" />
+    <ClInclude Include="UEffectManager.h" />
     <ClInclude Include="UGameSetting.h" />
     <ClInclude Include="UInputManager.h" />
     <ClInclude Include="UMap.h" />
