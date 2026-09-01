@@ -168,7 +168,7 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLine
             {
                 CurrentBall->Velocity = FVector(0, 0, 0);
             }
-            CurrentBall->Update(DeltaTime);
+            CurrentBall->Update(DeltaTime, (float)ScreenWidth, (float)ScreenHeight);
 
             for (int j = i + 1; j < UBall::TotalNumBalls; j++)
             {
@@ -312,13 +312,7 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLine
         if (bEnableMouseInteractMode)
         {
             POINT MousePos;
-            GetCursorPos(&MousePos);            // 모니터 화면 기준 마우스 좌표
-            ScreenToClient(hWnd, &MousePos);    // hWnd(현재창)의 왼쪽 상단 기준으로 좌표 변환
-
-            // 마우스 좌표를 스크린 사이즈로 나눠서 0~1 사이의 비율로 만듦
-            // 범위를 2로 늘리고 -1을 해서 ndc 범위로 만듬
-            float NdcX = (float)MousePos.x / (float)ScreenWidth * 2.0f - 1.0f;
-            float NdcY = -((float)MousePos.y / (float)ScreenHeight * 2.0f - 1.0f);
+            MousePos = UInputManager::GetInstance().GetMousePos();
 
             // 마우스 왼쪽 클릭 했을때
             if (ImGui::IsMouseClicked(ImGuiMouseButton_Left) && !io.WantCaptureMouse)
@@ -331,8 +325,8 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLine
                     UBall* ball = (UBall*)PrimitiveList[i];
 
                     // 공의 위치와 마우스 좌표 사이의 거리
-                    float dx = ball->Location.x - NdcX;
-                    float dy = ball->Location.y - NdcY;
+                    float dx = ball->Location.x - MousePos.x;
+                    float dy = ball->Location.y - MousePos.y;
 
                     // 두 거리가 해당 공의 반지름 보다 짧을 때
                     if (dx * dx + dy * dy < ball->Radius * ball->Radius)
@@ -355,8 +349,8 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLine
                     UBall* NewBall = new UBall();
 
                     // 마우스 커서 위치로
-                    NewBall->Location.x = NdcX;
-                    NewBall->Location.y = NdcY;
+                    NewBall->Location.x = MousePos.x;
+                    NewBall->Location.y = MousePos.y;
 
                     PrimitiveList[UBall::TotalNumBalls - 1] = NewBall;
                     TargetNumBalls++;
@@ -380,7 +374,7 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLine
             if (SelectedBall != nullptr && ImGui::IsMouseDown(ImGuiMouseButton_Left))
             {
                 // 마우스 위치로 가는 벡터 구하기7
-                FVector TargetPos(NdcX, NdcY, 0.0f);
+                FVector TargetPos(MousePos.x, MousePos.y, 0.0f);
                 FVector Dir = TargetPos - SelectedBall->Location;
 
                 // 끌려가는 힘

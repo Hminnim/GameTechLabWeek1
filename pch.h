@@ -27,3 +27,5 @@
 
 #include <WICTextureLoader.h>
 #include <SpriteBatch.h>
+
+#include <DirectXMath.h>

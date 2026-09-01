@@ -24,7 +24,7 @@ public:
 public:
     virtual ~UPrimitive() {}
     virtual void Render(URenderer& Renderer) = 0;
-    virtual void Update(float DeltaTime) = 0;
+    virtual void Update(float DeltaTime, float ScreendWidth, float ScreenHeight) = 0;
     virtual void ApplyGravity(float DeltaTime) = 0;
     virtual void SetGNumber(float NewG) = 0;
     virtual void SetElastic(float NewElastic) = 0;
