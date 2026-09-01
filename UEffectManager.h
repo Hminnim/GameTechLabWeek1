@@ -16,6 +16,7 @@ struct FActiveEffect
     ID3D11ShaderResourceView* Texture = nullptr;
     DirectX::XMFLOAT2 Position = { 0.0f, 0.0f };
     float Scale = 1.0f;
+    float Rotation = 0.0f; // radian (Rotation for shooting)
 
     // 총 재생 시간(s)
     float Duration = 1.0f;
@@ -55,7 +56,7 @@ class UEffectManager
 
         // 이펙트 재생 (텍스처키, 이펙트 위치, 재생시간, 비율, 프레임개수, 페이드아웃 여부)
         void PlayEffect(const std::string& textureKey, const DirectX::XMFLOAT2& position, 
-                        float duration, float scale = 1.0f, int frameCount = 1, bool fadeOut = false);
+                        float duration, float scale = 1.0f, int frameCount = 1, bool fadeOut = false, float rotation = 0.0f);
 
 
         void Update(float deltaTime);
