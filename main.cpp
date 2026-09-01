@@ -13,6 +13,8 @@
 #include "UWindow.h"
 #include "UScene.h"
 #include "UGameSetting.h"
+#include "UEffectManager.h"
+
 
 int UBall::TotalNumBalls = 0;
 
@@ -83,6 +85,23 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLine
 	USceneManager::GetInstance().AddScene("GameOver", new UGameOverScene());
     USceneManager::GetInstance().ChangeScene("Title");
 
+    ///////////////////////////////////////////////
+    //////////////////EFFECT TEST//////////////////
+    ///////////////////////////////////////////////
+
+    UEffectManager::GetInstance().Init(renderer.DeviceContext);
+    UEffectManager::GetInstance().PlayEffect(
+        "Resources/effect_test.png",
+        { 500.0f, 500.0f },
+        2.0f,
+        1.0f,
+        6
+    );
+
+    ///////////////////////////////////////////////
+    //////////////////EFFECT TEST//////////////////
+    ///////////////////////////////////////////////
+
     bool bIsExit = false;
 
 	// Main Loop (Quit Message가 들어오기 전까지 아래 Loop를 무한히 실행하게 됨)
@@ -111,6 +130,9 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLine
         ////////////////////////////////////////////
         // 매번 실행되는 코드를 여기에 추가합니다.
         USceneManager::GetInstance().Update(DeltaTime);
+        
+        UEffectManager::GetInstance().Update(DeltaTime); // EFFECT TEST
+
         renderer.Prepare();
         renderer.PrepareShader();
 		USceneManager::GetInstance().Render(renderer);
@@ -139,6 +161,7 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLine
                 }
             }
         }
+        UEffectManager::GetInstance().Render(); // EFFECT TEST
 
         // ImGui
         ImGui_ImplDX11_NewFrame();
