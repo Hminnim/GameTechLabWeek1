@@ -64,8 +64,11 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLine
     renderer.CreateShader();
     renderer.CreateConstantBuffer();
 
+    renderer.m_spriteBatch = std::make_unique<DirectX::SpriteBatch>(renderer.DeviceContext);
+
     // Resource Manager
     UResourceManager::GetInstance().Initialize(renderer.Device);
+    ID3D11ShaderResourceView* testUITexture = UResourceManager::GetInstance().GetTexture("Resources/Title.png");
 
     // ImGui를 생성합니다.
     IMGUI_CHECKVERSION();
@@ -226,6 +229,16 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLine
             ball->Render(renderer);
             renderer.RenderPrimitive(VertexBufferSphere, NumVerticesSphere);
         }
+
+        renderer.m_spriteBatch->Begin();
+
+        if (testUITexture)
+        {
+            RECT destRect = { 100, 100, 500, 300 };
+            renderer.m_spriteBatch->Draw(testUITexture, destRect);
+        }
+
+        renderer.m_spriteBatch->End();
 
 
         // ImGui
