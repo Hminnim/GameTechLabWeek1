@@ -2,6 +2,7 @@
 
 #include "UPrimitive.h"
 #include "CollisionManager.h"
+#include "UGameManager.h"
 
 enum class USkillType
 {
@@ -28,8 +29,10 @@ public:
     bool isSelfDestruct = false;
     bool isMagnetActivated = false;
     bool AlreadyActiveMag = true;
+
+    EPlayer Owner = EPlayer::Red;
  
-    UBall(const std::string& meshKey, const std::string& textureKey);
+    UBall(const std::string& meshKey, const EPlayer owner, const FVector startLocation);
     virtual ~UBall();
     virtual void Render(URenderer& Renderer) override;
     virtual void ApplyGravity(float DeltaTime) override;

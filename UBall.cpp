@@ -6,9 +6,11 @@
 
 CollisionManager CollisionMan;
 
-UBall::UBall(const std::string& meshKey, const std::string& textureKey)
+UBall::UBall(const std::string& meshKey, const EPlayer owner, const FVector startLocation)
 {
     TotalNumBalls++;
+
+    Owner = owner;
 
     // 기본 값
     Elastic = 1.0f;
@@ -19,18 +21,15 @@ UBall::UBall(const std::string& meshKey, const std::string& textureKey)
     Inertia = 0.4f * Mass * Radius * Radius;
 
     // 임시로 테스트용 크기,위치 속도 설정
-   // 랜덤 크기, 질량
-    Radius = (0.09f + (rand() % 100) / 100.0f) * 100.0f;
+    // 랜덤 크기, 질량
+    Radius = 50.0f;
     Mass = Radius * 10.0f;
 
-    // 랜덤 위치
-    Location.x = rand() % 1000 + 50.0f;
-    Location.y = rand() % 1000 + 50.0f;
-    Location.z = 0.0f;
+    Location = startLocation;
 
     // 랜덤 속도
-    Velocity.x = ((rand() % 200) - 100) * 10.0f;
-    Velocity.y = ((rand() % 200) - 100) * 10.0f;
+    Velocity.x = 0.0f;
+    Velocity.y = 0.0f;
     Velocity.z = 0.0f;
 
     // 랜덤 Rotation
@@ -41,8 +40,8 @@ UBall::UBall(const std::string& meshKey, const std::string& textureKey)
     m_vertexBuffer = UResourceManager::GetInstance().GetVertexBuffer(meshKey);
 	m_numVertices = UResourceManager::GetInstance().GetNumVertices(meshKey);
 
-    m_textureKey = textureKey;
-	m_textureView = UResourceManager::GetInstance().GetTexture(textureKey);
+    m_textureKey = (Owner == EPlayer::Red) ? "Resources/red.png" : "Resources/blue.png";
+	m_textureView = UResourceManager::GetInstance().GetTexture(m_textureKey);
 }
 
 UBall::~UBall()
@@ -68,7 +67,7 @@ void UBall::Update(float DeltaTime, std::vector<UPrimitive*>& others)
     Location += Velocity * DeltaTime;
 
     // 마찰력 계수 적용
-    if (Velocity.Length() > 1.0f) {
+    if (Velocity.Length() > 0.0f) {
         FVector NormalizeFricVec = Velocity / Velocity.Length() * (-1.0f);
         if (Velocity.Length() <= 300.0f * DeltaTime)
         {
