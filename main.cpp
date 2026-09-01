@@ -84,9 +84,6 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLine
     float DeltaTime = 0.0f;
 
     bool bActiveMagnetism = true;
-
-    // Collision Manager
-    CollisionManager CollisionMan;
 	
     // Resource Manager test code >> 삭제예정
     ID3D11ShaderResourceView* testTexture = UResourceManager::GetInstance().GetTexture("Resources/test.jpg");
