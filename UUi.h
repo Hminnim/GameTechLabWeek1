@@ -1,6 +1,8 @@
 #pragma once
 #include <string>
 
+class URenderer;
+
 // 모든 UI 요소(아이콘, 배경, 버튼 등) Base Class
 class UUI
 {
@@ -8,8 +10,8 @@ class UUI
         virtual ~UUI() = default;
 
         // virtual functions
-        virtual bool Init(ID3D11Device* device, const std::wstring& texturePath, float x, float y, float width, float height);
-        virtual void Render(ID3D11DeviceContext* context);
+        virtual bool Init(URenderer& renderer, const std::wstring& texturePath, float x, float y, float width, float height);
+        virtual void Render(URenderer& renderer);
 
         // Setter
         void SetActive(bool active) { _isActive = active; }
@@ -35,8 +37,6 @@ class UUI
         // mesh + srv
         ID3D11Buffer* _mesh = nullptr;
         ID3D11ShaderResourceView* _srv = nullptr;
-        UINT _stride = 0;
-        UINT _offset = 0;
 
         // false면 Render()에서 건너뜀 (일회성 사용)
         bool _isActive = true;

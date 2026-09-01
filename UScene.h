@@ -16,8 +16,8 @@ class UScene
         void AddUI(UUI* ui) { _uis.push_back(ui); }
         void AddButton(UButton* button) { _buttons.push_back(button); }
 
-        // 렌더링 (월드 -> ui -> button)
-        void Render(ID3D11DeviceContext* context);
+        // 렌더링 (순서: world -> ui -> button)
+        void Render(URenderer& renderer);
 
         // 마우스 클릭 - 버튼 대응
         void HandleClick(float mouseX, float mouseY);

@@ -1,23 +1,19 @@
+#pragma once
 #include "pch.h"
 #include "UUI.h"
-
-extern ID3D11BlendState* g_alphaBlendState;
-
-struct UIVertex
-{
-    float x, y, z; // 화면 위치
-    float u, v; // 텍스처 좌표
-};
+#include "URenderer.h"
 
 // Initialization
-bool UUI::Init(ID3D11Device* device, const std::wstring& texturePath, float x, float y, float width, float height)
+bool UUI::Init(URenderer& renderer, const std::wstring& texturePath, float x, float y, float width, float height)
 {
     _x = x;
     _y = y;
     _width = width;
     _height = height;
 
-    UIVertex vertices[4] =
+    // Todo: 텍스처 로드
+
+    FVertexSimple vertices[4] =
     {
         { x,         y,          0.0f, 0.0f, 0.0f }, // left-top
         { x + width, y,          0.0f, 1.0f, 0.0f }, // right-top
@@ -25,21 +21,18 @@ bool UUI::Init(ID3D11Device* device, const std::wstring& texturePath, float x, f
         { x + width, y + height, 0.0f, 1.0f, 1.0f }, // right-bottom
     };
 
-    _stride = sizeof(UIVertex);
-    _offset = 0;
-    return true;
+    _mesh = renderer.CreateVertexBuffer(vertices, sizeof(FVertexSimple)*4);
+    return _mesh != nullptr;
+
 }
 
-// Render
-void UUI::Render(ID3D11DeviceContext* context)
+// Rendering
+void UUI::Render(URenderer& renderer)
 {
     // render 대상 아니거나 srv, mesh 없으면 render pass
     if (!_isActive || !_srv || !_mesh)
         return;
 
-    context->OMSetBlendState(g_alphaBlendState, nullptr, 0xffffffff);
-    context->PSSetShaderResources(0, 1, &_srv);
-    context->IASetVertexBuffers(0, 1, &_mesh, &_stride, &_offset);
-    context->IASetPrimitiveTopology(D3D11_PRIMITIVE_TOPOLOGY_TRIANGLESTRIP);
-    context->Draw(4, 0);
+    // Todo: 렌더링 구현
+
 }
