@@ -12,27 +12,28 @@ UBall::UBall()
     GNumber = 1.0f;
     bEnableAngularVelocity = false;
 
-    // 랜덤 크기, 질량
-    Radius = (0.09f + (rand() % 100) / 100.0f) * 0.1f;
-    Mass = Radius * 10.0f;
-
     // 꽉찬 구의 관성 모멘트
     Inertia = 0.4f * Mass * Radius * Radius;
 
+    // 임시로 테스트용 크기,위치 속도 설정
+   // 랜덤 크기, 질량
+    Radius = (0.09f + (rand() % 100) / 100.0f) * 100.0f;
+    Mass = Radius * 10.0f;
+
     // 랜덤 위치
-    Location.x = ((rand() % 200) - 100) * 0.01f;
-    Location.y = ((rand() % 200) - 100) * 0.01f;
+    Location.x = rand() % 1000 + 50.0f;
+    Location.y = rand() % 1000 + 50.0f;
     Location.z = 0.0f;
 
     // 랜덤 속도
-    Velocity.x = 5.0f;
-    Velocity.y = 5.0f;
+    Velocity.x = ((rand() % 200) - 100) * 10.0f;
+    Velocity.y = ((rand() % 200) - 100) * 10.0f;
     Velocity.z = 0.0f;
 
     // 랜덤 Rotation
-    Rotation.x = ((rand() % 200) - 100) * 0.01f;
-    Rotation.y = ((rand() % 200) - 100) * 0.01f;
-    Rotation.z = ((rand() % 200) - 100) * 0.01f;
+    Rotation.x = ((rand() % 200) - 100) * 100.0f;
+    Rotation.y = ((rand() % 200) - 100) * 100.0f;
+    Rotation.z = ((rand() % 200) - 100) * 100.0f;
 
     m_textureKey = "Resources/test.png";
 	m_textureView = UResourceManager::GetInstance().GetTexture(m_textureKey);
@@ -49,7 +50,7 @@ void UBall::Render(URenderer& Renderer)
 	Renderer.BindTexture(0, m_textureView);
 }
 
-void UBall::Update(float DeltaTime)
+void UBall::Update(float DeltaTime, float ScreendWidth, float ScreenHeight)
 { 
     // 마찰력 계수 적용
     Location += Velocity * DeltaTime;
@@ -70,25 +71,25 @@ void UBall::Update(float DeltaTime)
     AngularVelocity.y *= 0.99f;
     AngularVelocity.z *= 0.99f;
 
-    if (Location.x < -1.0f + Radius)
+    if (Location.x < Radius)
     {
         Velocity.x *= -1.0f * Elastic;
-        Location.x = -1.0f + Radius;
+        Location.x = Radius;
     }
-    if (Location.x > 1.0f - Radius)
+    if (Location.x > ScreendWidth - Radius)
     {
         Velocity.x *= -1.0f * Elastic;
-        Location.x = 1.0f - Radius;
+        Location.x = ScreendWidth - Radius;
     }
-    if (Location.y < -1.0f + Radius)
+    if (Location.y < Radius)
     {
         Velocity.y *= -1.0f * Elastic;
-        Location.y = -1.0f + Radius;
+        Location.y = Radius;
     }
-    if (Location.y > 1.0f - Radius)
+    if (Location.y > ScreenHeight - Radius)
     {
         Velocity.y *= -1.0f * Elastic;
-        Location.y = 1.0f - Radius;
+        Location.y = ScreenHeight - Radius;
     }
 }
 
