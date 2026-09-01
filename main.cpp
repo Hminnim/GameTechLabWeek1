@@ -240,6 +240,8 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLine
             SelectBall->ApplySizeScaling(1.5);
         }
 
+
+        // 질량 공 활성화
         if (SelectedBall != nullptr && bEnableMassScaling)
         {
             UBall* SelectBall = dynamic_cast<UBall*>(SelectedBall);

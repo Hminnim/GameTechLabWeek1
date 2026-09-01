@@ -53,13 +53,14 @@ void UBall::Update(float DeltaTime)
 { 
     // 마찰력 계수 적용
     Location += Velocity * DeltaTime;
-    FVector NormalizeFricVec = Velocity / Velocity.Length() * (-1.0f);
-    if (Velocity.Length() <= 2.0f * DeltaTime)
-    {
-        Velocity = FVector(0, 0, 0);
+    if (Velocity.Length() > 0.001f) {
+        FVector NormalizeFricVec = Velocity / Velocity.Length() * (-1.0f);
+        if (Velocity.Length() <= 2.0f * DeltaTime)
+        {
+            Velocity = FVector(0, 0, 0);
+        }
+        Velocity += NormalizeFricVec * 2.0f * DeltaTime;
     }
-    Velocity += NormalizeFricVec * 2.0f * DeltaTime;
-
     if (bEnableAngularVelocity)
     {
         Rotation += AngularVelocity * DeltaTime;
