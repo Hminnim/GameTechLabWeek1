@@ -4,6 +4,7 @@
 #include "UUI.h"
 #include "UButton.h"
 
+
 class UPrimitive;
 
 // 한 화면을 구성하는 UPrimitive/UUI/UButton 묶음
@@ -20,7 +21,7 @@ class UScene
         void AddUI(UUI* ui) { _uis.push_back(ui); }
         void AddButton(UButton* button) { _buttons.push_back(button); }
 
-        virtual void Update(float deltaTime) {};
+        virtual void Update(float deltaTime);
 
         // 렌더링 (순서: world -> ui -> button)
         virtual void Render(URenderer& renderer);
@@ -41,7 +42,6 @@ class UTitleScene : public UScene
 {
 public:
 	void Initialize() override;
-
 	void Update(float deltaTime) override;
 	void Render(URenderer& renderer) override;
 };

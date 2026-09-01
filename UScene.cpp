@@ -4,6 +4,7 @@
 #include "UPrimitive.h"
 #include "UBall.h"
 
+
 void UScene::Render(URenderer& renderer)
 {
     // Game World Object
@@ -29,7 +30,13 @@ void UScene::HandleClick(float mouseX, float mouseY)
 
 }
 
-
+void UScene::Update(float Deltatime)
+{
+    for (auto* primitive : _primitives)
+    {
+        primitive->Update(Deltatime, 2040.0f, 1400.f,_primitives);
+    }
+}
 
 //////////////////
 // UTitleScene  //
@@ -57,6 +64,7 @@ void UTitleScene::Initialize()
 
 void UTitleScene::Update(float deltaTime)
 {
+    UScene::Update(deltaTime);
 }
 
 void UTitleScene::Render(URenderer& renderer)
