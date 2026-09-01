@@ -18,6 +18,9 @@ class UButton : public UUI
         // 클릭 판정 성공
         void OnClick();
 
+        // 호버링, 클릭 여부에 따라 다른 텍스쳐를 바인딩하여 draw..
+        // virtual void Render(URenderer& renderer) override;
+        
     private:
         std::function<void()> _onClick;
         bool _isOneTimeUse = false; // 일회성 여부

@@ -10,6 +10,8 @@ bool UButton::HitTest(float mouseX, float mouseY) const
 
 void UButton::OnClick()
 {
-    // Todo: 클릭했을 경우 실행할 동작
-
+    if (_onClick)
+    {
+        _onClick();
+    }
 }

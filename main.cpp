@@ -101,7 +101,7 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLine
                 break;
             }
         }
-		    // SoundManager 업데이트
+		// SoundManager 업데이트
         SoundManager.Update();
         DeltaTime = Timer.GetDeltaTime();
         UInputManager::GetInstance().Update();
@@ -111,7 +111,7 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLine
         USceneManager::GetInstance().Update(DeltaTime);
         renderer.Prepare();
         renderer.PrepareShader();
-		    USceneManager::GetInstance().Render(renderer);
+		USceneManager::GetInstance().Render(renderer);
 
 
         // ImGui

@@ -163,6 +163,7 @@
     <ClCompile Include="pch.cpp" />
     <ClCompile Include="UBall.cpp" />
     <ClCompile Include="UButton.cpp" />
+    <ClCompile Include="UGameLoopManager.cpp" />
     <ClCompile Include="UInputManager.cpp" />
     <ClCompile Include="URenderer .cpp" />
     <ClCompile Include="UResourceManager.cpp" />
@@ -196,6 +197,7 @@
     <ClInclude Include="Sphere.h" />
     <ClInclude Include="UBall.h" />
     <ClInclude Include="UButton.h" />
+    <ClInclude Include="UGameLoopManager.h" />
     <ClInclude Include="UInputManager.h" />
     <ClInclude Include="UPrimitive.h" />
     <ClInclude Include="URenderer.h" />
