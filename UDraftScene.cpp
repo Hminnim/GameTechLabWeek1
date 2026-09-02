@@ -29,10 +29,6 @@ void UDraftScene::Initialize()
         "heavier",
         "mine",
         "repulse",
-        "wall",
-        "wall",
-        "wall",
-        "wall",
         "wall"
     };
      DraftSkills = {
@@ -68,7 +64,7 @@ void UDraftScene::Initialize()
             }
             else
             {
-                UGameManager::GetInstance().BlueDrafedSkills.push_back(CurrentSkill);
+                UGameManager::GetInstance().BlueDraftedSkills.push_back(CurrentSkill);
                 UGameManager::GetInstance().CurrentDraftTurn = EPlayer::Red;
             }
 

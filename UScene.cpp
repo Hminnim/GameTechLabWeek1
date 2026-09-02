@@ -209,6 +209,7 @@ void UInGameScene::Initialize()
     "heavier",  // 3: Heavier
     "mine",     // 4: Mine
     "repulse"   // 5: Repulse
+    "wall"      // 6: Wall
     };
 
     for (int i = 0; i < (int)ESlot::MaxCount; ++i)
@@ -234,6 +235,14 @@ void UInGameScene::Initialize()
 
         AddSkillButton(skillBtn);
     }
+
+    //std::vector<ESkillType>& redSkills = UGameManager::GetInstance().RedDraftedSkills;
+    //std::vector<ESkillType>& blueSkills = UGameManager::GetInstance().BlueDraftedSkills;
+
+    //for (int i = 0; i < (int)ESlot::MaxCount; ++i)
+    //{
+
+    //}
 
 
     UGameManager::GetInstance().InitGame();
