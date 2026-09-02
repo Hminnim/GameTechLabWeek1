@@ -164,7 +164,6 @@
     <ClCompile Include="UBall.cpp" />
     <ClCompile Include="UButton.cpp" />
     <ClCompile Include="UEffectManager.cpp" />
-    <ClCompile Include="UGameLoopManager.cpp" />
     <ClCompile Include="UGameManager.cpp" />
     <ClCompile Include="UInputManager.cpp" />
     <ClCompile Include="UMap.cpp" />
