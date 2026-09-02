@@ -89,6 +89,49 @@ void UScene::Update(float Deltatime)
                 break;
             }
         }
+
+        if (UGameManager::GetInstance().CurrentPlayerTurn == EPlayer::Red)
+        {
+            // slot[0]~[4] 버튼들의 _isActive 를 false로
+			for (int i = 0; i < 5; ++i)
+			{
+				UButton* btn = dynamic_cast<UButton*>(_uis[i]);
+				if (btn != nullptr)
+				{
+					btn->SetActive(false);
+				}
+			}
+			// slot[5]~[9] 버튼들의 _isActive 를 true로
+			for (int i = 5; i < 10; ++i) 
+            {
+                UButton* btn = dynamic_cast<UButton*>(_uis[i]);
+                if (btn != nullptr)
+                {
+                    btn->SetActive(true);
+                }
+            }
+        }
+        else
+        {
+			// slot[0]~[4] 버튼들의 _isActive 를 true로
+			for (int i = 0; i < 5; ++i)
+			{
+				UButton* btn = dynamic_cast<UButton*>(_uis[i]);
+				if (btn != nullptr)
+				{
+					btn->SetActive(true);
+				}
+			}
+			// slot[5]~[9] 버튼들의 _isActive 를 false로
+			for (int i = 5; i < 10; ++i)
+			{
+				UButton* btn = dynamic_cast<UButton*>(_uis[i]);
+				if (btn != nullptr)
+				{
+					btn->SetActive(false);
+				}
+			}
+        }
     }
 }
 

@@ -20,7 +20,6 @@ public:
         
 private:
     std::function<void()> _onClick;
-	bool _isUsed = false;
 };
 
 

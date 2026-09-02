@@ -8,6 +8,8 @@
 
 bool UButton::HitTest(float mouseX, float mouseY) const
 {
+	if (!_isActive)
+		return false;
     return (mouseX >= _x && mouseX <= _x + _width) &&
         (mouseY >= _y && mouseY <= _y + _height);
 }
@@ -51,6 +53,9 @@ void USkillButton::Update(float deltaTime)
 
 void USkillButton::Render(URenderer& renderer)
 {
+    if (!_isActive)
+        return;
+
     switch (_state)
     {
     case ESkillButtonState::Normal:
