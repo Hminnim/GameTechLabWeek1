@@ -27,10 +27,13 @@ public:
     bool bEnableFreeze = false;
     bool isFreezed = false;
     bool isSelfDestruct = false;
+    bool isSizeScaling = false;
     bool isMagnetActivated = false;
     bool AlreadyActiveMag = false;
 
     EPlayer Owner = EPlayer::Red;
+
+    float TargetRadius;
  
     UBall(const std::string& meshKey, const EPlayer owner, const FVector startLocation);
     virtual ~UBall();
