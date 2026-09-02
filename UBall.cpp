@@ -58,9 +58,20 @@ void UBall::Render(URenderer& Renderer)
 
 void UBall::Update(float DeltaTime, std::vector<UPrimitive*>& others)
 {
+    if (isSizeScaling)
+    {
+        Radius += 30.0f * DeltaTime;
+        if (Radius > TargetRadius)
+        {
+            Radius = TargetRadius;
+            isSizeScaling = false;
+        }
+    }
+    
+    float FricVal=500.0f;
     if (isFreezed)
     {
-        Velocity = FVector(0, 0, 0);
+        FricVal = 200000.0f;
     }
 
     //속도에 따른 위치 이동
@@ -69,12 +80,28 @@ void UBall::Update(float DeltaTime, std::vector<UPrimitive*>& others)
     // 마찰력 계수 적용
     if (Velocity.Length() > 0.0f) {
         FVector NormalizeFricVec = Velocity / Velocity.Length() * (-1.0f);
-        if (Velocity.Length() <= 300.0f * DeltaTime)
+        if (Velocity.Length() <= FricVal * DeltaTime)
         {
             Velocity = FVector(0, 0, 0);
             bEnableFreeze = false;
+            // 척력 발생시 주위 밀어냄
+            if (isMagnetActivated && !AlreadyActiveMag)
+            {
+                float currentMagnetForce = 700000.0f;
+                for (auto* other : others)
+                {
+                    if (other != this)
+                    {
+                        if (other != nullptr)
+                        {
+                            ApplyReverseMagnetism(other, DeltaTime, currentMagnetForce);
+                        }
+                    }
+                }
+                AlreadyActiveMag = true;
+            }
         }
-        else Velocity += NormalizeFricVec * 300.0f * DeltaTime;
+        else Velocity += NormalizeFricVec * FricVal * DeltaTime;
     }
     if (bEnableAngularVelocity)
     {
@@ -117,23 +144,6 @@ void UBall::Update(float DeltaTime, std::vector<UPrimitive*>& others)
                 CollisionMan.ResolveCollision(this, otherBall);
             }
         }
-    }
-
-    // 척력 발생시 주위 밀어냄
-    if (isMagnetActivated && AlreadyActiveMag)
-    {
-        float currentMagnetForce = 700000.0f;
-        for (auto* other : others)
-        {
-            if (other != this)
-            {
-                if (other != nullptr)
-                {
-                    ApplyReverseMagnetism(other, DeltaTime, currentMagnetForce);
-                }
-            }
-        }
-        AlreadyActiveMag = false;
     }
 
     // 자폭 적용된 공 충돌시 삭제 + 주변에 척력 적용
@@ -254,7 +264,8 @@ void UBall::ApplySkill(USkillType skill)
              break;
 
         case USkillType::SizeScaling:
-             Radius *= 1.5;
+            TargetRadius = Radius * 1.5;
+            isSizeScaling = true;
              break;
 
         case USkillType::MassScaling:
