@@ -78,7 +78,7 @@ void UPlayerController::Update(std::vector<UPrimitive*>& primitives)
             {
                 float launchPower = 8.0f;
                 SelectedBall->Velocity = launchVec * launchPower;
-                float maxSpeed = 3000.0f;
+                float maxSpeed = 1700.0f;
                 if (SelectedBall->Velocity.Length() > maxSpeed)
                 {
                     SelectedBall->Velocity = (SelectedBall->Velocity / SelectedBall->Velocity.Length()) * maxSpeed;
