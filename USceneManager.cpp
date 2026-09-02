@@ -15,6 +15,12 @@ void USceneManager::AddScene(const std::string& name, UScene* scene)
 	m_scenes[name] = scene;
 }
 
+void USceneManager::RequestChangeScene(const std::string& name)
+{
+	m_hasPendingSceneChange = true;
+	m_pendingSceneName = name;
+}
+
 void  USceneManager::ChangeScene(const std::string& name) 
 {
 	if (m_currentScene != nullptr) {
@@ -29,6 +35,13 @@ void  USceneManager::ChangeScene(const std::string& name)
 
 void USceneManager::Update(float deltaTime)
 {
+	if (m_hasPendingSceneChange)
+	{
+		m_hasPendingSceneChange = false;
+		std::string nextScene = m_pendingSceneName;
+		ChangeScene(nextScene);
+	}
+
 	if (m_currentScene) m_currentScene->Update(deltaTime);
 }
 
