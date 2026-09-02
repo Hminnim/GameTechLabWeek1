@@ -3,6 +3,7 @@
 #include "UBall.h"
 #include "UResourceManager.h"
 #include "UGameSetting.h"
+#include "UEffectManager.h"
 
 CollisionManager CollisionMan;
 
@@ -100,10 +101,32 @@ void UBall::Update(float DeltaTime, std::vector<UPrimitive*>& others)
 
     
     float FricVal=500.0f;
-    if (isFreezed)
+    if (isFreezed && !bWasFreezed)
     {
+        // Freeze Effect
+        UEffectManager::GetInstance().PlayEffect(
+            "Resources/freeze.png",
+            DirectX::XMFLOAT2(Location.x, Location.y),
+            2.0f,
+            DirectX::XMFLOAT2(1.0f, 1.0f),
+            25
+        );
+
         FricVal = 200000.0f;
     }
+    else if (!isFreezed && bWasFreezed)
+    {  
+        // Unfreeze Effect
+        UEffectManager::GetInstance().PlayEffect(
+            "Resources/unfreeze.png",
+            DirectX::XMFLOAT2(Location.x, Location.y),
+            2.0f,
+            DirectX::XMFLOAT2(1.0f, 1.0f),
+            8
+        );
+    }
+
+    bWasFreezed = isFreezed;
 
     //속도에 따른 위치 이동
     Location += Velocity * DeltaTime;

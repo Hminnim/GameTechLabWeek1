@@ -75,6 +75,14 @@ void UEffectManager::Update(float deltaTime)
         if (m_arrow.IsFinished())
             m_arrow.ElapsedTime = fmodf(m_arrow.ElapsedTime, m_arrow.Duration);
     }
+
+    for (auto& pair : m_ices) // pair: <key, FActiveEffect>
+    {
+        FActiveEffect& effect = pair.second;
+        effect.ElapsedTime += deltaTime;
+        if (effect.IsFinished())
+            effect.ElapsedTime = fmodf(effect.ElapsedTime, effect.Duration);
+    }
 }
 
 void UEffectManager::DrawArrow(const std::string& textureKey, const DirectX::XMFLOAT2& position,
@@ -130,6 +138,58 @@ void UEffectManager::ClearArrow()
     m_hasArrow = false;
 }
 
+void UEffectManager::DrawIce(void* key, const std::string& textureKey, const DirectX::XMFLOAT2& position,
+                    float loopDuration, const DirectX::XMFLOAT2 scale, int frameCount)
+{
+    auto it = m_ices.find(key); // <key, FActiveEffect>
+    
+    // 이미 얼음이 재생되고 있는 경우, 위치/크기 조절 가능 (사용하지는 않을듯)
+    if (it != m_ices.end())
+    {
+        it->second.Position = position;
+        it->second.Scale = scale;
+        return;
+    }
+
+        ID3D11ShaderResourceView* srv = UResourceManager::GetInstance().GetTexture(textureKey);
+    if (!srv) {
+        OutputDebugStringA("Texture Load Failed!\n");
+        assert(false);
+    }
+    
+    // SRV 가로 pixel size 가져오기
+    ID3D11Resource* resource = nullptr;
+    srv->GetResource(&resource);
+
+    ID3D11Texture2D* texture2D = nullptr;
+    resource->QueryInterface(__uuidof(ID3D11Texture2D), (void**)&texture2D);
+
+    D3D11_TEXTURE2D_DESC desc = {};
+    texture2D->GetDesc(&desc); // desc.Width, desc.Height에 가로/세로 pixel size 저장
+
+    resource->Release();
+    texture2D->Release();
+
+    // Effect Setting
+    FActiveEffect effect;
+    effect.Texture = srv;
+    effect.Position = position;
+    effect.Scale = scale;
+    effect.Duration = loopDuration;
+    effect.ElapsedTime = 0.0f;
+    effect.FrameCount = frameCount;
+    effect.FrameWidth = (int)desc.Width / m_arrow.FrameCount;
+    effect.FrameHeight = (int)desc.Height;
+    effect.bFadeOut = false;
+
+    m_ices[key] = effect;
+}
+
+void UEffectManager::ClearIce(void* key)
+{
+    m_ices.erase(key);
+}
+
 void UEffectManager::Render()
 {
     if (m_activeEffects.empty() && !m_hasArrow)
@@ -138,6 +198,7 @@ void UEffectManager::Render()
     m_spriteBatch->Begin();
     // renderer.BeginSprite();
 
+    // Normal Effect
     for (const auto& effect : m_activeEffects)
     {
         float progress = effect.GetProgress();
@@ -178,6 +239,7 @@ void UEffectManager::Render()
         
     }
 
+    // 화살표 Effect
     if (m_hasArrow)
     {
         float progress = m_arrow.GetProgress();
@@ -213,6 +275,47 @@ void UEffectManager::Render()
             m_arrow.Rotation,                       // NO rotation
             origin,
             m_arrow.Scale
+
+        );
+    }
+
+    // Freeze Effect
+    for (const auto& pair : m_ices)
+    {
+        const FActiveEffect effect = pair.second;
+        float progress = effect.GetProgress();
+
+        int frameIdx = (int)(progress * effect.FrameCount); // 진행률 * 총 프레임 개수 = 현재 프레임 인덱스
+        
+        // progress가 1.0이면, idx error 발생하므로 보정 필요
+        if (frameIdx >= effect.FrameCount)
+            frameIdx = effect.FrameCount - 1;
+        
+        RECT sourceRECT =
+        {
+            frameIdx * effect.FrameWidth,       // left
+            0,                                  // top
+            (frameIdx + 1) * effect.FrameWidth, // right
+            effect.FrameHeight                  // bottom
+        };
+
+        // Todo: FadeOut 처리
+        
+        // Effect 중심부터 Draw
+        DirectX::XMFLOAT2 origin =
+        {
+            effect.FrameWidth * 0.5f,
+            effect.FrameHeight * 0.5f
+        };
+
+        m_spriteBatch->Draw(
+            effect.Texture,
+            effect.Position,
+            &sourceRECT,
+            DirectX::Colors::White,
+            effect.Rotation,                       // NO rotation
+            origin,
+            effect.Scale
 
         );
     }

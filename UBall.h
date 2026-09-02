@@ -32,6 +32,9 @@ public:
     bool isMagnetActivated = false;
     bool AlreadyActiveMag = false;
 
+    // Freeze Effect용 직전 프레임 freeze 감지 변수
+    bool bWasFreezed = false;
+
     EPlayer Owner = EPlayer::Red;
 
     float TargetRadius;
