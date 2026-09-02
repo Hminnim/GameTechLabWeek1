@@ -16,6 +16,7 @@ UBall::UBall(const std::string& meshKey, const EPlayer owner, const FVector star
     // 기본 값
     Elastic = 1.0f;
     GNumber = 1.0f;
+    bIsDestroyed = false;
     bEnableAngularVelocity = false;
 
     // 꽉찬 구의 관성 모멘트
@@ -159,32 +160,7 @@ void UBall::Update(float DeltaTime, std::vector<UPrimitive*>& others)
     if (bEnableAngularVelocity)
     {
         Rotation += AngularVelocity * DeltaTime;
-    }
-
-    int ScreendWidth = UGameSetting::GetInstance().ScreendWidth;
-    int ScreenHeight = UGameSetting::GetInstance().ScreenHeight;
-
-    // 벽에 부딫칠때 감속 및 방향 전환
-    if (Location.x < Radius)
-    {
-        Velocity.x *= -0.9f * Elastic;
-        Location.x = Radius;
-    }
-    if (Location.x > ScreendWidth - Radius)
-    {
-        Velocity.x *= -0.9f * Elastic;
-        Location.x = ScreendWidth - Radius;
-    }
-    if (Location.y < Radius)
-    {
-        Velocity.y *= -0.9f * Elastic;
-        Location.y = Radius;
-    }
-    if (Location.y > ScreenHeight - Radius)
-    {
-        Velocity.y *= -0.9f * Elastic;
-        Location.y = ScreenHeight - Radius;
-    }
+    }    
 
     //충돌 처리
     for (auto* other : others)
@@ -225,6 +201,37 @@ void UBall::Update(float DeltaTime, std::vector<UPrimitive*>& others)
         //    }
         //}
     }
+
+    int ScreendWidth = UGameSetting::GetInstance().ScreendWidth;
+    int ScreenHeight = UGameSetting::GetInstance().ScreenHeight;
+
+    //// 벽에 부딫칠때 감속 및 방향 전환
+    //if (Location.x < Radius)
+    //{
+    //    Velocity.x *= -0.9f * Elastic;
+    //    Location.x = Radius;
+    //}
+    //if (Location.x > ScreendWidth - Radius)
+    //{
+    //    Velocity.x *= -0.9f * Elastic;
+    //    Location.x = ScreendWidth - Radius;
+    //}
+    //if (Location.y < Radius)
+    //{
+    //    Velocity.y *= -0.9f * Elastic;
+    //    Location.y = Radius;
+    //}
+    //if (Location.y > ScreenHeight - Radius)
+    //{
+    //    Velocity.y *= -0.9f * Elastic;
+    //    Location.y = ScreenHeight - Radius;
+    //}
+
+    // 벽에 부딪칠때 공 파괴 (임시)
+    if ((Location.x < Radius) || (Location.x > ScreendWidth - Radius) || (Location.y < Radius) || (Location.y > ScreenHeight - Radius))
+    {
+        this->bIsDestroyed = true;
+    }    
 }
     
 

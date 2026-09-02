@@ -16,6 +16,14 @@ enum class ETurnState
 	GameOver
 };
 
+enum class EGameResult
+{
+	None,
+	RedWin,
+	BlueWin,
+	Draw
+};
+
 class UGameManager
 {
 public:
@@ -33,6 +41,7 @@ public:
 	// State
 	EPlayer CurrentPlayerTurn;
 	ETurnState CurrentTurnState;
+	EGameResult CurrentGameResult = EGameResult::None;
 
 	void Update(std::vector<UPrimitive*>& primitives);
 	void InitGame();
