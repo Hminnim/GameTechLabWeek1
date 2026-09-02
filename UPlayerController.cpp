@@ -1,7 +1,6 @@
 #include "pch.h"
 #include "UPlayerController.h"
 #include "UInputManager.h"
-#include "USceneManager.h"
 #include "UEffectManager.h"
 
 void UPlayerController::Update(std::vector<UPrimitive*>& primitives)
