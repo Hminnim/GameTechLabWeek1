@@ -342,11 +342,11 @@ void UGameOverScene::Enter()
     case EGameResult::None:
         return;
         break;
-    case EGameResult::RedWin:        
+    case EGameResult::RedWin:
         break;
-    case EGameResult::BlueWin:        
+    case EGameResult::BlueWin:
         break;
-    case EGameResult::Draw:        
+    case EGameResult::Draw:
         break;
     default:
         return;
