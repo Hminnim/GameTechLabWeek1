@@ -96,13 +96,17 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLine
     ///////////////////////////////////////////////
 
     UEffectManager::GetInstance().Init(renderer.DeviceContext);
-    // UEffectManager::GetInstance().PlayEffect(
-    //     "Resources/shooting.png",
-    //     { 500.0f, 500.0f },
+    // OutputDebugStringA("Init 이후 지점 도달\n");   // 이 줄 추가
+
+    // UEffectManager::GetInstance().DrawArrow(
+    //     "Resources/main_aura.png",
+    //     {UGameSetting::GetInstance().ScreendWidth * 0.5f, UGameSetting::GetInstance().ScreenHeight * 0.5f},
+    //     0.0f,
     //     1.0f,
-    //     2.0f,
-    //     6                
+    //     DirectX::XMFLOAT2(1.0f, 1.0f),
+    //     1
     // );
+    // OutputDebugStringA("DrawArrow 이후 지점 도달\n");  // 이 줄도 추가
 
     ///////////////////////////////////////////////
     //////////////////EFFECT TEST//////////////////
@@ -141,126 +145,140 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLine
 
         renderer.Prepare();
         renderer.PrepareShader();
-		USceneManager::GetInstance().Render(renderer);
 
-        if (UGameManager::GetInstance().CurrentTurnState == ETurnState::WaitInput)
-        {
-            // 1. 공 선택 하기
-            if (UInputManager::GetInstance().IsKeyDown(VK_LBUTTON) && !ImGui::GetIO().WantCaptureMouse)
-            {
-                POINT mouse = UInputManager::GetInstance().GetMousePos();
-                if (USceneManager::GetInstance().GetCurrentScene())
-                {
-                    auto& primitives = USceneManager::GetInstance().GetCurrentScene()->GetPrimitives();
-                    for (auto* prim : primitives)
-                    {
-                        UBall* ball = dynamic_cast<UBall*>(prim);
-                        if (ball && UGameManager::GetInstance().CanSelectBall(ball))
-                        {
-                            float dx = ball->Location.x - (float)mouse.x;
-                            float dy = ball->Location.y - (float)mouse.y;
-                            if (dx * dx + dy * dy < ball->Radius * ball->Radius)
-                            {
-                                SelectedBall = ball; // 선택만!
-								USoundManager::GetInstance().PlaySound("select_stone");
-                                break;
-                            }
-                        }
-                    }
-                }
-            }
-            // 2. 우클릭 드래그: 발사 조작 (스킬 걸고 나서 쏘기!)
-            if (SelectedBall != nullptr && UInputManager::GetInstance().IsKeyDown(VK_RBUTTON) && !ImGui::GetIO().WantCaptureMouse)
-            {
-                bIsDragging = true;
-                SelectedBall->Velocity = FVector(0, 0, 0);
-            }
+		    USceneManager::GetInstance().Render(renderer);
 
-            // 3. 드래그 중이면 매 프레임 화살표 update 하다가, 마우스 클릭 떼면 발사
-            if (bIsDragging && SelectedBall != nullptr)
-            {
-                POINT mouse = UInputManager::GetInstance().GetMousePos();
-                FVector launchVec(SelectedBall->Location.x - (float)mouse.x, SelectedBall->Location.y - (float)mouse.y, 0.0f);
-                float pullDistance = launchVec.Length();
+        //if (UGameManager::GetInstance().CurrentTurnState == ETurnState::WaitInput)
+        //{
+        //    // 1. 공 선택 하기
+        //    if (UInputManager::GetInstance().IsKeyDown(VK_LBUTTON) && !ImGui::GetIO().WantCaptureMouse)
+        //    {
+        //        POINT mouse = UInputManager::GetInstance().GetMousePos();
+        //        if (USceneManager::GetInstance().GetCurrentScene())
+        //        {
+        //            auto& primitives = USceneManager::GetInstance().GetCurrentScene()->GetPrimitives();
+        //            for (auto* prim : primitives)
+        //            {
+        //                UBall* ball = dynamic_cast<UBall*>(prim);
+        //                if (ball && UGameManager::GetInstance().CanSelectBall(ball))
+        //                {
+        //                    // OutputDebugStringA("Condition Pass\n");   // DEBUG
 
-                if (!g_bHasPlayedChargeSound)
-                {
-                    USoundManager::GetInstance().PlaySound("charge");
-                    g_bHasPlayedChargeSound = true;
-                }
+        //                    float dx = ball->Location.x - (float)mouse.x;
+        //                    float dy = ball->Location.y - (float)mouse.y;
+        //                    if (dx * dx + dy * dy < ball->Radius * ball->Radius)
+        //                    {
+        //                        if (ball != nullptr)
+        //                            UEffectManager::GetInstance().ClearAura(SelectedBall);   // 이전 Ball Aura Effect 삭제
 
-                if (UInputManager::GetInstance().IsKeyUp(VK_RBUTTON))
-                {
-                    // 발사 처리
-                    g_bHasPlayedChargeSound = false;
-                    if (pullDistance > 5.0f)
-                    {
-                        float launchPower = 8.0f;
-                        SelectedBall->Velocity = launchVec * launchPower;
-                        float maxSpeed = 3000.0f;
-                        if (SelectedBall->Velocity.Length() > maxSpeed)
-                        {
-                            SelectedBall->Velocity = (SelectedBall->Velocity / SelectedBall->Velocity.Length()) * maxSpeed;
-                        }
+        //                        SelectedBall = ball; // 선택만!
 
-                        // Shooting Effect 적용을 위한 발사각 계산 (좌클릭 -> 우클릭으로 변경)
-                        float launchAngle = atan2f(SelectedBall->Velocity.y, SelectedBall->Velocity.x);
+        //                        // 선택된 공 뒤에 aura effect
+        //                        UEffectManager::GetInstance().DrawAura(
+        //                            SelectedBall,
+        //                            "Resources/ball_aura.png",
+        //                            DirectX::XMFLOAT2(SelectedBall->Location.x, SelectedBall->Location.y),
+        //                            1.0f,
+        //                            DirectX::XMFLOAT2(0.5f, 0.5f),
+        //                            16
+        //                        );
+        //                        // OutputDebugStringA("DrawAura Finished\n");  // DEBUG
 
-                        UEffectManager::GetInstance().PlayEffect(
-                            "Resources/shooting.png",
-                            DirectX::XMFLOAT2(SelectedBall->Location.x, SelectedBall->Location.y),
-                            0.25f,
-                            DirectX::XMFLOAT2(2.0f, 2.0f),
-                            6,
-                            false,
-                            launchAngle
-                        );
-						USoundManager::GetInstance().PlaySound("shoot");
-                    }
-
-                    SelectedBall = nullptr;
-                    UGameManager::GetInstance().CurrentTurnState = ETurnState::BallMoving;
-                    bIsDragging = false;
-                    UEffectManager::GetInstance().ClearArrow(); // 발사 완료 및 화살 삭제
-                }
-                else if (pullDistance > 5.0f)
-                {
-                    // 드래그 중
-                    float launchAngle = atan2f(launchVec.y, launchVec.x);
-                    std::string arrowTexture = (UGameManager::GetInstance().CurrentPlayerTurn == EPlayer::Red)
-                                                ? "Resources/Red_arrow.png"
-                                                : "Resources/Blue_arrow.png";
+        //                        break;
+        //                    }
+        //                }
+        //            }
+        //        }
+        //    }
+        //    // 2. 우클릭 드래그: 발사 조작 (스킬 걸고 나서 쏘기!)
+        //    if (SelectedBall != nullptr && UInputManager::GetInstance().IsKeyDown(VK_RBUTTON) && !ImGui::GetIO().WantCaptureMouse)
+        //    {
+        //        bIsDragging = true;
+        //        SelectedBall->Velocity = FVector(0, 0, 0);
+        //        UEffectManager::GetInstance().ClearAura(SelectedBall);   // aura Effect 해제
+        //    }
 
 
-                    // 조준 방향
-                    FVector aimDir = launchVec / pullDistance;
-                    DirectX::XMFLOAT2 arrowPos =
-                    {
-                        SelectedBall->Location.x + aimDir.x * SelectedBall->Radius,
-                        SelectedBall->Location.y + aimDir.y * SelectedBall->Radius
-                    };
-                    
-                    // 당긴 거리에 비례하여 화살표 크기 조절
-                    float arrowScale = pullDistance / 200.0f;
-                    float minScale = 0.5f;
-                    float maxScale = 2.5f;
-                    arrowScale = std::clamp(arrowScale, minScale, maxScale);
-                    
-                    UEffectManager::GetInstance().DrawArrow(
-                        arrowTexture,
-                        arrowPos,
-                        launchAngle,
-                        1.0f,   // loop duration 
-                        DirectX::XMFLOAT2(arrowScale, 1.0f),
-                        30      // frame count
-                    );
-                }
-            }
-            else
-            {
-                UEffectManager::GetInstance().ClearArrow();
-            }
-        }
+        //    // 3. 드래그 중이면 매 프레임 화살표 update 하다가, 마우스 클릭 떼면 발사
+        //    if (bIsDragging && SelectedBall != nullptr)
+        //    {
+        //        POINT mouse = UInputManager::GetInstance().GetMousePos();
+        //        FVector launchVec(SelectedBall->Location.x - (float)mouse.x, SelectedBall->Location.y - (float)mouse.y, 0.0f);
+        //        float pullDistance = launchVec.Length();
+        //        
+        //        if (UInputManager::GetInstance().IsKeyUp(VK_RBUTTON))
+        //        {
+        //            // 발사 처리
+        //            if (pullDistance > 5.0f)
+        //            {
+        //                float launchPower = 8.0f;
+        //                SelectedBall->Velocity = launchVec * launchPower;
+        //                float maxSpeed = 3000.0f;
+        //                if (SelectedBall->Velocity.Length() > maxSpeed)
+        //                {
+        //                    SelectedBall->Velocity = (SelectedBall->Velocity / SelectedBall->Velocity.Length()) * maxSpeed;
+        //                }
+
+        //                // Shooting Effect 적용을 위한 발사각 계산 (좌클릭 -> 우클릭으로 변경)
+        //                float launchAngle = atan2f(SelectedBall->Velocity.y, SelectedBall->Velocity.x);
+
+        //                UEffectManager::GetInstance().PlayEffect(
+        //                    "Resources/shooting.png",
+        //                    DirectX::XMFLOAT2(SelectedBall->Location.x, SelectedBall->Location.y),
+        //                    0.25f,
+        //                    DirectX::XMFLOAT2(2.0f, 2.0f),
+        //                    6,
+        //                    false,
+        //                    launchAngle
+        //                );
+        //            }
+
+        //            UEffectManager::GetInstance().ClearAura(SelectedBall);
+        //            SelectedBall = nullptr;
+        //            UGameManager::GetInstance().CurrentTurnState = ETurnState::BallMoving;
+        //            bIsDragging = false;
+        //            UEffectManager::GetInstance().ClearArrow(); // 발사 완료 및 화살 삭제
+        //        }
+        //        else if (pullDistance > 5.0f)
+        //        {
+        //            // 드래그 중
+        //            float launchAngle = atan2f(launchVec.y, launchVec.x);
+        //            std::string arrowTexture = (UGameManager::GetInstance().CurrentPlayerTurn == EPlayer::Red)
+        //                                        ? "Resources/Red_arrow.png"
+        //                                        : "Resources/Blue_arrow.png";
+
+
+        //            // 조준 방향
+        //            FVector aimDir = launchVec / pullDistance;
+        //            DirectX::XMFLOAT2 arrowPos =
+        //            {
+        //                SelectedBall->Location.x + aimDir.x * SelectedBall->Radius,
+        //                SelectedBall->Location.y + aimDir.y * SelectedBall->Radius
+        //            };
+        //            
+        //            // 당긴 거리에 비례하여 화살표 크기 조절
+        //            float arrowScale = pullDistance / 200.0f;
+        //            float minScale = 0.5f;
+        //            float maxScale = 2.5f;
+        //            arrowScale = std::clamp(arrowScale, minScale, maxScale);
+        //            
+        //            UEffectManager::GetInstance().DrawArrow(
+        //                arrowTexture,
+        //                arrowPos,
+        //                launchAngle,
+        //                1.0f,   // loop duration 
+        //                DirectX::XMFLOAT2(arrowScale, 1.0f),
+        //                30      // frame count
+        //            );
+        //        }
+        //    }
+        //    else
+        //    {
+        //        UEffectManager::GetInstance().ClearArrow();
+
+        //    }
+        //}
+
         
         UEffectManager::GetInstance().Render(); // EFFECT TEST
 
@@ -272,24 +290,30 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLine
         // 이후 ImGui UI 컨트롤 추가는 ImGui::NewFrame()과 ImGui::Render() 사이인 여기에 위치합니다.
         ImGui::Begin("Jungle Property Window");
         ImGui::Text("Hello Jungle World!");
+
         if (SelectedBall != nullptr)
         {
             ImGui::TextColored(ImVec4(0, 1, 0, 1), "[ Ball Selected! ]");
             ImGui::Text("Radius: %.1f | Mass: %.1f", SelectedBall->Radius, SelectedBall->Mass);
             ImGui::Separator();
             // 6가지 코어 스킬 발동 버튼!
-            if (ImGui::Button("1. 자폭 (Mine)"))       SelectedBall->ApplySkill(USkillType::Mine);
-            if (ImGui::Button("2. 빙결 (Freeze)"))     SelectedBall->ApplySkill(USkillType::Freeze);
-            if (ImGui::Button("3. 거대화 (SizeUp)"))   SelectedBall->ApplySkill(USkillType::SizeScaling);
-            if (ImGui::Button("4. 질량증가 (MassUp)")) SelectedBall->ApplySkill(USkillType::MassScaling);
-            if (ImGui::Button("5. 척력파 (Magnet)"))   SelectedBall->ApplySkill(USkillType::ReverseMagnet);
-            if (ImGui::Button("6. 벽 생성 (Wall)"))   SelectedBall->ApplySkill(USkillType::WallCreate);
-            if (ImGui::Button("선택 해제 (Deselect)")) SelectedBall = nullptr;
+            if (ImGui::Button("1. 자폭 (Mine)"))       SelectedBall->ApplySkill(ESkillType::Mine);
+            if (ImGui::Button("2. 빙결 (Freeze)"))     SelectedBall->ApplySkill(ESkillType::Freeze);
+            if (ImGui::Button("3. 거대화 (SizeUp)"))   SelectedBall->ApplySkill(ESkillType::Giant);
+            if (ImGui::Button("4. 질량증가 (MassUp)")) SelectedBall->ApplySkill(ESkillType::Heavier);
+            if (ImGui::Button("5. 척력파 (Magnet)"))   SelectedBall->ApplySkill(ESkillType::Repulse);
+            if (ImGui::Button("6. 벽 생성 (Wall)"))   SelectedBall->ApplySkill(ESkillType::WallCreate);
+            if (ImGui::Button("선택 해제 (Deselect)")) SelectedBall = nullptr;            
+            {
+                UEffectManager::GetInstance().ClearAura(SelectedBall); // Aura Effect 해제
+                SelectedBall = nullptr;
+            }
         }
         else
         {
             ImGui::TextColored(ImVec4(1, 1, 0, 1), "Click a ball to select!");
         }
+
         if (bIsDragging && UInputManager::GetInstance().IsKeyUp(VK_LBUTTON))
         {
             if (SelectedBall != nullptr)

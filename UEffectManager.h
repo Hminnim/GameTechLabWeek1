@@ -65,13 +65,14 @@ class UEffectManager
         void ClearArrow();
 
         void Update(float deltaTime);
-        void Render();
+        void RenderAuras(); // Scene(공, UI)보다 먼저 그리기
+        void Render(); // Scene 이후에 그리기
 
         // 여러 개의 지속 이벤트를 위한 Effect (Ex. Freeze)
         // key : UBall*
-        void DrawIce(void* key, const std::string& textureKey, const DirectX::XMFLOAT2& position,
+        void DrawAura(void* key, const std::string& textureKey, const DirectX::XMFLOAT2& position,
                     float loopDuration, const DirectX::XMFLOAT2 scale = { 1.0f, 1.0f }, int frameCount = 1);
-        void ClearIce(void* key);
+        void ClearAura(void* key);
 
     private:
         UEffectManager() = default;
@@ -84,6 +85,6 @@ class UEffectManager
         bool m_hasArrow = false;
         FActiveEffect m_arrow;
 
-        std::unordered_map<void*, FActiveEffect> m_ices;
+        std::unordered_map<void*, FActiveEffect> m_stayEffects;
 
 };

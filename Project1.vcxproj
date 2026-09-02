@@ -167,6 +167,7 @@
     <ClCompile Include="UGameManager.cpp" />
     <ClCompile Include="UInputManager.cpp" />
     <ClCompile Include="UMap.cpp" />
+    <ClCompile Include="UPlayerController.cpp" />
     <ClCompile Include="URenderer .cpp" />
     <ClCompile Include="UResourceManager.cpp" />
     <ClCompile Include="UScene.cpp" />
@@ -206,6 +207,7 @@
     <ClInclude Include="UGameSetting.h" />
     <ClInclude Include="UInputManager.h" />
     <ClInclude Include="UMap.h" />
+    <ClInclude Include="UPlayerController.h" />
     <ClInclude Include="UPrimitive.h" />
     <ClInclude Include="URenderer.h" />
     <ClInclude Include="UResourceManager.h" />

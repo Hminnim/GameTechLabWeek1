@@ -5,6 +5,7 @@
 #include "USceneManager.h"
 #include "UGameSetting.h"
 #include "USoundManager.h"
+#include "UEffectManager.h"
 
 UGameManager::UGameManager()
 {

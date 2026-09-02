@@ -162,35 +162,37 @@ void UBall::SetEnableAngularMomentum(bool bEnable)
     bEnableAngularVelocity = bEnable;
 }
 
-void UBall::ApplySkill(USkillType skill)
+void UBall::ApplySkill(ESkillType skill)
 {
     switch (skill)
     {
-        case USkillType::Mine:
+        case ESkillType::Mine:
              isSelfDestruct = true;
              break;
 
-        case USkillType::Freeze:
+        case ESkillType::Freeze:
              bEnableFreeze = true;
              break;
 
-        case USkillType::SizeScaling:
+        case ESkillType::Giant:
             TargetRadius = Radius * 1.5f;
             isSizeScaling = true;
 			USoundManager::GetInstance().PlaySound("sizeup");
             break;
 
-        case USkillType::MassScaling:
+        case ESkillType::Heavier:
             TargetMass = Mass * 1.5f;
             isMassScaling = true;
 			USoundManager::GetInstance().PlaySound("sizeup");
             break;
 
-        case USkillType::ReverseMagnet:
+        case ESkillType::Repulse:
             isMagnetActivated = true;
             break;
-        case USkillType::WallCreate:
+        case ESkillType::WallCreate:
             bEnableWallCreate = true;
+            break;
+        default:
             break;
     }
 }
@@ -271,8 +273,35 @@ void UBall::FrictionFloor(float DeltaTime, std::vector<UPrimitive*>& others)
     float FricVal = 500.0f;
     if (isFreezed)
     {
+        // Freeze Effect
+        UEffectManager::GetInstance().DrawAura(
+            this,
+            "Resources/new_freeze.png",
+            DirectX::XMFLOAT2(this->Location.x, this->Location.y),
+            1.0f,
+            // 1.0f,
+            DirectX::XMFLOAT2(0.5f, 0.5f),
+            5
+        );
+
         FricVal = 200000.0f;
     }
+     else if (!isFreezed && bWasFreezed)
+    {  
+        // Unfreeze Effect
+        UEffectManager::GetInstance().ClearAura(this);   // Freeze Effect 해제
+
+        UEffectManager::GetInstance().PlayEffect(
+            "Resources/unfreeze.png",
+            DirectX::XMFLOAT2(this->Location.x, this->Location.y),
+            1.0f,
+            DirectX::XMFLOAT2(0.5f, 0.5f),
+            10
+        );
+    }
+
+    bWasFreezed = isFreezed;
+
     if (bEnableWallCreate && Velocity.Length()>50.0f && currentWallCount<MaxWallCount)
     {
         float dx = (Location.x - lastspawnpos.x);
