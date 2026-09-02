@@ -295,12 +295,12 @@ void UBall::ApplySkill(USkillType skill)
              break;
 
         case USkillType::SizeScaling:
-            TargetRadius = Radius * 1.5;
+            TargetRadius = Radius * 1.5f;
             isSizeScaling = true;
              break;
 
         case USkillType::MassScaling:
-            TargetMass = Mass * 1.5;
+            TargetMass = Mass * 1.5f;
             isMassScaling = true;
             break;
 

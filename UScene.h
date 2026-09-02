@@ -83,12 +83,14 @@ public:
     void Initialize() override;
     virtual void SetBackground(UUI* backgroundBlue, UUI* backgroundRed) { m_backgrounds[EPlayer::Blue] = backgroundBlue; m_backgrounds[EPlayer::Red] = backgroundRed; }
 
+	void AddSkillButton(USkillButton* skillButton) { m_skillButtons.push_back(skillButton); }
 	void Update(float deltaTime) override;
 	void Render(URenderer& renderer) override;
 
 private:
 	std::unordered_map<EPlayer, UUI*> m_backgrounds;
 	std::map<ESlot, FSlotData> m_slotData;
+	std::vector<USkillButton*> m_skillButtons;
 };
 
 class UGameOverScene : public UScene

@@ -88,50 +88,7 @@ void UScene::Update(float Deltatime)
                 btn->OnClick();
                 break;
             }
-        }
-
-        if (UGameManager::GetInstance().CurrentPlayerTurn == EPlayer::Red)
-        {
-            // slot[0]~[4] 버튼들의 _isActive 를 false로
-			for (int i = 0; i < 5; ++i)
-			{
-				UButton* btn = dynamic_cast<UButton*>(_uis[i]);
-				if (btn != nullptr)
-				{
-					btn->SetActive(false);
-				}
-			}
-			// slot[5]~[9] 버튼들의 _isActive 를 true로
-			for (int i = 5; i < 10; ++i) 
-            {
-                UButton* btn = dynamic_cast<UButton*>(_uis[i]);
-                if (btn != nullptr)
-                {
-                    btn->SetActive(true);
-                }
-            }
-        }
-        else
-        {
-			// slot[0]~[4] 버튼들의 _isActive 를 true로
-			for (int i = 0; i < 5; ++i)
-			{
-				UButton* btn = dynamic_cast<UButton*>(_uis[i]);
-				if (btn != nullptr)
-				{
-					btn->SetActive(true);
-				}
-			}
-			// slot[5]~[9] 버튼들의 _isActive 를 false로
-			for (int i = 5; i < 10; ++i)
-			{
-				UButton* btn = dynamic_cast<UButton*>(_uis[i]);
-				if (btn != nullptr)
-				{
-					btn->SetActive(false);
-				}
-			}
-        }
+        }   
     }
 }
 
@@ -164,14 +121,14 @@ void UTitleScene::Initialize()
     startbtn->Init("Resources/button_start.png", StartBtnX, ButtonY, ButtonWidth, ButtonHeight);
     AddUI(startbtn);
     startbtn->SetOnClick([]() {
-        USceneManager::GetInstance().ChangeScene("InGame");
+        USceneManager::GetInstance().RequestChangeScene("InGame");
         });
 
     UButton* exitbtn = new UButton();
     exitbtn->Init("Resources/button_exit.png", ExitBtnX, ButtonY, ButtonWidth, ButtonHeight);
     AddUI(exitbtn);
     exitbtn->SetOnClick([]() {
-        USceneManager::GetInstance().ChangeScene("GameOver");
+        USceneManager::GetInstance().RequestChangeScene("GameOver");
         });
 }
 
@@ -284,7 +241,7 @@ void UInGameScene::Initialize()
 
         // skillBtn->SetSlot(currentSlot); 
 
-        AddUI(skillBtn);
+        AddSkillButton(skillBtn);
     }
 
 
@@ -294,6 +251,20 @@ void UInGameScene::Initialize()
 void UInGameScene::Update(float deltaTime)
 {
     UScene::Update(deltaTime);
+
+    bool isRedTurn = (UGameManager::GetInstance().CurrentPlayerTurn == EPlayer::Red);
+
+    int halfCount = (int)ESlot::MaxCount / 2;
+
+    for (int i = 0; i < m_skillButtons.size(); ++i)
+    {
+        if (m_skillButtons[i] != nullptr)
+        {
+            bool bActive = isRedTurn ? (i >= halfCount) : (i < halfCount);
+
+            m_skillButtons[i]->SetActive(bActive);
+        }
+    }
 }
 
 void UInGameScene::Render(URenderer& renderer)
@@ -302,6 +273,12 @@ void UInGameScene::Render(URenderer& renderer)
     m_backgrounds[UGameManager::GetInstance().CurrentPlayerTurn]->Render(renderer);
     renderer.EndSprite();
     UScene::Render(renderer);
+    renderer.BeginSprite();
+    for (const auto& skillButton : m_skillButtons)
+	{
+		skillButton->Render(renderer);
+	}
+    renderer.EndSprite();
 }
 
 
@@ -334,14 +311,14 @@ void UGameOverScene::Initialize()
     temp2->Init("Resources/button_restart.png", RestartBtnX, ButtonY, ButtonWidth, ButtonHeight);
     AddUI(temp2);
     temp2->SetOnClick([]() {
-        USceneManager::GetInstance().ChangeScene("InGame");
+        USceneManager::GetInstance().RequestChangeScene("InGame");
         });
 
     UButton* temp3 = new UButton();
     temp3->Init("Resources/button_exit.png", ExitBtnX, ButtonY, ButtonWidth, ButtonHeight);
     AddUI(temp3);
     temp3->SetOnClick([]() {
-        USceneManager::GetInstance().ChangeScene("GameOver");
+        USceneManager::GetInstance().RequestChangeScene("GameOver");
         });
 }
 
