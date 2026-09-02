@@ -281,8 +281,11 @@ void UBall::FrictionFloor(float DeltaTime, std::vector<UPrimitive*>& others)
             float offset = Radius + 40.0f + 10.0f;
             FVector spawnpos = Location - (dir * offset);
 
+            float angle = atan2f(Velocity.y, Velocity.x);
+
             UScene* currentScene = USceneManager::GetInstance().GetCurrentScene();
-            currentScene->AddPrimitive(new UWall("square", FVector(spawnpos.x, spawnpos.y, 0.5f), 75.0f, this->Owner));
+            currentScene->AddPrimitive(new UWall("square", FVector(spawnpos.x, spawnpos.y, 0.5f), 75.0f, this->Owner, -angle));
+            
             lastspawnpos = spawnpos;
             currentWallCount++;
         }
