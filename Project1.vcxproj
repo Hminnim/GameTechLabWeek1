@@ -164,6 +164,7 @@
     <ClCompile Include="UBall.cpp" />
     <ClCompile Include="UButton.cpp" />
     <ClCompile Include="UEffectManager.cpp" />
+    <ClCompile Include="UFadeOverlay.cpp" />
     <ClCompile Include="UGameManager.cpp" />
     <ClCompile Include="UInputManager.cpp" />
     <ClCompile Include="UMap.cpp" />
@@ -203,6 +204,7 @@
     <ClInclude Include="UBall.h" />
     <ClInclude Include="UButton.h" />
     <ClInclude Include="UEffectManager.h" />
+    <ClInclude Include="UFadeOverlay.h" />
     <ClInclude Include="UGameManager.h" />
     <ClInclude Include="UGameSetting.h" />
     <ClInclude Include="UInputManager.h" />

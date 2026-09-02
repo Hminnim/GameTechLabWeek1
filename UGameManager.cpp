@@ -164,6 +164,7 @@ void UGameManager::CheckGameOver(std::vector<UPrimitive*>& primitives)
 				UEffectManager::GetInstance().ClearAura(ball);
 			}
 		}
+		USceneManager::GetInstance().RequestChangeScene("GameOver");
 	}
 
 }
