@@ -60,13 +60,44 @@ void UBall::Update(float DeltaTime, std::vector<UPrimitive*>& others)
 {
     if (isSizeScaling)
     {
-        Radius += 30.0f * DeltaTime;
-        if (Radius > TargetRadius)
-        {
-            Radius = TargetRadius;
-            isSizeScaling = false;
+        if (Radius < TargetRadius) {
+            Radius += 30.0f * DeltaTime;
+            if (Radius > TargetRadius)
+            {
+                Radius = TargetRadius;
+                isSizeScaling = false;
+            }
+        }
+        if (Radius > TargetRadius) {
+            Radius -= 30.0f * DeltaTime;
+            if (Radius < TargetRadius)
+            {
+                Radius = TargetRadius;
+                isSizeScaling = false;
+            }
         }
     }
+
+    if (isMassScaling)
+    {
+        if (Mass < TargetMass) {
+            Mass += 30.0f * DeltaTime;
+            if (Mass > TargetMass)
+            {
+                Mass = TargetMass;
+                isMassScaling = false;
+            }
+        }
+        if (Mass > TargetMass) {
+            Mass -= 30.0f * DeltaTime;
+            if (Mass < TargetMass)
+            {
+                Mass = TargetMass;
+                isMassScaling = false;
+            }
+        }
+    }
+
     
     float FricVal=500.0f;
     if (isFreezed)
@@ -83,7 +114,6 @@ void UBall::Update(float DeltaTime, std::vector<UPrimitive*>& others)
         if (Velocity.Length() <= FricVal * DeltaTime)
         {
             Velocity = FVector(0, 0, 0);
-            bEnableFreeze = false;
             // 척력 발생시 주위 밀어냄
             if (isMagnetActivated && !AlreadyActiveMag)
             {
@@ -269,8 +299,9 @@ void UBall::ApplySkill(USkillType skill)
              break;
 
         case USkillType::MassScaling:
-             Mass *= 1.5;
-             break;
+            TargetMass = Mass * 1.5;
+            isMassScaling = true;
+            break;
 
         case USkillType::ReverseMagnet:
             isMagnetActivated = true;
