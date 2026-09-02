@@ -172,6 +172,7 @@
     <ClCompile Include="UScene.cpp" />
     <ClCompile Include="USceneManager.cpp" />
     <ClCompile Include="USoundManager.cpp" />
+    <ClCompile Include="UWall.cpp" />
     <ClCompile Include="UUi.cpp" />
     <ClCompile Include="UWindow.cpp" />
   </ItemGroup>
@@ -211,6 +212,7 @@
     <ClInclude Include="UScene.h" />
     <ClInclude Include="USceneManager.h" />
     <ClInclude Include="USoundManager.h" />
+    <ClInclude Include="UWall.h" />
     <ClInclude Include="UUi.h" />
     <ClInclude Include="UWindow.h" />
   </ItemGroup>

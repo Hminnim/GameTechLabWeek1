@@ -7,7 +7,7 @@ class UResourceManager
 public:
 	static UResourceManager& GetInstance();
 
-	void Initialize(ID3D11Device* device, ID3D11Buffer* vertexBuffer, UINT numVertices);
+	void Initialize(const std::string& key, ID3D11Device* device, ID3D11Buffer* vertexBuffer, UINT numVertices);
 
 	UResourceManager(const UResourceManager&) = delete;
 	UResourceManager& operator=(const UResourceManager&) = delete;
@@ -24,6 +24,6 @@ private:
 	Microsoft::WRL::ComPtr<ID3D11Device> m_device;
 	std::unordered_map<std::string, Microsoft::WRL::ComPtr<ID3D11ShaderResourceView>> m_textures;
 	std::unordered_map<std::string, Microsoft::WRL::ComPtr<ID3D11Buffer>> m_vertexBuffers;
-	UINT m_numVertices = 0;
+	std::unordered_map<std::string, UINT> m_numVertices;
 };
 

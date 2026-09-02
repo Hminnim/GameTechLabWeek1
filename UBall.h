@@ -53,5 +53,10 @@ public:
     virtual void SetEnableAngularMomentum(bool bEnable) override;
     virtual void ApplySkill(USkillType Skill);
     virtual void Update(float DeltaTime, std::vector<UPrimitive*>& others) override;
-
+    void CollisionManage(float DeltaTime, std::vector<UPrimitive*>& others);
+    void ReverseMagnetWhenMine(float DeltaTime, std::vector<UPrimitive*>& others);
+    void FrictionFloor(float DeltaTime, std::vector<UPrimitive*>& others);
+    void SizeMassScaling(float DeltaTime);
+    void WallCollision();
+    
 };

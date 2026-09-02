@@ -1,6 +1,7 @@
 #pragma once
 #include "pch.h"
 #include "UBall.h"
+#include "UWall.h"
 #include "UResourceManager.h"
 #include "UGameSetting.h"
 #include "UEffectManager.h"
@@ -10,7 +11,7 @@ CollisionManager CollisionMan;
 UBall::UBall(const std::string& meshKey, const EPlayer owner, const FVector startLocation)
 {
     TotalNumBalls++;
-
+    
     Owner = owner;
 
     // 기본 값
@@ -60,188 +61,26 @@ void UBall::Render(URenderer& Renderer)
 
 void UBall::Update(float DeltaTime, std::vector<UPrimitive*>& others)
 {
-    if (isSizeScaling)
-    {
-        if (Radius < TargetRadius) {
-            Radius += 30.0f * DeltaTime;
-            if (Radius > TargetRadius)
-            {
-                Radius = TargetRadius;
-                isSizeScaling = false;
-            }
-        }
-        if (Radius > TargetRadius) {
-            Radius -= 30.0f * DeltaTime;
-            if (Radius < TargetRadius)
-            {
-                Radius = TargetRadius;
-                isSizeScaling = false;
-            }
-        }
-    }
+    UBall::SizeMassScaling(DeltaTime);
 
-    if (isMassScaling)
-    {
-        if (Mass < TargetMass) {
-            Mass += 30.0f * DeltaTime;
-            if (Mass > TargetMass)
-            {
-                Mass = TargetMass;
-                isMassScaling = false;
-            }
-        }
-        if (Mass > TargetMass) {
-            Mass -= 30.0f * DeltaTime;
-            if (Mass < TargetMass)
-            {
-                Mass = TargetMass;
-                isMassScaling = false;
-            }
-        }
-    }
+    UBall::WallCollision();
 
-    
-    float FricVal=500.0f;
-    if (isFreezed && !bWasFreezed)
-    {
-        // Freeze Effect
-        UEffectManager::GetInstance().PlayEffect(
-            "Resources/freeze.png",
-            DirectX::XMFLOAT2(Location.x, Location.y),
-            2.0f,
-            DirectX::XMFLOAT2(1.0f, 1.0f),
-            25
-        );
+    UBall::FrictionFloor(DeltaTime, others);
 
-        FricVal = 200000.0f;
-    }
-    else if (!isFreezed && bWasFreezed)
-    {  
-        // Unfreeze Effect
-        UEffectManager::GetInstance().PlayEffect(
-            "Resources/unfreeze.png",
-            DirectX::XMFLOAT2(Location.x, Location.y),
-            2.0f,
-            DirectX::XMFLOAT2(1.0f, 1.0f),
-            8
-        );
-    }
+    UBall::CollisionManage(DeltaTime, others);
 
-    bWasFreezed = isFreezed;
-
-    //속도에 따른 위치 이동
-    Location += Velocity * DeltaTime;
-
-    // 마찰력 계수 적용
-    if (Velocity.Length() > 0.0f) {
-        FVector NormalizeFricVec = Velocity / Velocity.Length() * (-1.0f);
-        if (Velocity.Length() <= FricVal * DeltaTime)
-        {
-            Velocity = FVector(0, 0, 0);
-            // 척력 발생시 주위 밀어냄
-            if (isMagnetActivated && !AlreadyActiveMag)
-            {
-                float currentMagnetForce = 700000.0f;
-                for (auto* other : others)
-                {
-                    if (other != this)
-                    {
-                        if (other != nullptr)
-                        {
-                            ApplyReverseMagnetism(other, DeltaTime, currentMagnetForce);
-                        }
-                    }
-                }
-                AlreadyActiveMag = true;
-            }
-        }
-        else Velocity += NormalizeFricVec * FricVal * DeltaTime;
-    }
-    if (bEnableAngularVelocity)
-    {
-        Rotation += AngularVelocity * DeltaTime;
-    }    
-
-    //충돌 처리
-    for (auto* other : others)
-    {
-        if (other != this && !other->bIsDestroyed)
-        {
-            UBall* otherBall = dynamic_cast<UBall*>(other);
-            if (otherBall != nullptr && !otherBall->bIsDestroyed)
-            {
-                CollisionMan.ResolveCollision(this, otherBall);
-
-            }
-        }
-    }
-
-    // 자폭 적용된 공 삭제 전 주변에 척력 적용
-    if (this->bIsDestroyed && this->isSelfDestruct)
-    {
-        // Self-Destruct Effect
-        UEffectManager::GetInstance().PlayEffect(
-            "Resources/self-destruct.png",
-            DirectX::XMFLOAT2(Location.x, Location.y),
-            1.25f,
-            DirectX::XMFLOAT2(2.0f, 2.0f),
-            9
-        );
-
-        float currentMineForce = 300000.0f;
-        for (auto* other : others)
-        {
-            if (other != this)
-            {
-                if (other != nullptr)
-                {
-                    ApplyReverseMagnetism(other, DeltaTime, currentMineForce);
-                }
-            }
-        }
-
-        //for (auto it = others.begin();it != others.end();it++)
-        //{
-        //    if (*it == this)
-        //    {
-        //        others.erase(it);
-        //        delete this;
-        //        return;
-        //    }
-        //}
-    }
-
-    int ScreendWidth = UGameSetting::GetInstance().ScreendWidth;
-    int ScreenHeight = UGameSetting::GetInstance().ScreenHeight;
-
-    //// 벽에 부딫칠때 감속 및 방향 전환
-    //if (Location.x < Radius)
-    //{
-    //    Velocity.x *= -0.9f * Elastic;
-    //    Location.x = Radius;
-    //}
-    //if (Location.x > ScreendWidth - Radius)
-    //{
-    //    Velocity.x *= -0.9f * Elastic;
-    //    Location.x = ScreendWidth - Radius;
-    //}
-    //if (Location.y < Radius)
-    //{
-    //    Velocity.y *= -0.9f * Elastic;
-    //    Location.y = Radius;
-    //}
-    //if (Location.y > ScreenHeight - Radius)
-    //{
-    //    Velocity.y *= -0.9f * Elastic;
-    //    Location.y = ScreenHeight - Radius;
-    //}
+    UBall::ReverseMagnetWhenMine(DeltaTime, others);
 
     // 벽에 부딪칠때 공 파괴 (임시)
     if ((Location.x < Radius) || (Location.x > ScreendWidth - Radius) || (Location.y < Radius) || (Location.y > ScreenHeight - Radius))
     {
         this->bIsDestroyed = true;
-    }    
+    }
 }
+
+int ScreendWidth = UGameSetting::GetInstance().ScreendWidth;
+int ScreenHeight = UGameSetting::GetInstance().ScreenHeight;
+
     
 
 void UBall::ApplyGravity(float DeltaTime)
@@ -346,5 +185,156 @@ void UBall::ApplySkill(USkillType skill)
         case USkillType::ReverseMagnet:
             isMagnetActivated = true;
             break;
+    }
+}
+
+void UBall::WallCollision()
+{
+    int ScreendWidth = UGameSetting::GetInstance().ScreendWidth;
+    int ScreenHeight = UGameSetting::GetInstance().ScreenHeight;
+    
+    if (Location.x < Radius)
+    {
+        Velocity.x *= -0.9f * Elastic;
+        Location.x = Radius;
+    }
+    if (Location.x > ScreendWidth - Radius)
+    {
+        Velocity.x *= -0.9f * Elastic;
+        Location.x = ScreendWidth - Radius;
+    }
+    if (Location.y < Radius)
+    {
+        Velocity.y *= -0.9f * Elastic;
+        Location.y = Radius;
+    }
+    if (Location.y > ScreenHeight - Radius)
+    {
+        Velocity.y *= -0.9f * Elastic;
+        Location.y = ScreenHeight - Radius;
+    }
+}
+
+void UBall::SizeMassScaling(float DeltaTime)
+{
+    if (isSizeScaling)
+    {
+        if (Radius < TargetRadius) {
+            Radius += 30.0f * DeltaTime;
+            if (Radius > TargetRadius)
+            {
+                Radius = TargetRadius;
+                isSizeScaling = false;
+            }
+        }
+        if (Radius > TargetRadius) {
+            Radius -= 30.0f * DeltaTime;
+            if (Radius < TargetRadius)
+            {
+                Radius = TargetRadius;
+                isSizeScaling = false;
+            }
+        }
+    }
+
+    if (isMassScaling)
+    {
+        if (Mass < TargetMass) {
+            Mass += 30.0f * DeltaTime;
+            if (Mass > TargetMass)
+            {
+                Mass = TargetMass;
+                isMassScaling = false;
+            }
+        }
+        if (Mass > TargetMass) {
+            Mass -= 30.0f * DeltaTime;
+            if (Mass < TargetMass)
+            {
+                Mass = TargetMass;
+                isMassScaling = false;
+            }
+        }
+    }
+}
+
+void UBall::FrictionFloor(float DeltaTime, std::vector<UPrimitive*>& others)
+{
+    float FricVal = 500.0f;
+    if (isFreezed)
+    {
+        FricVal = 200000.0f;
+    }
+
+    //속도에 따른 위치 이동
+    Location += Velocity * DeltaTime;
+
+    // 마찰력 계수 적용
+    if (Velocity.Length() > 0.0f) {
+        FVector NormalizeFricVec = Velocity / Velocity.Length() * (-1.0f);
+        if (Velocity.Length() <= FricVal * DeltaTime)
+        {
+            Velocity = FVector(0, 0, 0);
+            // 척력 발생시 주위 밀어냄
+            if (isMagnetActivated && !AlreadyActiveMag)
+            {
+                float currentMagnetForce = 500000.0f;
+                for (auto* other : others)
+                {
+                    if (other != this)
+                    {
+                        if (other != nullptr)
+                        {
+                            ApplyReverseMagnetism(other, DeltaTime, currentMagnetForce);
+                        }
+                    }
+                }
+                AlreadyActiveMag = true;
+            }
+        }
+        else Velocity += NormalizeFricVec * FricVal * DeltaTime;
+    }
+    if (bEnableAngularVelocity)
+    {
+        Rotation += AngularVelocity * DeltaTime;
+    }
+}
+
+void UBall::ReverseMagnetWhenMine(float DeltaTime, std::vector<UPrimitive*>& others)
+{
+    // 자폭시 척력 적용
+    if (this->bIsDestroyed && this->isSelfDestruct)
+    {
+        float currentMineForce = 500000.0f;
+        for (auto* other : others)
+        {
+            if (other != this)
+            {
+                if (other != nullptr)
+                {
+                    ApplyReverseMagnetism(other, DeltaTime, currentMineForce);
+                }
+            }
+        }
+    }
+}
+
+void UBall::CollisionManage(float DeltaTime, std::vector<UPrimitive*>& others)
+{
+    for (auto* other : others)
+    {
+        if (other != this && !other->bIsDestroyed)
+        {
+            UWall* otherWall = dynamic_cast<UWall*>(other);
+            if (otherWall != nullptr)
+            {
+                CollisionMan.ResolveWallCollision(this, otherWall);
+            }
+            UBall* otherBall = dynamic_cast<UBall*>(other);
+            if (otherBall != nullptr)
+            {
+                CollisionMan.ResolveCollision(this, otherBall);
+            }
+        }
     }
 }

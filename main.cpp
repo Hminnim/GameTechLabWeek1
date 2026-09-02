@@ -14,7 +14,6 @@
 #include "UScene.h"
 #include "UGameSetting.h"
 #include "UEffectManager.h"
-
 #include "UGameManager.h"
 
 int UBall::TotalNumBalls = 0;
@@ -54,8 +53,12 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLine
     ID3D11Buffer* VertexBufferSphere = renderer.CreateVertexBuffer(sphere_vertices, sizeof(sphere_vertices));
     UINT NumVerticesSphere = sizeof(sphere_vertices) / sizeof(FVertexSimple);
 
+    ID3D11Buffer* VertexBufferSquare = renderer.CreateVertexBuffer(square_vertices, sizeof(square_vertices));
+    UINT NumVerticesSquare = sizeof(square_vertices) / sizeof(FVertexSimple);
+
     // Resource Manager
-    UResourceManager::GetInstance().Initialize(renderer.Device, VertexBufferSphere, NumVerticesSphere);
+    UResourceManager::GetInstance().Initialize("sphere",renderer.Device, VertexBufferSphere, NumVerticesSphere);
+    UResourceManager::GetInstance().Initialize("square",renderer.Device, VertexBufferSquare, NumVerticesSquare);
     ID3D11ShaderResourceView* testUITexture = UResourceManager::GetInstance().GetTexture("Resources/Title.png");
 
     // ImGui를 생성합니다.
