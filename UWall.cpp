@@ -4,7 +4,7 @@
 
 int UWall::TotalNumWalls = 0;
 
-UWall::UWall(const std::string& meshKey,const FVector spawnLocation, float width)
+UWall::UWall(const std::string& meshKey,const FVector spawnLocation, float width, EPlayer Owner)
 {
     TotalNumWalls++;
 
@@ -17,6 +17,8 @@ UWall::UWall(const std::string& meshKey,const FVector spawnLocation, float width
     bEnableAngularVelocity = false;
 
     Width = width;
+    
+    owner = Owner;
 
     // 벽 스폰 위치
     Location = spawnLocation;

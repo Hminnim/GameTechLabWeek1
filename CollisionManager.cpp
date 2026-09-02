@@ -41,7 +41,6 @@ void CollisionManager::ResolveCollision(UPrimitive* TargetPrimitive, UPrimitive*
     {
         if (TargetBall->isSelfDestruct && OtherBall->Owner!=TargetBall->Owner)
         {
-            TargetPrimitive->bIsDestroyed = true;
             FVector CollisionPoint = (TargetPrimitive->Location + OtherPrimitive->Location) * 0.5f;
             UEffectManager::GetInstance().PlayEffect(
                 "Resources/collision.png",
@@ -53,11 +52,11 @@ void CollisionManager::ResolveCollision(UPrimitive* TargetPrimitive, UPrimitive*
                 0.0f
             );
             USoundManager::GetInstance().PlaySound("hit");
+            TargetPrimitive->bIsDestroyed = true;          
             return;
         }
         else if (OtherBall->isSelfDestruct && OtherBall->Owner != TargetBall->Owner)
         {
-            OtherPrimitive->bIsDestroyed = true;
             FVector CollisionPoint = (TargetPrimitive->Location + OtherPrimitive->Location) * 0.5f;
             UEffectManager::GetInstance().PlayEffect(
                 "Resources/collision.png",
@@ -69,6 +68,7 @@ void CollisionManager::ResolveCollision(UPrimitive* TargetPrimitive, UPrimitive*
                 0.0f
             );
             USoundManager::GetInstance().PlaySound("hit");
+            OtherPrimitive->bIsDestroyed = true;            
             return;
         }
         
@@ -80,6 +80,19 @@ void CollisionManager::ResolveCollision(UPrimitive* TargetPrimitive, UPrimitive*
         {
             TargetBall->isFreezed = true;
         }
+
+        //Collision Effect, Sound 출력
+        FVector CollisionPoint = (TargetPrimitive->Location + OtherPrimitive->Location) * 0.5f;
+        UEffectManager::GetInstance().PlayEffect(
+            "Resources/collision.png",
+            DirectX::XMFLOAT2(CollisionPoint.x, CollisionPoint.y),
+            0.25f,
+            DirectX::XMFLOAT2(2.0f, 2.0f),
+            7,
+            false,
+            0.0f
+        );
+        USoundManager::GetInstance().PlaySound("hit");
 
         // 거리 계산
         float Dist = (float)sqrt(DistSq);

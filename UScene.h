@@ -19,7 +19,7 @@ class UScene
         virtual void Exit() {};
 
         // 객체 추가
-        void AddPrimitive(UPrimitive* primitive) { _primitives.push_back(primitive); }
+        void AddPrimitive(UPrimitive* primitive) { _pendingPrimitives.push_back(primitive); }
         void AddUI(UUI* ui) { _uis.push_back(ui); }
         void AddButton(UButton* button) { _buttons.push_back(button); }
 
@@ -36,7 +36,7 @@ class UScene
 
     protected:
         std::vector<UPrimitive*> _primitives;
-
+        std::vector<UPrimitive*> _pendingPrimitives;
     private:     
         std::vector<UUI*> _uis;
         std::vector<UButton*> _buttons;

@@ -215,6 +215,15 @@ void UInGameScene::Update(float deltaTime)
         }
     }
 
+    if (!_pendingPrimitives.empty())
+    {
+        for (auto* p : _pendingPrimitives)
+        {
+            _primitives.push_back(p);
+        }
+        _pendingPrimitives.clear(); // 대기실 비우기
+    }
+
     // 공 파괴 업데이트
     for (auto it = _primitives.begin(); it != _primitives.end();)
     {

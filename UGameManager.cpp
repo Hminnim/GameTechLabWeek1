@@ -1,6 +1,7 @@
 #include "pch.h"
 #include "UGameManager.h"
 #include "UBall.h"
+#include "UWall.h"
 #include "USceneManager.h"
 #include "UGameSetting.h"
 
@@ -75,17 +76,23 @@ void UGameManager::CheckTurnEnd(std::vector<UPrimitive*>& primitives)
 	if (bIsAllBallStopped)
 	{
 		for (auto* primitive : primitives)
-		{
+		{						
+			UWall* Wall = dynamic_cast<UWall*>(primitive);
+			if (Wall != nullptr && Wall->Owner != CurrentPlayerTurn)
+			{
+				Wall->bIsDestroyed = true;
+			}						
 			UBall* ball = dynamic_cast<UBall*>(primitive);
 			if (ball && ball->Owner == CurrentPlayerTurn)
 			{
 				ball->isFreezed = false;
 				ball->bEnableFreeze = false;
+				ball->bEnableWallCreate = false;
 				ball->isSelfDestruct = false;
 				ball->TargetRadius = UGameSetting::GetInstance().BallBaseRadius;
 				ball->isSizeScaling = true;
 				ball->TargetMass = UGameSetting::GetInstance().BallBaseRadius * 10.0f;
-				ball->isMassScaling = true;
+				ball->isMassScaling = true;				
 			}
 		}
 		
