@@ -13,6 +13,12 @@ UGameManager::~UGameManager()
 
 void UGameManager::Update(std::vector<UPrimitive*>& primitives)
 {
+	// InGame 씬에서만 필요한 게임 판정
+	if (USceneManager::GetInstance().GetCurrentSceneName() != "InGame")
+	{
+		return;
+	}
+
 	UGameManager::CheckTurnEnd(primitives);
 	UGameManager::CheckGameOver(primitives);
 }
@@ -88,7 +94,7 @@ void UGameManager::CheckTurnEnd(std::vector<UPrimitive*>& primitives)
 
 void UGameManager::CheckGameOver(std::vector<UPrimitive*>& primitives)
 {
-	if (CurrentTurnState == ETurnState::GameOver)
+	if (CurrentTurnState != ETurnState::WaitInput)
 	{
 		return;
 	}
@@ -102,13 +108,13 @@ void UGameManager::CheckGameOver(std::vector<UPrimitive*>& primitives)
 		{
 			if (ball->Owner == EPlayer::Red)
 			{
-				RedBallCount += 1;
+				RedBallCount += 1;				
 			}
 			else if (ball->Owner == EPlayer::Blue)
 			{
-				BlueBallCount += 1;
+				BlueBallCount += 1;				
 			}
-		}
+		}		
 	}
 
 	// Blue 승

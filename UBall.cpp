@@ -15,6 +15,7 @@ UBall::UBall(const std::string& meshKey, const EPlayer owner, const FVector star
     // 기본 값
     Elastic = 1.0f;
     GNumber = 1.0f;
+    bIsDestroyed = false;
     bEnableAngularVelocity = false;
 
     // 꽉찬 구의 관성 모멘트
