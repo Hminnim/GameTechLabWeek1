@@ -91,13 +91,13 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLine
     ///////////////////////////////////////////////
 
     UEffectManager::GetInstance().Init(renderer.DeviceContext);
-    UEffectManager::GetInstance().PlayEffect(
-        "Resources/shooting.png",
-        { 500.0f, 500.0f },
-        1.0f,
-        2.0f,
-        6                
-    );
+    // UEffectManager::GetInstance().PlayEffect(
+    //     "Resources/shooting.png",
+    //     { 500.0f, 500.0f },
+    //     1.0f,
+    //     2.0f,
+    //     6                
+    // );
 
     ///////////////////////////////////////////////
     //////////////////EFFECT TEST//////////////////
@@ -182,6 +182,19 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLine
                     {
                         SelectedBall->Velocity = (SelectedBall->Velocity / SelectedBall->Velocity.Length()) * maxSpeed;
                     }
+
+                    // Shooting Effect 적용을 위한 발사각 계산 (좌클릭 -> 우클릭으로 변경)
+                    float launchAngle = atan2f(SelectedBall->Velocity.y, SelectedBall->Velocity.x);
+
+                    UEffectManager::GetInstance().PlayEffect(
+                        "Resources/shooting.png",
+                        DirectX::XMFLOAT2(SelectedBall->Location.x, SelectedBall->Location.y),
+                        0.25f,
+                        1.5f,
+                        6,
+                        false,
+                        launchAngle
+                    );
                 }
                 UGameManager::GetInstance().CurrentTurnState = ETurnState::BallMoving;
             }
@@ -234,17 +247,17 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLine
                     }
 
                     // Shooting Effect 적용을 위한 발사각 계산
-                    float launchAngle = atan2f(SelectedBall->Velocity.y, SelectedBall->Velocity.x);
+                    // float launchAngle = atan2f(SelectedBall->Velocity.y, SelectedBall->Velocity.x);
 
-                    UEffectManager::GetInstance().PlayEffect(
-                        "Resources/shooting.png",
-                        DirectX::XMFLOAT2(SelectedBall->Location.x, SelectedBall->Location.y),
-                        0.25f,
-                        1.5f,
-                        6,
-                        false,
-                        launchAngle
-                    );
+                    // UEffectManager::GetInstance().PlayEffect(
+                    //     "Resources/shooting.png",
+                    //     DirectX::XMFLOAT2(SelectedBall->Location.x, SelectedBall->Location.y),
+                    //     0.25f,
+                    //     1.5f,
+                    //     6,
+                    //     false,
+                    //     launchAngle
+                    // );
                 }
 
                 UGameManager::GetInstance().CurrentTurnState = ETurnState::BallMoving;
