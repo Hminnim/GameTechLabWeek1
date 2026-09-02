@@ -1,6 +1,7 @@
 #include "pch.h"
 #include "UGameManager.h"
 #include "UBall.h"
+#include "USceneManager.h"
 
 UGameManager::UGameManager()
 {
@@ -24,7 +25,7 @@ void UGameManager::InitGame()
 
 bool UGameManager::CanSelectBall(UBall* TargetBall)
 {
-	if (CurrentTurnState != ETurnState::WaitInput)
+	if (CurrentTurnState != ETurnState::WaitInput && TargetBall == nullptr)
 	{
 		return false;
 	}
@@ -87,19 +88,48 @@ void UGameManager::CheckTurnEnd(std::vector<UPrimitive*>& primitives)
 
 void UGameManager::CheckGameOver(std::vector<UPrimitive*>& primitives)
 {
+	if (CurrentTurnState != ETurnState::GameOver)
+	{
+		return;
+	}
+
 	int RedBallCount = 0;
 	int BlueBallCount = 0;
 
 	for (auto* primitive : primitives)
 	{
-		if (primitive->Owner == EPlayer::Red)
+		if (UBall* ball = dynamic_cast<UBall*>(primitive))
 		{
-			RedBallCount += 1;
-		}
-		if (primitive->Owner == EPlayer::Blue)
-		{
-			BlueBallCount += 1;
+			if (ball->Owner == EPlayer::Red)
+			{
+				RedBallCount += 1;
+			}
+			else if (ball->Owner == EPlayer::Blue)
+			{
+				BlueBallCount += 1;
+			}
 		}
 	}
-}
 
+	// Blue 승
+	if (RedBallCount == 0 && BlueBallCount > 0)
+	{
+		CurrentTurnState = ETurnState::GameOver;
+		OutputDebugStringA("===== BLUE WIN! =====\n");
+		// Blue 승리 화면 전환
+	}
+	// Red 승
+	else if (RedBallCount > 0 && BlueBallCount == 0)
+	{
+		CurrentTurnState = ETurnState::GameOver;
+		OutputDebugStringA("===== RED WIN! =====\n");
+		// Red 승리 화면 전환
+	}
+	// 무승부
+	else if (RedBallCount == 0 && BlueBallCount == 0)
+	{
+		CurrentTurnState = ETurnState::GameOver;
+		OutputDebugStringA("===== DRAW! =====\n");
+		// 무승부 화면 전환
+	}
+}
