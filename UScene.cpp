@@ -265,6 +265,11 @@ void UInGameScene::Update(float deltaTime)
     }
 
     // Skill Button 업데이트
+    for (USkillButton* btn : m_skillButtons)
+    {
+        btn->Update(deltaTime);
+    }
+
     if (UInputManager::GetInstance().IsKeyDown(VK_LBUTTON)) {
         LONG mouseX = UInputManager::GetInstance().GetMousePos().x;
         LONG mouseY = UInputManager::GetInstance().GetMousePos().y;
@@ -277,6 +282,7 @@ void UInGameScene::Update(float deltaTime)
             }
         }
     }
+    
 
     UScene::Update(deltaTime);
 }
