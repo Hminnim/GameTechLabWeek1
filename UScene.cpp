@@ -320,6 +320,9 @@ void UInGameScene::Enter()
         it = _primitives.erase(it);
     }
 
+    // 스킬들 리셋
+	UGameManager::GetInstance().ResetSkiils();
+
     // 지정된 위치 공 소환
     float ScreenWidth = (float)UGameSetting::GetInstance().ScreendWidth;
     float ScreenHeight = (float)UGameSetting::GetInstance().ScreenHeight;
@@ -331,8 +334,8 @@ void UInGameScene::Enter()
 
     int NumBallsPerTeam = UGameSetting::GetInstance().BallsPerTeam;
 
-    float RedStartX = MapMarginX + (MapWidth * 0.15f);
-    float BlueStartX = MapMarginX + (MapWidth * 0.85f);
+    float RedStartX = MapMarginX + (MapWidth * 0.85f);
+    float BlueStartX = MapMarginX + (MapWidth * 0.15f);
 
     std::vector<FVector> RedSpawnPoints;
     std::vector<FVector> BlueSpawnPoints;
