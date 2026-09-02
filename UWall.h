@@ -18,7 +18,9 @@ public:
 
 	float Width;
 
-	UWall(const std::string& meshkey, const FVector spawnLocation, float width);
+	EPlayer owner;
+
+	UWall(const std::string& meshkey, const FVector spawnLocation, float width, EPlayer Owner);
 	virtual ~UWall();
 	virtual void Render(URenderer& Renderer) override;
 	virtual void SetTexture(ID3D11ShaderResourceView* srv);

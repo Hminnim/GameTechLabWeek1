@@ -7,6 +7,7 @@
 #include "UEffectManager.h"
 #include "UScene.h"
 #include "USceneManager.h"
+#include "USoundManager.h"
 
 CollisionManager CollisionMan;
 
@@ -260,6 +261,7 @@ void UBall::SizeMassScaling(float DeltaTime)
         }
     }
 }
+FVector lastspawnpos;
 
 void UBall::FrictionFloor(float DeltaTime, std::vector<UPrimitive*>& others)
 {
@@ -270,13 +272,20 @@ void UBall::FrictionFloor(float DeltaTime, std::vector<UPrimitive*>& others)
     }
     if (bEnableWallCreate && Velocity.Length()>50.0f && currentWallCount<MaxWallCount)
     {
-        FVector dir = Velocity / Velocity.Length();
-        float offset = Radius + 40.0f + 10.0f;
-        FVector spawnpos = Location - (dir * offset);
+        float dx = (Location.x - lastspawnpos.x);
+        float dy = (Location.y - lastspawnpos.y);
+        float dist = sqrtf(dx * dx + dy * dy);
 
-        UScene* currentScene = USceneManager::GetInstance().GetCurrentScene();
-        currentScene->AddPrimitive(new UWall("square", FVector(spawnpos.x, spawnpos.y,0.5f), 75.0f));
-        currentWallCount++;
+        if (dist >= 150.0f) {
+            FVector dir = Velocity / Velocity.Length();
+            float offset = Radius + 40.0f + 10.0f;
+            FVector spawnpos = Location - (dir * offset);
+
+            UScene* currentScene = USceneManager::GetInstance().GetCurrentScene();
+            currentScene->AddPrimitive(new UWall("square", FVector(spawnpos.x, spawnpos.y, 0.5f), 75.0f, this->Owner));
+            lastspawnpos = spawnpos;
+            currentWallCount++;
+        }
     }
 
     //속도에 따른 위치 이동
@@ -318,6 +327,16 @@ void UBall::ReverseMagnetWhenMine(float DeltaTime, std::vector<UPrimitive*>& oth
     // 자폭시 척력 적용
     if (this->bIsDestroyed && this->isSelfDestruct)
     {
+        UEffectManager::GetInstance().PlayEffect(
+            "Resources/self-destruct.png",
+            DirectX::XMFLOAT2(Location.x, Location.y),
+            1.25f,                         // 재생 시간 (1.25초)
+            DirectX::XMFLOAT2(2.0f, 2.0f), // 크기 배율 (2배)
+            9,                             // 총 9프레임 스프라이트 시트
+            false,
+            0.0f
+        );
+        USoundManager::GetInstance().PlaySound("hit");
         float currentMineForce = 500000.0f;
         for (auto* other : others)
         {

@@ -44,7 +44,7 @@ public:
     float TargetMass;
 
     int currentWallCount = 0;
-    int MaxWallCount = 5;
+    int MaxWallCount = 20;
 
     UBall(const std::string& meshKey, const EPlayer owner, const FVector startLocation);
     virtual ~UBall();
