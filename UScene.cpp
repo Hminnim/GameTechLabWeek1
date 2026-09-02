@@ -173,46 +173,31 @@ void UInGameScene::Initialize()
     UButton* freezeBtn = new UButton();
     float Y1 = (BtnYInterval * 1) - (BtnHeight * 0.5f);
     freezeBtn->Init("Resources/button_freeze.png", BtnX, Y1, BtnWidth, BtnHeight);
-    freezeBtn->SetUsedTexture("Resources/button_freeze_used.png");
-    freezeBtn->SetOnClick([this]() {
-        this->PlayerController.UseSkill(USkillType::Freeze);
-        });
+    freezeBtn->SetUsedTexture("Resources/button_freeze_used.png");   
     AddUI(freezeBtn);
 
     UButton* giantBtn = new UButton();
     float Y2 = (BtnYInterval * 2) - (BtnHeight * 0.5f);
     giantBtn->Init("Resources/button_giant.png", BtnX, Y2, BtnWidth, BtnHeight);
-    giantBtn->SetUsedTexture("Resources/button_giant_used.png");
-    giantBtn->SetOnClick([this]() {
-        this->PlayerController.UseSkill(USkillType::SizeScaling);
-        });
+    giantBtn->SetUsedTexture("Resources/button_giant_used.png"); 
     AddUI(giantBtn);
 
     UButton* heavierBtn = new UButton();
     float Y3 = (BtnYInterval * 3) - (BtnHeight * 0.5f);
     heavierBtn->Init("Resources/button_heavier.png", BtnX, Y3, BtnWidth, BtnHeight);
-    heavierBtn->SetUsedTexture("Resources/button_heavier_used.png");
-    heavierBtn->SetOnClick([this]() {
-        this->PlayerController.UseSkill(USkillType::MassScaling);
-        });
+    heavierBtn->SetUsedTexture("Resources/button_heavier_used.png");   
     AddUI(heavierBtn);
 
     UButton* mineBtn = new UButton();
     float Y4 = (BtnYInterval * 4) - (BtnHeight * 0.5f);
     mineBtn->Init("Resources/button_mine.png", BtnX, Y4, BtnWidth, BtnHeight);
-    mineBtn->SetUsedTexture("Resources/button_mine_used.png");
-    mineBtn->SetOnClick([this]() {
-        this->PlayerController.UseSkill(USkillType::Mine);
-        });
+    mineBtn->SetUsedTexture("Resources/button_mine_used.png");   
     AddUI(mineBtn);
 
     UButton* repulseBtn = new UButton();
     float Y5 = (BtnYInterval * 5) - (BtnHeight * 0.5f);
     repulseBtn->Init("Resources/button_repulse.png", BtnX, Y5, BtnWidth, BtnHeight);
-    repulseBtn->SetUsedTexture("Resources/button_repulse_used.png");
-    repulseBtn->SetOnClick([this]() {
-        this->PlayerController.UseSkill(USkillType::ReverseMagnet);
-        });
+    repulseBtn->SetUsedTexture("Resources/button_repulse_used.png");    
     AddUI(repulseBtn);
 
     UGameManager::GetInstance().InitGame();
