@@ -112,7 +112,7 @@ void UTitleScene::Initialize()
     exitbtn->Init("Resources/button_exit.png", ExitBtnX, ButtonY, ButtonWidth, ButtonHeight);
     AddUI(exitbtn);
     exitbtn->SetOnClick([]() {
-        USceneManager::GetInstance().RequestChangeScene("GameOver");
+        PostQuitMessage(0);
         });
 
     
@@ -416,7 +416,7 @@ void UGameOverScene::Initialize()
     temp3->Init("Resources/button_exit.png", ExitBtnX, ButtonY, ButtonWidth, ButtonHeight);
     AddUI(temp3);
     temp3->SetOnClick([]() {
-        USceneManager::GetInstance().RequestChangeScene("GameOver");
+        PostQuitMessage(0);
         });
 }
 
