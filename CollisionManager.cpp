@@ -40,12 +40,12 @@ void CollisionManager::ResolveCollision(UPrimitive* TargetPrimitive, UPrimitive*
     {
         if (TargetBall->isSelfDestruct)
         {
-            TargetPrimitive->isDestroyed = true;
+            TargetPrimitive->bIsDestroyed = true;
             return;
         }
         else if (OtherBall->isSelfDestruct)
         {
-            OtherPrimitive->isDestroyed = true;
+            OtherPrimitive->bIsDestroyed = true;
             return;
         }
         
