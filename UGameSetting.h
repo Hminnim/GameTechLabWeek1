@@ -13,5 +13,5 @@ public:
 	~UGameSetting() {}
 
 	int ScreendWidth = 2040;
-	int ScreenHeight = 1400;
+	int ScreenHeight = 1200;
 };

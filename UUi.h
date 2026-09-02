@@ -15,6 +15,7 @@ class UUI
 
         // Setter
         void SetActive(bool active) { _isActive = active; }
+		void SetPosition(float x, float y) { _x = x; _y = y; }
         
         // Check the status (item or not)
         bool IsActive() const { return _isActive; }
