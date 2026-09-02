@@ -10,5 +10,5 @@ private:
 
 public:
 	void Update(std::vector<UPrimitive*>& primitives);
-	void UseSkill(ESkillType skillType);
+	void ApplySkill(ESkillType skillType);
 };

@@ -65,4 +65,5 @@ public:
 	void SetCurrentSelectedSkill(ESkillType skill) { m_currentSelectedSkill = skill; }
 	void ResetSkiils() { m_usedSkills.clear(); }
 	void ConsumeSkill(EPlayer player, ESkillType skill) { m_usedSkills[player][skill] = true; }
+	void ConsumeCurrentSkill() { m_usedSkills[CurrentPlayerTurn][m_currentSelectedSkill] = true; }
 };

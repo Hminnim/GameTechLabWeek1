@@ -224,7 +224,7 @@ void UInGameScene::Initialize()
         skillBtn->SetUsedTexture(usedTex);
         skillBtn->SetSkillType(slotInfo.AssignedSkill);
         skillBtn->SetOnClick([this,slotInfo]() {            
-            this->PlayerController.UseSkill(slotInfo.AssignedSkill);
+            this->PlayerController.ApplySkill(slotInfo.AssignedSkill);
             });
 
         // skillBtn->SetSlot(currentSlot); 

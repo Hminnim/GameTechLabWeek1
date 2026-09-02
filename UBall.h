@@ -58,6 +58,7 @@ public:
     virtual void ApplyAirResistance(float DeltaTime, float AirResistance) override;
     virtual void SetEnableAngularMomentum(bool bEnable) override;
     virtual void ApplySkill(ESkillType Skill);
+    virtual void RemoveAllSkill();
     virtual void Update(float DeltaTime, std::vector<UPrimitive*>& others) override;
     void CollisionManage(float DeltaTime, std::vector<UPrimitive*>& others);
     void ReverseMagnetWhenMine(float DeltaTime, std::vector<UPrimitive*>& others);

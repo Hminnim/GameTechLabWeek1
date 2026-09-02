@@ -174,12 +174,12 @@ void UBall::ApplySkill(ESkillType skill)
              break;
 
         case ESkillType::Giant:
-            TargetRadius = Radius * 1.5f;
+            TargetRadius = UGameSetting::GetInstance().BallBaseRadius * 1.5f;
             isSizeScaling = true;
              break;
 
         case ESkillType::Heavier:
-            TargetMass = Mass * 1.5f;
+            TargetMass = UGameSetting::GetInstance().BallBaseRadius * 10.0f * 1.5f;
             isMassScaling = true;
             break;
 
@@ -192,6 +192,18 @@ void UBall::ApplySkill(ESkillType skill)
         default:
             break;
     }
+}
+
+void UBall::RemoveAllSkill()
+{
+    isFreezed = false;
+    bEnableFreeze = false;
+    bEnableWallCreate = false;
+    isSelfDestruct = false;
+    TargetRadius = UGameSetting::GetInstance().BallBaseRadius;
+    isSizeScaling = true;
+    TargetMass = UGameSetting::GetInstance().BallBaseRadius * 10.0f;
+    isMassScaling = true;
 }
 
 void UBall::WallCollision()
