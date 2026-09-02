@@ -100,8 +100,6 @@ void UGameManager::CheckTurnEnd(std::vector<UPrimitive*>& primitives)
 
 		USoundManager::GetInstance().PlaySound("change_turn");
 	}
-
-
 }
 
 void UGameManager::CheckGameOver(std::vector<UPrimitive*>& primitives)
