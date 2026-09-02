@@ -11,6 +11,7 @@
 #include "UButton.h"
 #include "UWall.h"
 #include "UEffectManager.h"
+#include "UFadeOverlay.h"
 
 void UScene::Render(URenderer& renderer)
 {
@@ -37,6 +38,7 @@ void UScene::Render(URenderer& renderer)
         ui->Render(renderer);
     for (auto* button : _buttons)
         button->Render(renderer);
+    m_fadeOverlay.Render(renderer);
 	renderer.EndSprite();
 }
 
@@ -436,4 +438,25 @@ void UGameOverScene::Render(URenderer& renderer)
 
 void UGameOverScene::Enter()
 {  
+}
+
+
+
+/////////////////
+// UDraftScene //
+/////////////////
+void DraftScene::Initialize()
+{
+}
+
+void DraftScene::Update(float deltaTime)
+{
+}
+
+void DraftScene::Render(URenderer& renderer)
+{
+}
+
+void DraftScene::Enter()
+{
 }

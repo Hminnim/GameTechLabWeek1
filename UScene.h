@@ -6,6 +6,7 @@
 #include "UMap.h"
 #include "UGameManager.h"
 #include "UPlayerController.h"
+#include "UFadeOverlay.h"
 
 class UPrimitive;
 
@@ -35,6 +36,8 @@ class UScene
         // 마우스 클릭 - 버튼 대응
         void HandleClick(float mouseX, float mouseY);
 
+        UFadeOverlay& GetFadeOverlay() { return m_fadeOverlay; }
+
     protected:
         std::vector<UPrimitive*> _primitives;
         std::vector<UPrimitive*> _pendingPrimitives;
@@ -43,6 +46,8 @@ class UScene
         std::vector<UButton*> _buttons;
         UUI* _background;
         UUI* _map;
+
+		UFadeOverlay m_fadeOverlay;
 
         std::unique_ptr<DirectX::SpriteBatch> m_spriteBatch;
 };
@@ -115,4 +120,19 @@ public:
 
 private:
     std::unordered_map<EGameResult, UUI*> _resultBackgrounds;
+};
+
+class DraftScene : public UScene
+{
+public:
+	void Initialize() override;
+
+	void Update(float deltaTime) override;
+	void Render(URenderer& renderer) override;
+
+	void Enter() override;
+
+private:
+	std::vector<USkillButton*> m_pickStageSkillButtons; // Init 에서 위치 계산해서 때려넣
+
 };
