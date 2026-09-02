@@ -177,8 +177,8 @@ void UBall::Update(float DeltaTime, std::vector<UPrimitive*>& others)
         }
     }
 
-    // 자폭 적용된 공 충돌시 삭제 + 주변에 척력 적용
-    if (this->bIsDestroyed)
+    // 자폭 적용된 공 삭제 전 주변에 척력 적용
+    if (this->bIsDestroyed && this->isSelfDestruct)
     {
         float currentMineForce = 300000.0f;
         for (auto* other : others)
