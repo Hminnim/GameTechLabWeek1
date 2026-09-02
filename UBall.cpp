@@ -17,13 +17,14 @@ UBall::UBall(const std::string& meshKey, const EPlayer owner, const FVector star
     // 기본 값
     Elastic = 1.0f;
     GNumber = 1.0f;
+    bIsDestroyed = false;
     bEnableAngularVelocity = false;
 
     // 꽉찬 구의 관성 모멘트
     Inertia = 0.4f * Mass * Radius * Radius;
 
     // 반지름, 반지름에 비례한 질량
-    Radius = 50.0f;
+    Radius = UGameSetting::GetInstance().BallBaseRadius;
     Mass = Radius * 10.0f;
 
     // 공 시작 위치
@@ -69,7 +70,17 @@ void UBall::Update(float DeltaTime, std::vector<UPrimitive*>& others)
     UBall::CollisionManage(DeltaTime, others);
 
     UBall::ReverseMagnetWhenMine(DeltaTime, others);
+
+    // 벽에 부딪칠때 공 파괴 (임시)
+    if ((Location.x < Radius) || (Location.x > ScreendWidth - Radius) || (Location.y < Radius) || (Location.y > ScreenHeight - Radius))
+    {
+        this->bIsDestroyed = true;
+    }
 }
+
+int ScreendWidth = UGameSetting::GetInstance().ScreendWidth;
+int ScreenHeight = UGameSetting::GetInstance().ScreenHeight;
+
     
 
 void UBall::ApplyGravity(float DeltaTime)

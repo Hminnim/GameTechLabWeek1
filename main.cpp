@@ -172,13 +172,17 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLine
                 bIsDragging = true;
                 SelectedBall->Velocity = FVector(0, 0, 0);
             }
-            if (bIsDragging && UInputManager::GetInstance().IsKeyUp(VK_RBUTTON))
+
+            // 3. 드래그 중이면 매 프레임 화살표 update 하다가, 마우스 클릭 떼면 발사
+            if (bIsDragging && SelectedBall != nullptr)
             {
-                if (SelectedBall != nullptr)
+                POINT mouse = UInputManager::GetInstance().GetMousePos();
+                FVector launchVec(SelectedBall->Location.x - (float)mouse.x, SelectedBall->Location.y - (float)mouse.y, 0.0f);
+                float pullDistance = launchVec.Length();
+                
+                if (UInputManager::GetInstance().IsKeyUp(VK_RBUTTON))
                 {
-                    POINT mouse = UInputManager::GetInstance().GetMousePos();
-                    FVector launchVec(SelectedBall->Location.x - (float)mouse.x, SelectedBall->Location.y - (float)mouse.y, 0.0f);
-                    float pullDistance = launchVec.Length();
+                    // 발사 처리
                     if (pullDistance > 5.0f)
                     {
                         float launchPower = 8.0f;
@@ -196,16 +200,54 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLine
                             "Resources/shooting.png",
                             DirectX::XMFLOAT2(SelectedBall->Location.x, SelectedBall->Location.y),
                             0.25f,
-                            1.5f,
+                            DirectX::XMFLOAT2(2.0f, 2.0f),
                             6,
                             false,
                             launchAngle
                         );
                     }
+
                     SelectedBall = nullptr;
                     UGameManager::GetInstance().CurrentTurnState = ETurnState::BallMoving;
+                    bIsDragging = false;
+                    UEffectManager::GetInstance().ClearArrow(); // 발사 완료 및 화살 삭제
                 }
-                bIsDragging = false;
+                else if (pullDistance > 5.0f)
+                {
+                    // 드래그 중
+                    float launchAngle = atan2f(launchVec.y, launchVec.x);
+                    std::string arrowTexture = (UGameManager::GetInstance().CurrentPlayerTurn == EPlayer::Red)
+                                                ? "Resources/Red_arrow.png"
+                                                : "Resources/Blue_arrow.png";
+
+
+                    // 조준 방향
+                    FVector aimDir = launchVec / pullDistance;
+                    DirectX::XMFLOAT2 arrowPos =
+                    {
+                        SelectedBall->Location.x + aimDir.x * SelectedBall->Radius,
+                        SelectedBall->Location.y + aimDir.y * SelectedBall->Radius
+                    };
+                    
+                    // 당긴 거리에 비례하여 화살표 크기 조절
+                    float arrowScale = pullDistance / 200.0f;
+                    float minScale = 0.5f;
+                    float maxScale = 2.5f;
+                    arrowScale = std::clamp(arrowScale, minScale, maxScale);
+                    
+                    UEffectManager::GetInstance().DrawArrow(
+                        arrowTexture,
+                        arrowPos,
+                        launchAngle,
+                        1.0f,   // loop duration 
+                        DirectX::XMFLOAT2(arrowScale, 1.0f),
+                        30      // frame count
+                    );
+                }
+            }
+            else
+            {
+                UEffectManager::GetInstance().ClearArrow();
             }
         }
         
@@ -312,7 +354,7 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLine
                         "Resources/Red_turn.png", // source path
                         { UGameSetting::GetInstance().ScreendWidth * 0.5f, UGameSetting::GetInstance().ScreenHeight * 0.5f }, // size
                         1.0f, // duration
-                        1.0f, // scale
+                        DirectX::XMFLOAT2(1.0f, 1.0f), // scale
                         1     // frame count
                     );
                 }
@@ -329,7 +371,7 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLine
                         "Resources/Blue_turn.png", // source path
                         { UGameSetting::GetInstance().ScreendWidth * 0.5f, UGameSetting::GetInstance().ScreenHeight * 0.5f }, // size
                         1.0f, // duration
-                        1.0f, // scale
+                        DirectX::XMFLOAT2(1.0f, 1.0f), // scale
                         1     // frame count    
                     );
                 }
