@@ -253,7 +253,7 @@ void UInGameScene::Enter()
     float MapWidth = ScreenWidth - (MapMarginX * 2);
     float MapHeight = ScreenHeight - (MapMarginY * 2);
 
-    int NumBallsPerTeam = 3;
+    int NumBallsPerTeam = UGameSetting::GetInstance().BallsPerTeam;
 
     float RedStartX = MapMarginX + (MapWidth * 0.15f);
     float BlueStartX = MapMarginX + (MapWidth * 0.85f);

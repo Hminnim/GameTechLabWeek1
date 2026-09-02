@@ -23,7 +23,7 @@ UBall::UBall(const std::string& meshKey, const EPlayer owner, const FVector star
     Inertia = 0.4f * Mass * Radius * Radius;
 
     // 반지름, 반지름에 비례한 질량
-    Radius = 50.0f;
+    Radius = UGameSetting::GetInstance().BallBaseRadius;
     Mass = Radius * 10.0f;
 
     // 공 시작 위치

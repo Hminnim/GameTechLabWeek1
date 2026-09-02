@@ -2,6 +2,7 @@
 #include "UGameManager.h"
 #include "UBall.h"
 #include "USceneManager.h"
+#include "UGameSetting.h"
 
 UGameManager::UGameManager()
 {
@@ -81,9 +82,9 @@ void UGameManager::CheckTurnEnd(std::vector<UPrimitive*>& primitives)
 				ball->isFreezed = false;
 				ball->bEnableFreeze = false;
 				ball->isSelfDestruct = false;
-				ball->TargetRadius = 50.0f;
+				ball->TargetRadius = UGameSetting::GetInstance().BallBaseRadius;
 				ball->isSizeScaling = true;
-				ball->TargetMass = 50.0f*10.0f;
+				ball->TargetMass = UGameSetting::GetInstance().BallBaseRadius * 10.0f;
 				ball->isMassScaling = true;
 			}
 		}
