@@ -71,18 +71,16 @@ void UBall::Update(float DeltaTime, std::vector<UPrimitive*>& others)
 
     UBall::ReverseMagnetWhenMine(DeltaTime, others);
 
+    int ScreendWidth = UGameSetting::GetInstance().ScreendWidth;
+    int ScreenHeight = UGameSetting::GetInstance().ScreenHeight;
+
     // 벽에 부딪칠때 공 파괴 (임시)
     if ((Location.x < Radius) || (Location.x > ScreendWidth - Radius) || (Location.y < Radius) || (Location.y > ScreenHeight - Radius))
     {
         this->bIsDestroyed = true;
     }
 }
-
-int ScreendWidth = UGameSetting::GetInstance().ScreendWidth;
-int ScreenHeight = UGameSetting::GetInstance().ScreenHeight;
-
     
-
 void UBall::ApplyGravity(float DeltaTime)
 {
     Velocity.y += 9800.0f * GNumber * DeltaTime;

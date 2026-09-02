@@ -161,14 +161,7 @@ void UInGameScene::Initialize()
     int NumButtons = 5;
     float BtnYInterval = ScreenHeight / (NumButtons + 1);
     // 화면 크기에 따른 보정 ----------------------------------------------
-    for (const FVector& spawnPos : RedSpawnPoints)
-    {
-        AddPrimitive(new UBall("sphere", EPlayer::Red, spawnPos));
-    }
-    for (const FVector& spawnPos : BlueSpawnPoints)
-    {
-        AddPrimitive(new UBall("sphere", EPlayer::Blue, spawnPos));
-    }
+
     // Wall 테스트용
     AddPrimitive(new UWall("square", FVector(1300.0f, 600.0f, 0.5f), 75.0f));
     UMap* map = new UMap();
