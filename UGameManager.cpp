@@ -88,7 +88,7 @@ void UGameManager::CheckTurnEnd(std::vector<UPrimitive*>& primitives)
 
 void UGameManager::CheckGameOver(std::vector<UPrimitive*>& primitives)
 {
-	if (CurrentTurnState != ETurnState::GameOver)
+	if (CurrentTurnState == ETurnState::GameOver)
 	{
 		return;
 	}
