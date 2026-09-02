@@ -161,33 +161,35 @@ void UBall::SetEnableAngularMomentum(bool bEnable)
     bEnableAngularVelocity = bEnable;
 }
 
-void UBall::ApplySkill(USkillType skill)
+void UBall::ApplySkill(ESkillType skill)
 {
     switch (skill)
     {
-        case USkillType::Mine:
+        case ESkillType::Mine:
              isSelfDestruct = true;
              break;
 
-        case USkillType::Freeze:
+        case ESkillType::Freeze:
              bEnableFreeze = true;
              break;
 
-        case USkillType::SizeScaling:
+        case ESkillType::Giant:
             TargetRadius = Radius * 1.5f;
             isSizeScaling = true;
              break;
 
-        case USkillType::MassScaling:
+        case ESkillType::Heavier:
             TargetMass = Mass * 1.5f;
             isMassScaling = true;
             break;
 
-        case USkillType::ReverseMagnet:
+        case ESkillType::Repulse:
             isMagnetActivated = true;
             break;
-        case USkillType::WallCreate:
+        case ESkillType::WallCreate:
             bEnableWallCreate = true;
+            break;
+        default:
             break;
     }
 }
