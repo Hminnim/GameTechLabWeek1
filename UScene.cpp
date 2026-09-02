@@ -39,32 +39,6 @@ void UScene::HandleClick(float mouseX, float mouseY)
 
 void UScene::Update(float Deltatime)
 {
-    // 공 판정 업데이트
-    for (auto* primitive : _primitives)
-    {
-        if (primitive != nullptr && !primitive->bIsDestroyed)
-        {
-            primitive->Update(Deltatime, _primitives);
-        }        
-    }
-
-    // 공 파괴 업데이트
-    for (auto it = _primitives.begin(); it != _primitives.end();)
-    {
-        if ((*it)->bIsDestroyed)
-        {
-            delete* it;
-            it = _primitives.erase(it);         
-        }
-        else
-        {
-            ++it;
-        }
-    }
-
-	// GameManager 업데이트
-    UGameManager::GetInstance().Update(_primitives);
-
     // UI 업데이트
     for (auto* ui : _uis)
     {
