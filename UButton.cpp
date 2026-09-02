@@ -5,6 +5,7 @@
 #include "UResourceManager.h"
 #include "UGameManager.h"
 #include "UGameSetting.h"
+#include "USoundManager.h"
 #include "UEffectManager.h"
 
 bool UButton::HitTest(float mouseX, float mouseY) const
@@ -17,6 +18,7 @@ bool UButton::HitTest(float mouseX, float mouseY) const
 
 void UButton::OnClick()
 {
+    PlayClickSound();
     if (_onClick)
     {
         _onClick();
@@ -32,13 +34,11 @@ void UButton::Render(URenderer& renderer)
 // USkillButton //
 //////////////////
 void USkillButton::OnClick()
-{
-    UButton::OnClick();
-
+{        
 	if (_state == ESkillButtonState::Normal)
 	{
-		_state = ESkillButtonState::Selected;
-		UGameManager::GetInstance().m_currentSelectedSkill = _skillType;
+        UButton::OnClick();
+		_state = ESkillButtonState::Selected;        
 	}
 }
 
@@ -47,13 +47,13 @@ void USkillButton::Update(float deltaTime)
 	if (UGameManager::GetInstance().m_usedSkills[UGameManager::GetInstance().CurrentPlayerTurn][_skillType])
 	{
 		_state = ESkillButtonState::Used;
-        UEffectManager::GetInstance().ClearAura(this); // Effect 해제
+        UEffectManager::GetInstance().ClearAura(this);   // Used면 effect 해제
 
 	}
 	else if (_state == ESkillButtonState::Selected && UGameManager::GetInstance().m_currentSelectedSkill != _skillType)
 	{
 		_state = ESkillButtonState::Normal;
-        UEffectManager::GetInstance().ClearAura(this); // Effect 해제
+        UEffectManager::GetInstance().ClearAura(this);   // Selected -> Normal이면 effect 해제
 
 	}
 
@@ -61,6 +61,9 @@ void USkillButton::Update(float deltaTime)
     bool bIsUsed = UGameManager::GetInstance().m_usedSkills[UGameManager::GetInstance().CurrentPlayerTurn][_skillType];
     if (bIsUsed)
     {
+        if (_state != ESkillButtonState::Used)
+            UEffectManager::GetInstance().ClearAura(this);   // Selected -> Used면 effect 해제
+
         _state = ESkillButtonState::Used;
     }
     else
@@ -71,6 +74,7 @@ void USkillButton::Update(float deltaTime)
         }
         else if (_state == ESkillButtonState::Selected && UGameManager::GetInstance().m_currentSelectedSkill != _skillType)
         {
+            UEffectManager::GetInstance().ClearAura(this);   // Selected -> Normal이면 effect 해제
             _state = ESkillButtonState::Normal;
         }
     }
@@ -92,13 +96,12 @@ void USkillButton::Render(URenderer& renderer)
         break;
     case ESkillButtonState::Selected:
         UUI::Render(renderer);
-        
-        // @Effect
+
         UEffectManager::GetInstance().DrawAura(
-            this,  
+            this,
             "Resources/item_aura.png",
-            DirectX::XMFLOAT2(_x + _width * 0.5f, _y + _height * 0.5f),  // 버튼 중앙
-            3.0f,
+            DirectX::XMFLOAT2(_x + _width * 0.5f, _y + _height * 0.5f),
+            1.0f,
             DirectX::XMFLOAT2(1.0f, 1.0f),
             16
         );

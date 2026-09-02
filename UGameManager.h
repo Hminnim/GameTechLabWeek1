@@ -24,7 +24,8 @@ enum class ESkillType
 	Heavier,
 	Mine,
 	Repulse,
-	WallCreate
+	WallCreate,
+	Shotgun
 };
 
 enum class EGameResult
@@ -55,14 +56,17 @@ public:
 	ESkillType m_currentSelectedSkill;
 	std::map<EPlayer, std::map<ESkillType, bool>> m_usedSkills;
 	EGameResult CurrentGameResult = EGameResult::None;
+	float m_frozenTimer = 0.0f;
 
-	void Update(std::vector<UPrimitive*>& primitives);
+	void Update(std::vector<UPrimitive*>& primitives,float Deltatime);
 	void InitGame();
 	bool CanSelectBall(UBall* TargetBall);
 	void CheckTurnEnd(std::vector<UPrimitive*>& primitives);
 	void CheckGameOver(std::vector<UPrimitive*>& primitives);
+	void CheckFrozenTurnSkip(std::vector<UPrimitive*>& primitives,float deltaTime);
 
 	void SetCurrentSelectedSkill(ESkillType skill) { m_currentSelectedSkill = skill; }
 	void ResetSkiils() { m_usedSkills.clear(); }
 	void ConsumeSkill(EPlayer player, ESkillType skill) { m_usedSkills[player][skill] = true; }
+	void ConsumeCurrentSkill() { m_usedSkills[CurrentPlayerTurn][m_currentSelectedSkill] = true; }
 };

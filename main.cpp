@@ -1,4 +1,4 @@
-﻿#pragma once
+#pragma once
 
 #include "pch.h"
 
@@ -22,6 +22,8 @@ int ListCapacity = 0;
 
 static UBall* SelectedBall = nullptr;
 static bool bIsDragging = false;
+
+static bool g_bHasPlayedChargeSound = false;
 
 int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLine, int nShowCmd){
     // SoundManager 초기화 및 재생할 음원 파일 설정
@@ -144,7 +146,7 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLine
         renderer.Prepare();
         renderer.PrepareShader();
 
-		USceneManager::GetInstance().Render(renderer);
+		    USceneManager::GetInstance().Render(renderer);
 
         //if (UGameManager::GetInstance().CurrentTurnState == ETurnState::WaitInput)
         //{
@@ -294,14 +296,14 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLine
             ImGui::TextColored(ImVec4(0, 1, 0, 1), "[ Ball Selected! ]");
             ImGui::Text("Radius: %.1f | Mass: %.1f", SelectedBall->Radius, SelectedBall->Mass);
             ImGui::Separator();
-            // 6가지 코어 스킬 발동 버튼!
             if (ImGui::Button("1. 자폭 (Mine)"))       SelectedBall->ApplySkill(ESkillType::Mine);
             if (ImGui::Button("2. 빙결 (Freeze)"))     SelectedBall->ApplySkill(ESkillType::Freeze);
             if (ImGui::Button("3. 거대화 (SizeUp)"))   SelectedBall->ApplySkill(ESkillType::Giant);
             if (ImGui::Button("4. 질량증가 (MassUp)")) SelectedBall->ApplySkill(ESkillType::Heavier);
             if (ImGui::Button("5. 척력파 (Magnet)"))   SelectedBall->ApplySkill(ESkillType::Repulse);
             if (ImGui::Button("6. 벽 생성 (Wall)"))   SelectedBall->ApplySkill(ESkillType::WallCreate);
-            if (ImGui::Button("선택 해제 (Deselect)")) SelectedBall = nullptr;            
+            if (ImGui::Button("7. 산탄 (Shotgun)"))   SelectedBall->ApplySkill(ESkillType::Shotgun);
+            if (ImGui::Button("선택 해제 (Deselect)"))
             {
                 UEffectManager::GetInstance().ClearAura(SelectedBall); // Aura Effect 해제
                 SelectedBall = nullptr;

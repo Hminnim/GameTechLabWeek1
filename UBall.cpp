@@ -10,6 +10,9 @@
 #include "USoundManager.h"
 
 CollisionManager CollisionMan;
+FVector lastspawnpos;
+FVector ShotgunstartPos;
+
 
 UBall::UBall(const std::string& meshKey, const EPlayer owner, const FVector startLocation)
 {
@@ -81,6 +84,7 @@ void UBall::Update(float DeltaTime, std::vector<UPrimitive*>& others)
     if ((Location.x < Radius) || (Location.x > ScreendWidth - Radius) || (Location.y < Radius) || (Location.y > ScreenHeight - Radius))
     {
         this->bIsDestroyed = true;
+		USoundManager::GetInstance().PlaySound("out");
     }
 }
     
@@ -174,13 +178,15 @@ void UBall::ApplySkill(ESkillType skill)
              break;
 
         case ESkillType::Giant:
-            TargetRadius = Radius * 1.5f;
+            TargetRadius = UGameSetting::GetInstance().BallBaseRadius * 1.5f;
             isSizeScaling = true;
-             break;
+			USoundManager::GetInstance().PlaySound("sizeup");
+            break;
 
         case ESkillType::Heavier:
-            TargetMass = Mass * 1.5f;
+            TargetMass = UGameSetting::GetInstance().BallBaseRadius * 10.0f * 1.5f;
             isMassScaling = true;
+			USoundManager::GetInstance().PlaySound("sizeup");
             break;
 
         case ESkillType::Repulse:
@@ -189,9 +195,26 @@ void UBall::ApplySkill(ESkillType skill)
         case ESkillType::WallCreate:
             bEnableWallCreate = true;
             break;
+        case ESkillType::Shotgun:
+            bEnableShotgun = true;
+            ShotgunstartPos = Location;
+            break;
         default:
             break;
     }
+}
+
+void UBall::RemoveAllSkill()
+{
+    isFreezed = false;
+    bEnableFreeze = false;
+    bEnableWallCreate = false;
+    isSelfDestruct = false;
+    TargetRadius = UGameSetting::GetInstance().BallBaseRadius;
+    isSizeScaling = true;
+    TargetMass = UGameSetting::GetInstance().BallBaseRadius * 10.0f;
+    isMassScaling = true;
+    bEnableShotgun = false;
 }
 
 void UBall::WallCollision()
@@ -263,7 +286,6 @@ void UBall::SizeMassScaling(float DeltaTime)
         }
     }
 }
-FVector lastspawnpos;
 
 void UBall::FrictionFloor(float DeltaTime, std::vector<UPrimitive*>& others)
 {
@@ -293,7 +315,7 @@ void UBall::FrictionFloor(float DeltaTime, std::vector<UPrimitive*>& others)
             DirectX::XMFLOAT2(this->Location.x, this->Location.y),
             1.0f,
             DirectX::XMFLOAT2(0.5f, 0.5f),
-            10
+            8
         );
     }
 
@@ -320,6 +342,31 @@ void UBall::FrictionFloor(float DeltaTime, std::vector<UPrimitive*>& others)
         }
     }
 
+
+    if (bEnableShotgun)
+    {       
+        float dx = (Location.x - ShotgunstartPos.x);
+        float dy = (Location.y - ShotgunstartPos.y);
+        float dist = sqrtf(dx * dx + dy * dy);
+        
+        if (dist >= 150.0f) {
+            float angle = atan2f(Velocity.y, Velocity.x);
+            FVector leftdir = FVector(cosf(angle - 0.20f), sin(angle - 0.20f), 0.0f);
+            UBall* leftBall = new UBall("sphere", this->Owner, Location);
+            leftBall->Velocity = leftdir * Velocity.Length();
+            leftBall->isShotgunbullet = true;
+            FVector rightdir = FVector(cosf(angle + 0.20f), sin(angle + 0.20f), 0.0f);
+            UBall* rightBall = new UBall("sphere", this->Owner, Location);
+            rightBall->Velocity = rightdir * Velocity.Length();
+            rightBall->isShotgunbullet = true;
+            UScene* currentScene = USceneManager::GetInstance().GetCurrentScene();
+            currentScene->AddPrimitive(leftBall);
+            currentScene->AddPrimitive(rightBall);
+            bEnableShotgun = false;
+        }
+    }
+    
+
     //속도에 따른 위치 이동
     Location += Velocity * DeltaTime;
 
@@ -332,7 +379,7 @@ void UBall::FrictionFloor(float DeltaTime, std::vector<UPrimitive*>& others)
             // 척력 발생시 주위 밀어냄
             if (isMagnetActivated && !AlreadyActiveMag)
             {
-                float currentMagnetForce = 500000.0f;
+                float currentMagnetForce = 300000.0f;
                 for (auto* other : others)
                 {
                     if (other != this)
@@ -344,6 +391,7 @@ void UBall::FrictionFloor(float DeltaTime, std::vector<UPrimitive*>& others)
                     }
                 }
                 AlreadyActiveMag = true;
+				USoundManager::GetInstance().PlaySound("repulse");
             }
         }
         else Velocity += NormalizeFricVec * FricVal * DeltaTime;
@@ -368,7 +416,7 @@ void UBall::ReverseMagnetWhenMine(float DeltaTime, std::vector<UPrimitive*>& oth
             false,
             0.0f
         );
-        USoundManager::GetInstance().PlaySound("hit");
+        USoundManager::GetInstance().PlaySound("mine");
         float currentMineForce = 500000.0f;
         for (auto* other : others)
         {
@@ -401,8 +449,4 @@ void UBall::CollisionManage(float DeltaTime, std::vector<UPrimitive*>& others)
             }
         }
     }
-}
-
-void UBall::WallCreate()
-{
 }

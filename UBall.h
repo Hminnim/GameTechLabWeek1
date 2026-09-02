@@ -4,16 +4,6 @@
 #include "CollisionManager.h"
 #include "UGameManager.h"
 
-//enum class USkillType
-//{
-//    ReverseMagnet,
-//    Mine,
-//    Freeze,
-//    SizeScaling,
-//    MassScaling,
-//    WallCreate
-//};
-
 class UBall : public UPrimitive
 {
 public:
@@ -25,9 +15,12 @@ public:
 	ID3D11Buffer*   m_vertexBuffer;
 	UINT            m_numVertices;
 
+    bool bEnableShotgun = false;
     bool bEnableFreeze = false;
     bool bEnableWallCreate = false;
     bool isFreezed = false;
+    bool isShotgunbullet = false;
+    FVector ShotgunstartPos;
     bool isSelfDestruct = false;
     bool isSizeScaling = false;
     bool isMassScaling = false;
@@ -58,6 +51,7 @@ public:
     virtual void ApplyAirResistance(float DeltaTime, float AirResistance) override;
     virtual void SetEnableAngularMomentum(bool bEnable) override;
     virtual void ApplySkill(ESkillType Skill);
+    virtual void RemoveAllSkill();
     virtual void Update(float DeltaTime, std::vector<UPrimitive*>& others) override;
     void CollisionManage(float DeltaTime, std::vector<UPrimitive*>& others);
     void ReverseMagnetWhenMine(float DeltaTime, std::vector<UPrimitive*>& others);

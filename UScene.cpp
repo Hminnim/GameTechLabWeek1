@@ -112,7 +112,7 @@ void UTitleScene::Initialize()
     exitbtn->Init("Resources/button_exit.png", ExitBtnX, ButtonY, ButtonWidth, ButtonHeight);
     AddUI(exitbtn);
     exitbtn->SetOnClick([]() {
-        USceneManager::GetInstance().RequestChangeScene("GameOver");
+        PostQuitMessage(0);
         });
 
     
@@ -224,7 +224,7 @@ void UInGameScene::Initialize()
         skillBtn->SetUsedTexture(usedTex);
         skillBtn->SetSkillType(slotInfo.AssignedSkill);
         skillBtn->SetOnClick([this,slotInfo]() {            
-            this->PlayerController.UseSkill(slotInfo.AssignedSkill);
+            this->PlayerController.ApplySkill(slotInfo.AssignedSkill);
             });
 
         // skillBtn->SetSlot(currentSlot); 
@@ -258,7 +258,7 @@ void UInGameScene::Update(float deltaTime)
         btn->Update(deltaTime);
     }
 
-    if (UInputManager::GetInstance().IsKeyDown(VK_LBUTTON)) {
+    if (UInputManager::GetInstance().IsKeyDown(VK_LBUTTON) && PlayerController.bHasSelectedBall()) {
         LONG mouseX = UInputManager::GetInstance().GetMousePos().x;
         LONG mouseY = UInputManager::GetInstance().GetMousePos().y;
 
@@ -309,7 +309,7 @@ void UInGameScene::Update(float deltaTime)
         }
     }
 
-    UGameManager::GetInstance().Update(_primitives);
+    UGameManager::GetInstance().Update(_primitives,deltaTime);
 }
 
 void UInGameScene::Render(URenderer& renderer)
@@ -416,7 +416,7 @@ void UGameOverScene::Initialize()
     temp3->Init("Resources/button_exit.png", ExitBtnX, ButtonY, ButtonWidth, ButtonHeight);
     AddUI(temp3);
     temp3->SetOnClick([]() {
-        USceneManager::GetInstance().RequestChangeScene("GameOver");
+        PostQuitMessage(0);
         });
 }
 

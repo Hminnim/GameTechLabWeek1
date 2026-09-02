@@ -2,6 +2,9 @@
 #include "UPlayerController.h"
 #include "UInputManager.h"
 #include "UEffectManager.h"
+#include "USoundManager.h"
+
+bool g_bHasPlayedChargeSound = false;
 
 void UPlayerController::Update(std::vector<UPrimitive*>& primitives)
 {
@@ -23,8 +26,12 @@ void UPlayerController::Update(std::vector<UPrimitive*>& primitives)
                 float dy = ball->Location.y - (float)mouse.y;
                 if (dx * dx + dy * dy < ball->Radius * ball->Radius)
                 {
-                    if (ball != nullptr)
+                    if (SelectedBall != nullptr)
+                    {
                         UEffectManager::GetInstance().ClearAura(SelectedBall);   // 이전 Ball Aura Effect 삭제
+                        SelectedBall->RemoveAllSkill(); // 이전 선택한 Ball의 스킬 해제
+                        UGameManager::GetInstance().m_currentSelectedSkill = ESkillType::None; // 스킬 선택도 해제
+                    }                        
 
                     SelectedBall = ball; // 선택만!
 
@@ -38,7 +45,7 @@ void UPlayerController::Update(std::vector<UPrimitive*>& primitives)
                         16
                     );
                     // OutputDebugStringA("DrawAura Finished\n");  // DEBUG
-
+                    USoundManager::GetInstance().PlaySound("select_stone");
                     break;
                 }
             }
@@ -58,10 +65,15 @@ void UPlayerController::Update(std::vector<UPrimitive*>& primitives)
         POINT mouse = UInputManager::GetInstance().GetMousePos();
         FVector launchVec(SelectedBall->Location.x - (float)mouse.x, SelectedBall->Location.y - (float)mouse.y, 0.0f);
         float pullDistance = launchVec.Length();
-
+        if (!g_bHasPlayedChargeSound)
+        {
+            USoundManager::GetInstance().PlaySound("charge");
+            g_bHasPlayedChargeSound = true;
+        }
         if (UInputManager::GetInstance().IsKeyUp(VK_RBUTTON))
         {
             // 발사 처리
+            g_bHasPlayedChargeSound = false;
             if (pullDistance > 5.0f)
             {
                 float launchPower = 8.0f;
@@ -84,13 +96,20 @@ void UPlayerController::Update(std::vector<UPrimitive*>& primitives)
                     false,
                     launchAngle
                 );
+				USoundManager::GetInstance().PlaySound("shoot");
             }
+                        
+            UGameManager::GetInstance().CurrentTurnState = ETurnState::BallMoving;
+            // 스킬 사용 판정
+            UGameManager::GetInstance().ConsumeCurrentSkill(); // 현재 스킬 사용
+            UGameManager::GetInstance().m_currentSelectedSkill = ESkillType::None; // 현재 스킬 선택 해제
 
             UEffectManager::GetInstance().ClearAura(SelectedBall);
-            SelectedBall = nullptr;
-            UGameManager::GetInstance().CurrentTurnState = ETurnState::BallMoving;
-            bIsDragging = false;
             UEffectManager::GetInstance().ClearArrow(); // 발사 완료 및 화살 삭제
+
+            SelectedBall = nullptr;            
+            bIsDragging = false;
+            
         }
         else if (pullDistance > 5.0f)
         {
@@ -131,10 +150,28 @@ void UPlayerController::Update(std::vector<UPrimitive*>& primitives)
     }
 }
 
-void UPlayerController::UseSkill(ESkillType skillType)
+void UPlayerController::ApplySkill(ESkillType skillType)
 {    
-    if (SelectedBall)
+    if (SelectedBall == nullptr)
     {
-        SelectedBall->ApplySkill(skillType);
+        return;
     }
+
+    EPlayer currentTurn = UGameManager::GetInstance().CurrentPlayerTurn;
+
+    // 이미 사용한 스킬
+    if (UGameManager::GetInstance().m_usedSkills[currentTurn][skillType])
+    {
+        return;
+    }
+
+    // 이미 스킬이 선택 되어 있을 때
+    if (UGameManager::GetInstance().m_currentSelectedSkill != ESkillType::None)
+    {
+        SelectedBall->RemoveAllSkill();
+    }
+
+    // 스킬 적용
+    SelectedBall->ApplySkill(skillType);
+    UGameManager::GetInstance().SetCurrentSelectedSkill(skillType);
 }
