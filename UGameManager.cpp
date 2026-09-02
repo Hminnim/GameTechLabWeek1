@@ -1,6 +1,7 @@
 #include "pch.h"
 #include "UGameManager.h"
 #include "UBall.h"
+#include "USceneManager.h"
 
 UGameManager::UGameManager()
 {
@@ -12,6 +13,12 @@ UGameManager::~UGameManager()
 
 void UGameManager::Update(std::vector<UPrimitive*>& primitives)
 {
+	// InGame 씬에서만 필요한 게임 판정
+	if (USceneManager::GetInstance().GetCurrentSceneName() != "InGame")
+	{
+		return;
+	}
+
 	UGameManager::CheckTurnEnd(primitives);
 	UGameManager::CheckGameOver(primitives);
 }
@@ -20,11 +27,12 @@ void UGameManager::InitGame()
 {
 	CurrentPlayerTurn = EPlayer::Red;
 	CurrentTurnState = ETurnState::WaitInput;
+	CurrentGameResult = EGameResult::None;
 }
 
 bool UGameManager::CanSelectBall(UBall* TargetBall)
 {
-	if (CurrentTurnState != ETurnState::WaitInput)
+	if (CurrentTurnState != ETurnState::WaitInput && TargetBall == nullptr)
 	{
 		return false;
 	}
@@ -87,19 +95,53 @@ void UGameManager::CheckTurnEnd(std::vector<UPrimitive*>& primitives)
 
 void UGameManager::CheckGameOver(std::vector<UPrimitive*>& primitives)
 {
+	if (CurrentTurnState != ETurnState::WaitInput)
+	{
+		return;
+	}
+
 	int RedBallCount = 0;
 	int BlueBallCount = 0;
 
 	for (auto* primitive : primitives)
 	{
-		if (primitive->Owner == EPlayer::Red)
+		if (UBall* ball = dynamic_cast<UBall*>(primitive))
 		{
-			RedBallCount += 1;
-		}
-		if (primitive->Owner == EPlayer::Blue)
-		{
-			BlueBallCount += 1;
-		}
+			if (ball->Owner == EPlayer::Red)
+			{
+				RedBallCount += 1;				
+			}
+			else if (ball->Owner == EPlayer::Blue)
+			{
+				BlueBallCount += 1;				
+			}
+		}		
+	}
+
+	// Blue 승
+	if (RedBallCount == 0 && BlueBallCount > 0)
+	{
+		OutputDebugStringA("===== BLUE WIN! =====\n");
+		CurrentTurnState = ETurnState::GameOver;
+		CurrentGameResult = EGameResult::BlueWin;
+	}
+	// Red 승
+	else if (RedBallCount > 0 && BlueBallCount == 0)
+	{
+		OutputDebugStringA("===== RED WIN! =====\n");
+		CurrentTurnState = ETurnState::GameOver;
+		CurrentGameResult = EGameResult::RedWin;
+	}
+	// 무승부
+	else if (RedBallCount == 0 && BlueBallCount == 0)
+	{
+		OutputDebugStringA("===== DRAW! =====\n");
+		CurrentTurnState = ETurnState::GameOver;		
+		CurrentGameResult = EGameResult::Draw;
+	}
+
+	if (CurrentGameResult != EGameResult::None)
+	{
+		USceneManager::GetInstance().ChangeScene("GameOver");
 	}
 }
-

@@ -4,7 +4,7 @@
 #include "UUI.h"
 #include "UButton.h"
 #include "UMap.h"
-
+#include "UGameManager.h"
 
 class UPrimitive;
 
@@ -34,8 +34,10 @@ class UScene
         // 마우스 클릭 - 버튼 대응
         void HandleClick(float mouseX, float mouseY);
 
-    private:
+    protected:
         std::vector<UPrimitive*> _primitives;
+
+    private:     
         std::vector<UUI*> _uis;
         std::vector<UButton*> _buttons;
         UUI* _background;
@@ -60,6 +62,8 @@ public:
 
 	void Update(float deltaTime) override;
 	void Render(URenderer& renderer) override;
+
+    void Enter() override;
 };
 
 class UGameOverScene : public UScene
@@ -69,4 +73,14 @@ public:
 
 	void Update(float deltaTime) override;
 	void Render(URenderer& renderer) override;
+
+    virtual void SetBackground(UUI* backgroundRedWin, UUI* backgroundBlueWin, UUI* backgroundDraw) {
+        _resultBackgrounds[EGameResult::RedWin] = backgroundRedWin, _resultBackgrounds[EGameResult::BlueWin] = backgroundBlueWin
+            , _resultBackgrounds[EGameResult::Draw] = backgroundDraw;
+    }
+
+    void Enter() override;
+
+private:
+    std::unordered_map<EGameResult, UUI*> _resultBackgrounds;
 };
