@@ -23,6 +23,8 @@ int ListCapacity = 0;
 static UBall* SelectedBall = nullptr;
 static bool bIsDragging = false;
 
+static bool g_bHasPlayedChargeSound = false;
+
 int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLine, int nShowCmd){
     // SoundManager 초기화 및 재생할 음원 파일 설정
     USoundManager::GetInstance().Init();
@@ -144,7 +146,7 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLine
         renderer.Prepare();
         renderer.PrepareShader();
 
-		USceneManager::GetInstance().Render(renderer);
+		    USceneManager::GetInstance().Render(renderer);
 
         //if (UGameManager::GetInstance().CurrentTurnState == ETurnState::WaitInput)
         //{

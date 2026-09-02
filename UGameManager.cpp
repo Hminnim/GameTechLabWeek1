@@ -4,6 +4,7 @@
 #include "UWall.h"
 #include "USceneManager.h"
 #include "UGameSetting.h"
+#include "USoundManager.h"
 #include "UEffectManager.h"
 
 UGameManager::UGameManager()
@@ -103,6 +104,8 @@ void UGameManager::CheckTurnEnd(std::vector<UPrimitive*>& primitives)
 
 		CurrentPlayerTurn = (CurrentPlayerTurn == EPlayer::Red ? EPlayer::Blue : EPlayer::Red);
 		CurrentTurnState = ETurnState::WaitInput;
+
+		USoundManager::GetInstance().PlaySound("change_turn");
 	}
 
 
@@ -139,6 +142,7 @@ void UGameManager::CheckGameOver(std::vector<UPrimitive*>& primitives)
 		OutputDebugStringA("===== BLUE WIN! =====\n");
 		CurrentTurnState = ETurnState::GameOver;
 		CurrentGameResult = EGameResult::BlueWin;
+		USoundManager::GetInstance().PlaySound("win");
 	}
 	// Red 승
 	else if (RedBallCount > 0 && BlueBallCount == 0)
@@ -146,6 +150,7 @@ void UGameManager::CheckGameOver(std::vector<UPrimitive*>& primitives)
 		OutputDebugStringA("===== RED WIN! =====\n");
 		CurrentTurnState = ETurnState::GameOver;
 		CurrentGameResult = EGameResult::RedWin;
+		USoundManager::GetInstance().PlaySound("win");
 	}
 	// 무승부
 	else if (RedBallCount == 0 && BlueBallCount == 0)
@@ -153,6 +158,7 @@ void UGameManager::CheckGameOver(std::vector<UPrimitive*>& primitives)
 		OutputDebugStringA("===== DRAW! =====\n");
 		CurrentTurnState = ETurnState::GameOver;		
 		CurrentGameResult = EGameResult::Draw;
+		USoundManager::GetInstance().PlaySound("win");
 	}
 
 	if (CurrentGameResult != EGameResult::None)

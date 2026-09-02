@@ -5,6 +5,7 @@
 #include "UResourceManager.h"
 #include "UGameManager.h"
 #include "UGameSetting.h"
+#include "USoundManager.h"
 
 bool UButton::HitTest(float mouseX, float mouseY) const
 {
@@ -16,6 +17,7 @@ bool UButton::HitTest(float mouseX, float mouseY) const
 
 void UButton::OnClick()
 {
+    PlayClickSound();
     if (_onClick)
     {
         _onClick();
