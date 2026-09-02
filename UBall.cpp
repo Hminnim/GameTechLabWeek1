@@ -203,6 +203,15 @@ void UBall::Update(float DeltaTime, std::vector<UPrimitive*>& others)
     // 자폭 적용된 공 삭제 전 주변에 척력 적용
     if (this->bIsDestroyed && this->isSelfDestruct)
     {
+        // Self-Destruct Effect
+        UEffectManager::GetInstance().PlayEffect(
+            "Resources/self-destruct.png",
+            DirectX::XMFLOAT2(Location.x, Location.y),
+            1.25f,
+            DirectX::XMFLOAT2(2.0f, 2.0f),
+            9
+        );
+
         float currentMineForce = 300000.0f;
         for (auto* other : others)
         {
