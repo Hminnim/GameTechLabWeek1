@@ -17,6 +17,8 @@ public :
 	CollisionManager& operator=(const CollisionManager&) = delete;
 
 	bool DetectCollision(UPrimitive* TargetPrimitive, UPrimitive* OtherPrimitive);
+	bool DetectWallCollision(UPrimitive* TargetPrimitive, UPrimitive* OtherPrimitive);
 	void ResolveCollision(UPrimitive* TargetPrimitive, UPrimitive* OtherPrimitive);
+	void ResolveWallCollision(UPrimitive* TargetPrimitive, UPrimitive* OtherPrimitive);
 	 
 };

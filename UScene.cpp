@@ -7,6 +7,7 @@
 #include "UInputManager.h"
 #include "UGameSetting.h"
 #include "UMap.h"
+#include "UWall.h"
 
 void UScene::Render(URenderer& renderer)
 {
@@ -123,6 +124,8 @@ void UTitleScene::Initialize()
     exitbtn->SetOnClick([]() {
         USceneManager::GetInstance().ChangeScene("GameOver");
         });
+
+    
 }
 
 void UTitleScene::Update(float deltaTime)
@@ -183,7 +186,9 @@ void UInGameScene::Initialize()
     {
         AddPrimitive(new UBall("sphere", EPlayer::Blue, spawnPos));
     }
-
+    // Wall 테스트용
+    AddPrimitive(new UWall("square", FVector(1300.0f, 600.0f, 0.5f), 75.0f));
+    
     UMap* map = new UMap();
     map->Init("Resources/map.png", MapMarginX, MapMarginY, MapWidth, MapHeight);
     SetMap(map);

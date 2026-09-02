@@ -1,6 +1,7 @@
 #pragma once
 #include "pch.h"
 #include "UBall.h"
+#include "UWall.h"
 #include "UResourceManager.h"
 #include "UGameSetting.h"
 #include "UEffectManager.h"
@@ -10,7 +11,7 @@ CollisionManager CollisionMan;
 UBall::UBall(const std::string& meshKey, const EPlayer owner, const FVector startLocation)
 {
     TotalNumBalls++;
-
+    
     Owner = owner;
 
     // 기본 값
@@ -313,11 +314,15 @@ void UBall::CollisionManage(float DeltaTime, std::vector<UPrimitive*>& others)
     {
         if (other != this && !other->bIsDestroyed)
         {
+            UWall* otherWall = dynamic_cast<UWall*>(other);
+            if (otherWall != nullptr)
+            {
+                CollisionMan.ResolveWallCollision(this, otherWall);
+            }
             UBall* otherBall = dynamic_cast<UBall*>(other);
-            if (otherBall != nullptr && !otherBall->bIsDestroyed)
+            if (otherBall != nullptr)
             {
                 CollisionMan.ResolveCollision(this, otherBall);
-
             }
         }
     }

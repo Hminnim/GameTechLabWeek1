@@ -7,11 +7,11 @@ UResourceManager& UResourceManager::GetInstance()
     return instance;
 }
 
-void UResourceManager::Initialize(ID3D11Device* device, ID3D11Buffer* vertexBuffer, UINT numVertices)
+void UResourceManager::Initialize(const std::string& key, ID3D11Device* device, ID3D11Buffer* vertexBuffer, UINT numVertices)
 {
     m_device = device;
-    m_vertexBuffers["sphere"] = vertexBuffer;
-    m_numVertices = numVertices;
+    m_vertexBuffers[key] = vertexBuffer;
+    m_numVertices[key] = numVertices;
 }
 
 ID3D11ShaderResourceView* UResourceManager::GetTexture(const std::string& key)
@@ -48,5 +48,5 @@ ID3D11Buffer* UResourceManager::GetVertexBuffer(const std::string& key)
 
 UINT UResourceManager::GetNumVertices(const std::string& key)
 {
-    return m_numVertices;
+    return m_numVertices[key];
 }
