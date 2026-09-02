@@ -17,7 +17,7 @@ bool UButton::HitTest(float mouseX, float mouseY) const
 
 void UButton::OnClick()
 {
-	USoundManager::GetInstance().PlaySound("select_menu");
+    PlayClickSound();
     if (_onClick)
     {
         _onClick();
@@ -40,7 +40,6 @@ void USkillButton::OnClick()
 	{
 		_state = ESkillButtonState::Selected;
 		UGameManager::GetInstance().m_currentSelectedSkill = _skillType;
-		USoundManager::GetInstance().PlaySound("select_item");
 	}
 }
 
