@@ -280,8 +280,6 @@ void UInGameScene::Enter()
     {
         AddPrimitive(new UBall("sphere", EPlayer::Blue, spawnPos));
     }
-    // Wall 테스트용
-    AddPrimitive(new UWall("square", FVector(1300.0f, 600.0f, 0.5f), 75.0f));
     UGameManager::GetInstance().InitGame();
 }
 
