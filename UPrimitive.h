@@ -21,7 +21,7 @@ public:
 
     // States
     bool bEnableAngularVelocity;
-    bool isDestroyed = false;
+    bool bIsDestroyed = false;
 
     EPlayer Owner = EPlayer::Red;
 

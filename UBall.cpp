@@ -21,22 +21,22 @@ UBall::UBall(const std::string& meshKey, const EPlayer owner, const FVector star
     // 꽉찬 구의 관성 모멘트
     Inertia = 0.4f * Mass * Radius * Radius;
 
-    // 임시로 테스트용 크기,위치 속도 설정
-    // 랜덤 크기, 질량
+    // 반지름, 반지름에 비례한 질량
     Radius = 50.0f;
     Mass = Radius * 10.0f;
 
+    // 공 시작 위치
     Location = startLocation;
 
-    // 랜덤 속도
+    // 초기에는 멈춤
     Velocity.x = 0.0f;
     Velocity.y = 0.0f;
     Velocity.z = 0.0f;
 
-    // 랜덤 Rotation
-    Rotation.x = 1.57f;//((rand() % 200) - 100) * 100.0f;
-    Rotation.y = 0;//((rand() % 200) - 100) * 100.0f;
-    Rotation.z = 0;//((rand() % 200) - 100) * 100.0f;
+    //
+    Rotation.x = 1.57f;
+    Rotation.y = 0;
+    Rotation.z = 0;
 
     m_vertexBuffer = UResourceManager::GetInstance().GetVertexBuffer(meshKey);
 	m_numVertices = UResourceManager::GetInstance().GetNumVertices(meshKey);
@@ -134,12 +134,27 @@ void UBall::Update(float DeltaTime, std::vector<UPrimitive*>& others)
     // 마찰력 계수 적용
     if (Velocity.Length() > 0.0f) {
         FVector NormalizeFricVec = Velocity / Velocity.Length() * (-1.0f);
-        if (Velocity.Length() <= 300.0f * DeltaTime)
+        if (Velocity.Length() <= FricVal * DeltaTime)
         {
             Velocity = FVector(0, 0, 0);
-            bEnableFreeze = false;
+            // 척력 발생시 주위 밀어냄
+            if (isMagnetActivated && !AlreadyActiveMag)
+            {
+                float currentMagnetForce = 700000.0f;
+                for (auto* other : others)
+                {
+                    if (other != this)
+                    {
+                        if (other != nullptr)
+                        {
+                            ApplyReverseMagnetism(other, DeltaTime, currentMagnetForce);
+                        }
+                    }
+                }
+                AlreadyActiveMag = true;
+            }
         }
-        else Velocity += NormalizeFricVec * 300.0f * DeltaTime;
+        else Velocity += NormalizeFricVec * FricVal * DeltaTime;
     }
     if (bEnableAngularVelocity)
     {
@@ -174,35 +189,19 @@ void UBall::Update(float DeltaTime, std::vector<UPrimitive*>& others)
     //충돌 처리
     for (auto* other : others)
     {
-        if (other != this)
+        if (other != this && !other->bIsDestroyed)
         {
             UBall* otherBall = dynamic_cast<UBall*>(other);
-            if (otherBall != nullptr)
+            if (otherBall != nullptr && !otherBall->bIsDestroyed)
             {
                 CollisionMan.ResolveCollision(this, otherBall);
+
             }
         }
     }
 
-    // 척력 발생시 주위 밀어냄
-    if (isMagnetActivated && AlreadyActiveMag)
-    {
-        float currentMagnetForce = 700000.0f;
-        for (auto* other : others)
-        {
-            if (other != this)
-            {
-                if (other != nullptr)
-                {
-                    ApplyReverseMagnetism(other, DeltaTime, currentMagnetForce);
-                }
-            }
-        }
-        AlreadyActiveMag = false;
-    }
-
-    // 자폭 적용된 공 충돌시 삭제 + 주변에 척력 적용
-    if (this->isDestroyed)
+    // 자폭 적용된 공 삭제 전 주변에 척력 적용
+    if (this->bIsDestroyed && this->isSelfDestruct)
     {
         float currentMineForce = 300000.0f;
         for (auto* other : others)
@@ -216,15 +215,15 @@ void UBall::Update(float DeltaTime, std::vector<UPrimitive*>& others)
             }
         }
 
-        for (auto it = others.begin();it != others.end();it++)
-        {
-            if (*it == this)
-            {
-                others.erase(it);
-                delete this;
-                return;
-            }
-        }
+        //for (auto it = others.begin();it != others.end();it++)
+        //{
+        //    if (*it == this)
+        //    {
+        //        others.erase(it);
+        //        delete this;
+        //        return;
+        //    }
+        //}
     }
 }
     
@@ -319,12 +318,14 @@ void UBall::ApplySkill(USkillType skill)
              break;
 
         case USkillType::SizeScaling:
-             Radius *= 1.5;
+            TargetRadius = Radius * 1.5;
+            isSizeScaling = true;
              break;
 
         case USkillType::MassScaling:
-             Mass *= 1.5;
-             break;
+            TargetMass = Mass * 1.5;
+            isMassScaling = true;
+            break;
 
         case USkillType::ReverseMagnet:
             isMagnetActivated = true;
