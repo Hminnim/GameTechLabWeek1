@@ -81,6 +81,7 @@ void UBall::Update(float DeltaTime, std::vector<UPrimitive*>& others)
     if ((Location.x < Radius) || (Location.x > ScreendWidth - Radius) || (Location.y < Radius) || (Location.y > ScreenHeight - Radius))
     {
         this->bIsDestroyed = true;
+		USoundManager::GetInstance().PlaySound("out");
     }
 }
     
@@ -176,11 +177,13 @@ void UBall::ApplySkill(ESkillType skill)
         case ESkillType::Giant:
             TargetRadius = UGameSetting::GetInstance().BallBaseRadius * 1.5f;
             isSizeScaling = true;
-             break;
+			USoundManager::GetInstance().PlaySound("sizeup");
+            break;
 
         case ESkillType::Heavier:
             TargetMass = UGameSetting::GetInstance().BallBaseRadius * 10.0f * 1.5f;
             isMassScaling = true;
+			USoundManager::GetInstance().PlaySound("sizeup");
             break;
 
         case ESkillType::Repulse:
@@ -282,8 +285,35 @@ void UBall::FrictionFloor(float DeltaTime, std::vector<UPrimitive*>& others)
     float FricVal = 500.0f;
     if (isFreezed)
     {
+        // Freeze Effect
+        UEffectManager::GetInstance().DrawAura(
+            this,
+            "Resources/new_freeze.png",
+            DirectX::XMFLOAT2(this->Location.x, this->Location.y),
+            1.0f,
+            // 1.0f,
+            DirectX::XMFLOAT2(0.5f, 0.5f),
+            5
+        );
+
         FricVal = 200000.0f;
     }
+     else if (!isFreezed && bWasFreezed)
+    {  
+        // Unfreeze Effect
+        UEffectManager::GetInstance().ClearAura(this);   // Freeze Effect 해제
+
+        UEffectManager::GetInstance().PlayEffect(
+            "Resources/unfreeze.png",
+            DirectX::XMFLOAT2(this->Location.x, this->Location.y),
+            1.0f,
+            DirectX::XMFLOAT2(0.5f, 0.5f),
+            8
+        );
+    }
+
+    bWasFreezed = isFreezed;
+
     if (bEnableWallCreate && Velocity.Length()>50.0f && currentWallCount<MaxWallCount)
     {
         float dx = (Location.x - lastspawnpos.x);
@@ -329,6 +359,7 @@ void UBall::FrictionFloor(float DeltaTime, std::vector<UPrimitive*>& others)
                     }
                 }
                 AlreadyActiveMag = true;
+				USoundManager::GetInstance().PlaySound("repulse");
             }
         }
         else Velocity += NormalizeFricVec * FricVal * DeltaTime;
@@ -353,7 +384,7 @@ void UBall::ReverseMagnetWhenMine(float DeltaTime, std::vector<UPrimitive*>& oth
             false,
             0.0f
         );
-        USoundManager::GetInstance().PlaySound("hit");
+        USoundManager::GetInstance().PlaySound("mine");
         float currentMineForce = 500000.0f;
         for (auto* other : others)
         {

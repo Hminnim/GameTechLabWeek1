@@ -73,10 +73,12 @@ void CollisionManager::ResolveCollision(UPrimitive* TargetPrimitive, UPrimitive*
         if (TargetBall->bEnableFreeze)
         {
             OtherBall->isFreezed = true;
+			USoundManager::GetInstance().PlaySound("freeze");
         }
         if (OtherBall->bEnableFreeze)
         {
             TargetBall->isFreezed = true;
+			USoundManager::GetInstance().PlaySound("freeze");
         }
 
         //Collision Effect, Sound 출력
