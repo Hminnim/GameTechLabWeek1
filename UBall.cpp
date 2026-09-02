@@ -81,6 +81,7 @@ void UBall::Update(float DeltaTime, std::vector<UPrimitive*>& others)
     if ((Location.x < Radius) || (Location.x > ScreendWidth - Radius) || (Location.y < Radius) || (Location.y > ScreenHeight - Radius))
     {
         this->bIsDestroyed = true;
+		USoundManager::GetInstance().PlaySound("out");
     }
 }
     
@@ -176,11 +177,13 @@ void UBall::ApplySkill(ESkillType skill)
         case ESkillType::Giant:
             TargetRadius = Radius * 1.5f;
             isSizeScaling = true;
-             break;
+			USoundManager::GetInstance().PlaySound("sizeup");
+            break;
 
         case ESkillType::Heavier:
             TargetMass = Mass * 1.5f;
             isMassScaling = true;
+			USoundManager::GetInstance().PlaySound("sizeup");
             break;
 
         case ESkillType::Repulse:
@@ -344,6 +347,7 @@ void UBall::FrictionFloor(float DeltaTime, std::vector<UPrimitive*>& others)
                     }
                 }
                 AlreadyActiveMag = true;
+				USoundManager::GetInstance().PlaySound("repulse");
             }
         }
         else Velocity += NormalizeFricVec * FricVal * DeltaTime;
@@ -368,7 +372,7 @@ void UBall::ReverseMagnetWhenMine(float DeltaTime, std::vector<UPrimitive*>& oth
             false,
             0.0f
         );
-        USoundManager::GetInstance().PlaySound("hit");
+        USoundManager::GetInstance().PlaySound("mine");
         float currentMineForce = 500000.0f;
         for (auto* other : others)
         {
