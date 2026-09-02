@@ -12,6 +12,7 @@ public:
     void Initialize() {};
 
     void AddScene(const std::string& name, UScene* scene);
+    void RequestChangeScene(const std::string& name);
     void ChangeScene(const std::string& name);
     void Update(float deltaTime);
     void Render(URenderer& renderer);
@@ -24,5 +25,8 @@ private:
     std::unordered_map<std::string, UScene*> m_scenes;
     UScene* m_currentScene = nullptr;
     std::string m_currentSceneName;
+
+    bool m_hasPendingSceneChange = false;
+    std::string m_pendingSceneName;
 };
 

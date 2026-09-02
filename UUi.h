@@ -11,6 +11,7 @@ class UUI
 
         // virtual functions
         virtual bool Init(const std::string& texturePath, float x, float y, float width, float height);
+        virtual void Update(float deltaTime) {};
         virtual void Render(URenderer& renderer);
 
         // Setter

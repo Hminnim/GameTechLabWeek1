@@ -7,6 +7,8 @@
 #include "UInputManager.h"
 #include "UGameSetting.h"
 #include "UMap.h"
+#include "UGameManager.h"
+#include "UButton.h"
 #include "UWall.h"
 
 void UScene::Render(URenderer& renderer)
@@ -18,20 +20,14 @@ void UScene::Render(URenderer& renderer)
 		_map->Render(renderer);
     renderer.EndSprite();
 
-    // Game World Object
     for (auto* primitive : _primitives)
         primitive->Render(renderer);
 
 	renderer.BeginSprite();
-
-    // UI
     for (auto* ui : _uis)
         ui->Render(renderer);
-
-    // Button
     for (auto* button : _buttons)
         button->Render(renderer);
-
 	renderer.EndSprite();
 }
 
@@ -43,21 +39,57 @@ void UScene::HandleClick(float mouseX, float mouseY)
 
 void UScene::Update(float Deltatime)
 {
-    if (UInputManager::GetInstance().IsKeyDown(VK_LBUTTON)) {
-        float mouseX = UInputManager::GetInstance().GetMousePos().x;
-        float mouseY = UInputManager::GetInstance().GetMousePos().y;
+    // 공 판정 업데이트
+    for (auto* primitive : _primitives)
+    {
+        if (primitive != nullptr && !primitive->bIsDestroyed)
+        {
+            primitive->Update(Deltatime, _primitives);
+        }        
+    }
 
-        for (int i = _uis.size() - 1; i >= 0; --i) {
+    // 공 파괴 업데이트
+    for (auto it = _primitives.begin(); it != _primitives.end();)
+    {
+        if ((*it)->bIsDestroyed)
+        {
+            delete* it;
+            it = _primitives.erase(it);         
+        }
+        else
+        {
+            ++it;
+        }
+    }
+
+	// GameManager 업데이트
+    UGameManager::GetInstance().Update(_primitives);
+
+    // UI 업데이트
+    for (auto* ui : _uis)
+    {
+        if (ui != nullptr && ui->IsActive())
+        {
+            ui->Update(Deltatime);
+        }
+    }
+
+    // Button 업데이트
+    if (UInputManager::GetInstance().IsKeyDown(VK_LBUTTON)) {
+        LONG mouseX = UInputManager::GetInstance().GetMousePos().x;
+        LONG mouseY = UInputManager::GetInstance().GetMousePos().y;
+
+        for (int i = (int)_uis.size() - 1; i >= 0; --i) {
 
             UUI* ui = _uis[i];
 
             UButton* btn = dynamic_cast<UButton*>(ui);
 
-            if (btn != nullptr && btn->HitTest(mouseX, mouseY)) {
+            if (btn != nullptr && btn->HitTest((float)mouseX, (float)mouseY)) {
                 btn->OnClick();
                 break;
             }
-        }
+        }   
     }
 }
 
@@ -90,14 +122,14 @@ void UTitleScene::Initialize()
     startbtn->Init("Resources/button_start.png", StartBtnX, ButtonY, ButtonWidth, ButtonHeight);
     AddUI(startbtn);
     startbtn->SetOnClick([]() {
-        USceneManager::GetInstance().ChangeScene("InGame");
+        USceneManager::GetInstance().RequestChangeScene("InGame");
         });
 
     UButton* exitbtn = new UButton();
     exitbtn->Init("Resources/button_exit.png", ExitBtnX, ButtonY, ButtonWidth, ButtonHeight);
     AddUI(exitbtn);
     exitbtn->SetOnClick([]() {
-        USceneManager::GetInstance().ChangeScene("GameOver");
+        USceneManager::GetInstance().RequestChangeScene("GameOver");
         });
 
     
@@ -158,6 +190,7 @@ void UInGameScene::Initialize()
     float BtnWidth = ScreenWidth * (120.0f / 2040.0f);
     float BtnHeight = BtnWidth;
     float BtnX = ScreenWidth * (92.0f / 2040.0f);
+    float RightBtnX = ScreenWidth - BtnX - BtnWidth;
     int NumButtons = 5;
     float BtnYInterval = ScreenHeight / (NumButtons + 1);
     // 화면 크기에 따른 보정 ----------------------------------------------
@@ -165,45 +198,94 @@ void UInGameScene::Initialize()
     map->Init("Resources/map.png", MapMarginX, MapMarginY, MapWidth, MapHeight);
     SetMap(map);
 
-    UUI* background = new UUI();
-    background->Init("Resources/background_blue.png", 0, 0, ScreenWidth, ScreenHeight);
-    SetBackground(background);
+    UUI* backgroundRed = new UUI();
+	UUI* backgroundBlue = new UUI();
+    backgroundRed->Init("Resources/background_red.png", 0, 0, ScreenWidth, ScreenHeight);
+    backgroundBlue->Init("Resources/background_blue.png", 0, 0, ScreenWidth, ScreenHeight);
+    SetBackground(backgroundBlue, backgroundRed);
 
-    UButton* freezeBtn = new UButton();
-    float Y1 = (BtnYInterval * 1) - (BtnHeight * 0.5f);
-    freezeBtn->Init("Resources/button_freeze.png", BtnX, Y1, BtnWidth, BtnHeight);
-    freezeBtn->SetUsedTexture("Resources/button_freeze_used.png");
-    AddUI(freezeBtn);
 
-    UButton* giantBtn = new UButton();
-    float Y2 = (BtnYInterval * 2) - (BtnHeight * 0.5f);
-    giantBtn->Init("Resources/button_giant.png", BtnX, Y2, BtnWidth, BtnHeight);
-    giantBtn->SetUsedTexture("Resources/button_giant_used.png");
-    AddUI(giantBtn);
+    // Load&Set Skill Button
 
-    UButton* heavierBtn = new UButton();
-    float Y3 = (BtnYInterval * 3) - (BtnHeight * 0.5f);
-    heavierBtn->Init("Resources/button_heavier.png", BtnX, Y3, BtnWidth, BtnHeight);
-    heavierBtn->SetUsedTexture("Resources/button_heavier_used.png");
-    AddUI(heavierBtn);
+	// Set Skill Button Positions
+    for (int i = 0; i < (int)ESlot::MaxCount; ++i)
+    {
+        int yIndex = (i % 5) + 1;
+        float slotY = (BtnYInterval * yIndex) - (BtnHeight * 0.5f);
+        float slotX = (i < (int)ESlot::MaxCount / 2) ? BtnX : RightBtnX;
+        m_slotData[(ESlot)i] = { (ESkillType)((i % 5) + 1),slotX, slotY };
+    }
 
-    UButton* mineBtn = new UButton();
-    float Y4 = (BtnYInterval * 4) - (BtnHeight * 0.5f);
-    mineBtn->Init("Resources/button_mine.png", BtnX, Y4, BtnWidth, BtnHeight);
-    mineBtn->SetUsedTexture("Resources/button_mine_used.png");
-    AddUI(mineBtn);
+    std::string skillNames[] = {
+    "none",     // 0: None
+    "freeze",   // 1: Freeze
+    "giant",    // 2: Giant
+    "heavier",  // 3: Heavier
+    "mine",     // 4: Mine
+    "repulse"   // 5: Repulse
+    };
 
-    UButton* repulseBtn = new UButton();
-    float Y5 = (BtnYInterval * 5) - (BtnHeight * 0.5f);
-    repulseBtn->Init("Resources/button_repulse.png", BtnX, Y5, BtnWidth, BtnHeight);
-    repulseBtn->SetUsedTexture("Resources/button_repulse_used.png");
-    AddUI(repulseBtn);
+    for (int i = 0; i < (int)ESlot::MaxCount; ++i)
+    {
+        ESlot currentSlot = (ESlot)i;
+        FSlotData slotInfo = m_slotData[currentSlot];
+
+        std::string baseName = skillNames[(int)slotInfo.AssignedSkill];
+
+        std::string normalTex = "Resources/button_" + baseName + ".png";
+        std::string usedTex = "Resources/button_" + baseName + "_used.png";
+
+        USkillButton* skillBtn = new USkillButton();
+
+        skillBtn->Init(normalTex, slotInfo.x, slotInfo.y, BtnWidth, BtnHeight);
+        skillBtn->SetUsedTexture(usedTex);
+        skillBtn->SetSkillType(slotInfo.AssignedSkill);
+
+        // skillBtn->SetSlot(currentSlot); 
+
+        AddSkillButton(skillBtn);
+    }
+
 
     UGameManager::GetInstance().InitGame();
 }
 
 void UInGameScene::Update(float deltaTime)
 {
+    bool isRedTurn = (UGameManager::GetInstance().CurrentPlayerTurn == EPlayer::Red);
+
+    int halfCount = (int)ESlot::MaxCount / 2;
+
+    for (int i = 0; i < m_skillButtons.size(); ++i)
+    {
+        if (m_skillButtons[i] != nullptr)
+        {
+            bool bActive = isRedTurn ? (i >= halfCount) : (i < halfCount);
+
+            m_skillButtons[i]->SetActive(bActive);
+        }
+    }
+
+    // Skill Button 업데이트
+    for (USkillButton* btn : m_skillButtons)
+    {
+        btn->Update(deltaTime);
+    }
+
+    if (UInputManager::GetInstance().IsKeyDown(VK_LBUTTON)) {
+        LONG mouseX = UInputManager::GetInstance().GetMousePos().x;
+        LONG mouseY = UInputManager::GetInstance().GetMousePos().y;
+
+        for (USkillButton* btn : m_skillButtons)
+        {
+            if (btn != nullptr && btn->HitTest((float)mouseX, (float)mouseY)) {
+                btn->OnClick();
+                break;
+            }
+        }
+    }
+    
+
     UScene::Update(deltaTime);
 
     // 공 판정 업데이트
@@ -243,7 +325,16 @@ void UInGameScene::Update(float deltaTime)
 
 void UInGameScene::Render(URenderer& renderer)
 {
+    renderer.BeginSprite();
+    m_backgrounds[UGameManager::GetInstance().CurrentPlayerTurn]->Render(renderer);
+    renderer.EndSprite();
     UScene::Render(renderer);
+    renderer.BeginSprite();
+    for (const auto& skillButton : m_skillButtons)
+	{
+		skillButton->Render(renderer);
+	}
+    renderer.EndSprite();
 }
 
 void UInGameScene::Enter()
@@ -326,14 +417,14 @@ void UGameOverScene::Initialize()
     temp2->Init("Resources/button_restart.png", RestartBtnX, ButtonY, ButtonWidth, ButtonHeight);
     AddUI(temp2);
     temp2->SetOnClick([]() {
-        USceneManager::GetInstance().ChangeScene("InGame");
+        USceneManager::GetInstance().RequestChangeScene("InGame");
         });
 
     UButton* temp3 = new UButton();
     temp3->Init("Resources/button_exit.png", ExitBtnX, ButtonY, ButtonWidth, ButtonHeight);
     AddUI(temp3);
     temp3->SetOnClick([]() {
-        USceneManager::GetInstance().ChangeScene("GameOver");
+        USceneManager::GetInstance().RequestChangeScene("GameOver");
         });
 }
 
