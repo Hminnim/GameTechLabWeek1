@@ -75,16 +75,16 @@ void UScene::Update(float Deltatime)
 
     // Button 업데이트
     if (UInputManager::GetInstance().IsKeyDown(VK_LBUTTON)) {
-        float mouseX = UInputManager::GetInstance().GetMousePos().x;
-        float mouseY = UInputManager::GetInstance().GetMousePos().y;
+        LONG mouseX = UInputManager::GetInstance().GetMousePos().x;
+        LONG mouseY = UInputManager::GetInstance().GetMousePos().y;
 
-        for (int i = _uis.size() - 1; i >= 0; --i) {
+        for (int i = (int)_uis.size() - 1; i >= 0; --i) {
 
             UUI* ui = _uis[i];
 
             UButton* btn = dynamic_cast<UButton*>(ui);
 
-            if (btn != nullptr && btn->HitTest(mouseX, mouseY)) {
+            if (btn != nullptr && btn->HitTest((float)mouseX, (float)mouseY)) {
                 btn->OnClick();
                 break;
             }
