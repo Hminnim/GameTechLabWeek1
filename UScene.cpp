@@ -8,6 +8,7 @@
 #include "UGameSetting.h"
 #include "UMap.h"
 #include "UWall.h"
+#include "UEffectManager.h"
 
 void UScene::Render(URenderer& renderer)
 {
@@ -18,6 +19,12 @@ void UScene::Render(URenderer& renderer)
 		_map->Render(renderer);
     renderer.EndSprite();
 
+    UEffectManager::GetInstance().RenderAuras();
+    renderer.DeviceContext->OMSetDepthStencilState(renderer.DefaultDepthStencilState, 0);
+    renderer.DeviceContext->OMSetBlendState(nullptr, nullptr, 0xFFFFFFFF);
+    renderer.DeviceContext->RSSetState(renderer.RasterizerState);
+    renderer.PrepareShader();
+    
     // Game World Object
     for (auto* primitive : _primitives)
         primitive->Render(renderer);
