@@ -5,6 +5,7 @@
 #include "UResourceManager.h"
 #include "UGameManager.h"
 #include "UGameSetting.h"
+#include "USoundManager.h"
 
 bool UButton::HitTest(float mouseX, float mouseY) const
 {
@@ -16,6 +17,7 @@ bool UButton::HitTest(float mouseX, float mouseY) const
 
 void UButton::OnClick()
 {
+	USoundManager::GetInstance().PlaySound("select_menu");
     if (_onClick)
     {
         _onClick();
@@ -36,6 +38,7 @@ void USkillButton::OnClick()
 	{
 		_state = ESkillButtonState::Selected;
 		UGameManager::GetInstance().m_currentSelectedSkill = _skillType;
+		USoundManager::GetInstance().PlaySound("select_item");
 	}
 }
 

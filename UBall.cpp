@@ -177,11 +177,13 @@ void UBall::ApplySkill(USkillType skill)
         case USkillType::SizeScaling:
             TargetRadius = Radius * 1.5f;
             isSizeScaling = true;
-             break;
+			USoundManager::GetInstance().PlaySound("sizeup");
+            break;
 
         case USkillType::MassScaling:
             TargetMass = Mass * 1.5f;
             isMassScaling = true;
+			USoundManager::GetInstance().PlaySound("sizeup");
             break;
 
         case USkillType::ReverseMagnet:
@@ -316,6 +318,7 @@ void UBall::FrictionFloor(float DeltaTime, std::vector<UPrimitive*>& others)
                     }
                 }
                 AlreadyActiveMag = true;
+				USoundManager::GetInstance().PlaySound("repulse");
             }
         }
         else Velocity += NormalizeFricVec * FricVal * DeltaTime;

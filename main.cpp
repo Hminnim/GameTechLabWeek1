@@ -192,6 +192,7 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLine
                 if (UInputManager::GetInstance().IsKeyUp(VK_RBUTTON))
                 {
                     // 발사 처리
+                    g_bHasPlayedChargeSound = false;
                     if (pullDistance > 5.0f)
                     {
                         float launchPower = 8.0f;
