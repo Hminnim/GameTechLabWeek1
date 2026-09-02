@@ -52,4 +52,5 @@ private:
 	ESkillType _skillType = ESkillType::None;
     ESkillButtonState _state = ESkillButtonState::Normal;
     std::string _usedTextureKey;
+    char _skillAuraKey = 0; // Skill별 Aura Effect 구분 key
 };

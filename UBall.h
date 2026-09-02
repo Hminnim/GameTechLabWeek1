@@ -26,10 +26,15 @@ public:
     bool isMassScaling = false;
     bool isMagnetActivated = false;   
     bool AlreadyActiveMag = false;
+    bool isGiantActivated = false;      // 지름증가 스킬 활성화 여부
+    bool isHeavierActivated = false;    // 질량증가 스킬 활성화 여부
 
 
     // Freeze Effect용 직전 프레임 freeze 감지 변수
     bool bWasFreezed = false;
+    // Skill별 Aura Effect 구분 key
+    char _skillAuraKey = 0; 
+
 
     EPlayer Owner = EPlayer::Red;
 
