@@ -293,7 +293,7 @@ void UBall::FrictionFloor(float DeltaTime, std::vector<UPrimitive*>& others)
             DirectX::XMFLOAT2(this->Location.x, this->Location.y),
             1.0f,
             DirectX::XMFLOAT2(0.5f, 0.5f),
-            10
+            8
         );
     }
 
