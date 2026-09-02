@@ -46,7 +46,7 @@ public:
     virtual void SetGNumber(float NewG);
     virtual void SetElastic(float NewElastic) override;
     virtual void SetTexture(ID3D11ShaderResourceView* srv);
-    virtual void ApplyReverseMagnetism(UPrimitive* OtherPrimitive, float DeltaTime, float MagneticForce) override;
+    virtual void ApplyReverseMagnetism(UPrimitive* OtherPrimitive, float DeltaTime, float MagneticForce, float MaxDist) override;
     virtual void ApplySelfFreeze() override;
     virtual void ApplyAirResistance(float DeltaTime, float AirResistance) override;
     virtual void SetEnableAngularMomentum(bool bEnable) override;

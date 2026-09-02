@@ -108,7 +108,7 @@ void UBall::SetTexture(ID3D11ShaderResourceView* srv)
 	m_textureView = srv;
 }
 
-void UBall::ApplyReverseMagnetism(UPrimitive* OtherPrimitive, float DeltaTime, float MagneticForce)
+void UBall::ApplyReverseMagnetism(UPrimitive* OtherPrimitive, float DeltaTime, float MagneticForce, float MaxDist)
 {
     UBall* Other = dynamic_cast<UBall*>(OtherPrimitive);
     if (!Other)
@@ -120,7 +120,7 @@ void UBall::ApplyReverseMagnetism(UPrimitive* OtherPrimitive, float DeltaTime, f
     float DistSq = Delta.LengthSquared();       // 거리 제곱
 
     // 너무 가까히 말고 일정 거리 이내에서
-    if (DistSq > 0.01f && DistSq < 250000.0f)
+    if (DistSq > 0.01f && DistSq < MaxDist)
     {
         float Dist = (float)sqrt(DistSq);
 
@@ -289,7 +289,7 @@ void UBall::SizeMassScaling(float DeltaTime)
 
 void UBall::FrictionFloor(float DeltaTime, std::vector<UPrimitive*>& others)
 {
-    float FricVal = 500.0f;
+    float FricVal = 700.0f;
     if (isFreezed)
     {
         // Freeze Effect
@@ -379,14 +379,14 @@ void UBall::FrictionFloor(float DeltaTime, std::vector<UPrimitive*>& others)
             // 척력 발생시 주위 밀어냄
             if (isMagnetActivated && !AlreadyActiveMag)
             {
-                float currentMagnetForce = 300000.0f;
+                float currentMagnetForce = 100000.0f;
                 for (auto* other : others)
                 {
                     if (other != this)
                     {
                         if (other != nullptr)
                         {
-                            ApplyReverseMagnetism(other, DeltaTime, currentMagnetForce);
+                            ApplyReverseMagnetism(other, DeltaTime, currentMagnetForce, 40000.0f);
                         }
                     }
                 }
@@ -417,14 +417,14 @@ void UBall::ReverseMagnetWhenMine(float DeltaTime, std::vector<UPrimitive*>& oth
             0.0f
         );
         USoundManager::GetInstance().PlaySound("mine");
-        float currentMineForce = 500000.0f;
+        float currentMineForce = 300000.0f;
         for (auto* other : others)
         {
             if (other != this)
             {
                 if (other != nullptr)
                 {
-                    ApplyReverseMagnetism(other, DeltaTime, currentMineForce);
+                    ApplyReverseMagnetism(other, DeltaTime, currentMineForce, 16000.0f);
                 }
             }
         }
