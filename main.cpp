@@ -298,7 +298,7 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLine
             if (ImGui::Button("4. 질량증가 (MassUp)")) SelectedBall->ApplySkill(USkillType::MassScaling);
             if (ImGui::Button("5. 척력파 (Magnet)"))   SelectedBall->ApplySkill(USkillType::ReverseMagnet);
             if (ImGui::Button("6. 벽 생성 (Wall)"))   SelectedBall->ApplySkill(USkillType::WallCreate);
-            if (ImGui::Button("선택 해제 (Deselect)")) SelectedBall = nullptr;
+            // if (ImGui::Button("선택 해제 (Deselect)")) SelectedBall = nullptr;
             if (ImGui::Button("선택 해제 (Deselect)"))
             {
                 UEffectManager::GetInstance().ClearAura(SelectedBall); // Aura Effect 해제
