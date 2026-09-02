@@ -218,11 +218,14 @@ void UInGameScene::Initialize()
         std::string normalTex = "Resources/button_" + baseName + ".png";
         std::string usedTex = "Resources/button_" + baseName + "_used.png";
 
-        USkillButton* skillBtn = new USkillButton();
+        USkillButton* skillBtn = new USkillButton();        
 
         skillBtn->Init(normalTex, slotInfo.x, slotInfo.y, BtnWidth, BtnHeight);
         skillBtn->SetUsedTexture(usedTex);
         skillBtn->SetSkillType(slotInfo.AssignedSkill);
+        skillBtn->SetOnClick([this,slotInfo]() {            
+            this->PlayerController.UseSkill(slotInfo.AssignedSkill);
+            });
 
         // skillBtn->SetSlot(currentSlot); 
 
@@ -270,6 +273,9 @@ void UInGameScene::Update(float deltaTime)
     
 
     UScene::Update(deltaTime);
+
+    // 공 발사
+    PlayerController.Update(_primitives);
 
     // 공 판정 업데이트
     for (auto* primitive : _primitives)

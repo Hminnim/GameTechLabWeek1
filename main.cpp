@@ -196,6 +196,7 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLine
                 UEffectManager::GetInstance().ClearAura(SelectedBall);   // aura Effect 해제
             }
 
+
             // 3. 드래그 중이면 매 프레임 화살표 update 하다가, 마우스 클릭 떼면 발사
             if (bIsDragging && SelectedBall != nullptr)
             {
@@ -275,6 +276,7 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLine
 
             }
         }
+
         
         UEffectManager::GetInstance().Render(); // EFFECT TEST
 
@@ -286,18 +288,19 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLine
         // 이후 ImGui UI 컨트롤 추가는 ImGui::NewFrame()과 ImGui::Render() 사이인 여기에 위치합니다.
         ImGui::Begin("Jungle Property Window");
         ImGui::Text("Hello Jungle World!");
+
         if (SelectedBall != nullptr)
         {
             ImGui::TextColored(ImVec4(0, 1, 0, 1), "[ Ball Selected! ]");
             ImGui::Text("Radius: %.1f | Mass: %.1f", SelectedBall->Radius, SelectedBall->Mass);
             ImGui::Separator();
             // 6가지 코어 스킬 발동 버튼!
-            if (ImGui::Button("1. 자폭 (Mine)"))       SelectedBall->ApplySkill(USkillType::Mine);
-            if (ImGui::Button("2. 빙결 (Freeze)"))     SelectedBall->ApplySkill(USkillType::Freeze);
-            if (ImGui::Button("3. 거대화 (SizeUp)"))   SelectedBall->ApplySkill(USkillType::SizeScaling);
-            if (ImGui::Button("4. 질량증가 (MassUp)")) SelectedBall->ApplySkill(USkillType::MassScaling);
-            if (ImGui::Button("5. 척력파 (Magnet)"))   SelectedBall->ApplySkill(USkillType::ReverseMagnet);
-            if (ImGui::Button("6. 벽 생성 (Wall)"))   SelectedBall->ApplySkill(USkillType::WallCreate);
+            if (ImGui::Button("1. 자폭 (Mine)"))       SelectedBall->ApplySkill(ESkillType::Mine);
+            if (ImGui::Button("2. 빙결 (Freeze)"))     SelectedBall->ApplySkill(ESkillType::Freeze);
+            if (ImGui::Button("3. 거대화 (SizeUp)"))   SelectedBall->ApplySkill(ESkillType::Giant);
+            if (ImGui::Button("4. 질량증가 (MassUp)")) SelectedBall->ApplySkill(ESkillType::Heavier);
+            if (ImGui::Button("5. 척력파 (Magnet)"))   SelectedBall->ApplySkill(ESkillType::Repulse);
+            if (ImGui::Button("6. 벽 생성 (Wall)"))   SelectedBall->ApplySkill(ESkillType::WallCreate);
             if (ImGui::Button("선택 해제 (Deselect)")) SelectedBall = nullptr;
             if (ImGui::Button("선택 해제 (Deselect)"))
             {
@@ -309,6 +312,7 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLine
         {
             ImGui::TextColored(ImVec4(1, 1, 0, 1), "Click a ball to select!");
         }
+
         if (bIsDragging && UInputManager::GetInstance().IsKeyUp(VK_LBUTTON))
         {
             if (SelectedBall != nullptr)

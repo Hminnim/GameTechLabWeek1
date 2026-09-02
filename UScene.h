@@ -5,7 +5,7 @@
 #include "UButton.h"
 #include "UMap.h"
 #include "UGameManager.h"
-
+#include "UPlayerController.h"
 
 class UPrimitive;
 
@@ -94,6 +94,8 @@ private:
 	std::unordered_map<EPlayer, UUI*> m_backgrounds;
 	std::map<ESlot, FSlotData> m_slotData;
 	std::vector<USkillButton*> m_skillButtons;
+    
+    UPlayerController PlayerController;
 };
 
 class UGameOverScene : public UScene

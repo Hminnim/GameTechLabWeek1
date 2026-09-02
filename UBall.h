@@ -4,15 +4,15 @@
 #include "CollisionManager.h"
 #include "UGameManager.h"
 
-enum class USkillType
-{
-    ReverseMagnet,
-    Mine,
-    Freeze,
-    SizeScaling,
-    MassScaling,
-    WallCreate
-};
+//enum class USkillType
+//{
+//    ReverseMagnet,
+//    Mine,
+//    Freeze,
+//    SizeScaling,
+//    MassScaling,
+//    WallCreate
+//};
 
 class UBall : public UPrimitive
 {
@@ -57,7 +57,7 @@ public:
     virtual void ApplySelfFreeze() override;
     virtual void ApplyAirResistance(float DeltaTime, float AirResistance) override;
     virtual void SetEnableAngularMomentum(bool bEnable) override;
-    virtual void ApplySkill(USkillType Skill);
+    virtual void ApplySkill(ESkillType Skill);
     virtual void Update(float DeltaTime, std::vector<UPrimitive*>& others) override;
     void CollisionManage(float DeltaTime, std::vector<UPrimitive*>& others);
     void ReverseMagnetWhenMine(float DeltaTime, std::vector<UPrimitive*>& others);

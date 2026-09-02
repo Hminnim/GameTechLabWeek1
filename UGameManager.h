@@ -23,7 +23,8 @@ enum class ESkillType
 	Giant,
 	Heavier,
 	Mine,
-	Repulse
+	Repulse,
+	WallCreate
 };
 
 enum class EGameResult
