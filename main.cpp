@@ -138,68 +138,74 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLine
         renderer.PrepareShader();
 		USceneManager::GetInstance().Render(renderer);
 
-        if (UInputManager::GetInstance().IsKeyDown(VK_LBUTTON) && !ImGui::GetIO().WantCaptureMouse)
+        if (UGameManager::GetInstance().CurrentTurnState == ETurnState::WaitInput)
         {
-            POINT mouse = UInputManager::GetInstance().GetMousePos();
-            if (USceneManager::GetInstance().GetCurrentScene())
+            // 1. 공 선택 하기
+            if (UInputManager::GetInstance().IsKeyDown(VK_LBUTTON) && !ImGui::GetIO().WantCaptureMouse)
             {
-                auto& primitives = USceneManager::GetInstance().GetCurrentScene()->GetPrimitives();
-                for (auto* prim : primitives)
+                POINT mouse = UInputManager::GetInstance().GetMousePos();
+                if (USceneManager::GetInstance().GetCurrentScene())
                 {
-                    UBall* ball = dynamic_cast<UBall*>(prim);
-                    if (ball && UGameManager::GetInstance().CanSelectBall(ball))
+                    auto& primitives = USceneManager::GetInstance().GetCurrentScene()->GetPrimitives();
+                    for (auto* prim : primitives)
                     {
-                        float dx = ball->Location.x - (float)mouse.x;
-                        float dy = ball->Location.y - (float)mouse.y;
-                        if (dx * dx + dy * dy < ball->Radius * ball->Radius)
+                        UBall* ball = dynamic_cast<UBall*>(prim);
+                        if (ball && UGameManager::GetInstance().CanSelectBall(ball))
                         {
-                            SelectedBall = ball; // 선택만!
-                            break;
+                            float dx = ball->Location.x - (float)mouse.x;
+                            float dy = ball->Location.y - (float)mouse.y;
+                            if (dx * dx + dy * dy < ball->Radius * ball->Radius)
+                            {
+                                SelectedBall = ball; // 선택만!
+                                break;
+                            }
                         }
                     }
                 }
             }
-        }
-        // 2. 우클릭 드래그: 발사 조작 (스킬 걸고 나서 쏘기!)
-        if (SelectedBall != nullptr && UInputManager::GetInstance().IsKeyDown(VK_RBUTTON) && !ImGui::GetIO().WantCaptureMouse)
-        {
-            bIsDragging = true;
-            SelectedBall->Velocity = FVector(0, 0, 0);
-        }
-        if (bIsDragging && UInputManager::GetInstance().IsKeyUp(VK_RBUTTON))
-        {
-            if (SelectedBall != nullptr)
+            // 2. 우클릭 드래그: 발사 조작 (스킬 걸고 나서 쏘기!)
+            if (SelectedBall != nullptr && UInputManager::GetInstance().IsKeyDown(VK_RBUTTON) && !ImGui::GetIO().WantCaptureMouse)
             {
-                POINT mouse = UInputManager::GetInstance().GetMousePos();
-                FVector launchVec(SelectedBall->Location.x - (float)mouse.x, SelectedBall->Location.y - (float)mouse.y, 0.0f);
-                float pullDistance = launchVec.Length();
-                if (pullDistance > 5.0f)
-                {
-                    float launchPower = 8.0f;
-                    SelectedBall->Velocity = launchVec * launchPower;
-                    float maxSpeed = 3000.0f;
-                    if (SelectedBall->Velocity.Length() > maxSpeed)
-                    {
-                        SelectedBall->Velocity = (SelectedBall->Velocity / SelectedBall->Velocity.Length()) * maxSpeed;
-                    }
-
-                    // Shooting Effect 적용을 위한 발사각 계산 (좌클릭 -> 우클릭으로 변경)
-                    float launchAngle = atan2f(SelectedBall->Velocity.y, SelectedBall->Velocity.x);
-
-                    UEffectManager::GetInstance().PlayEffect(
-                        "Resources/shooting.png",
-                        DirectX::XMFLOAT2(SelectedBall->Location.x, SelectedBall->Location.y),
-                        0.25f,
-                        1.5f,
-                        6,
-                        false,
-                        launchAngle
-                    );
-                }
-                UGameManager::GetInstance().CurrentTurnState = ETurnState::BallMoving;
+                bIsDragging = true;
+                SelectedBall->Velocity = FVector(0, 0, 0);
             }
-            bIsDragging = false;
+            if (bIsDragging && UInputManager::GetInstance().IsKeyUp(VK_RBUTTON))
+            {
+                if (SelectedBall != nullptr)
+                {
+                    POINT mouse = UInputManager::GetInstance().GetMousePos();
+                    FVector launchVec(SelectedBall->Location.x - (float)mouse.x, SelectedBall->Location.y - (float)mouse.y, 0.0f);
+                    float pullDistance = launchVec.Length();
+                    if (pullDistance > 5.0f)
+                    {
+                        float launchPower = 8.0f;
+                        SelectedBall->Velocity = launchVec * launchPower;
+                        float maxSpeed = 3000.0f;
+                        if (SelectedBall->Velocity.Length() > maxSpeed)
+                        {
+                            SelectedBall->Velocity = (SelectedBall->Velocity / SelectedBall->Velocity.Length()) * maxSpeed;
+                        }
+
+                        // Shooting Effect 적용을 위한 발사각 계산 (좌클릭 -> 우클릭으로 변경)
+                        float launchAngle = atan2f(SelectedBall->Velocity.y, SelectedBall->Velocity.x);
+
+                        UEffectManager::GetInstance().PlayEffect(
+                            "Resources/shooting.png",
+                            DirectX::XMFLOAT2(SelectedBall->Location.x, SelectedBall->Location.y),
+                            0.25f,
+                            1.5f,
+                            6,
+                            false,
+                            launchAngle
+                        );
+                    }
+                    SelectedBall = nullptr;
+                    UGameManager::GetInstance().CurrentTurnState = ETurnState::BallMoving;
+                }
+                bIsDragging = false;
+            }
         }
+        
         UEffectManager::GetInstance().Render(); // EFFECT TEST
 
         // ImGui
@@ -277,18 +283,58 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLine
         ImGui::Separator();
         ImGui::Text("=== Game Manager Status ===");
 
-        // 1. 현재 턴 가져오기
-        EPlayer currentTurn = UGameManager::GetInstance().CurrentPlayerTurn;
-        if (currentTurn == EPlayer::Red)
+        if (USceneManager::GetInstance().GetCurrentSceneName() == "InGame")
         {
-            // Red 턴이면 빨간색 텍스트
-            ImGui::TextColored(ImVec4(1.0f, 0.3f, 0.3f, 1.0f), "[ Turn : RED Player ]");
-        }
-        else
-        {
-            // Blue 턴이면 파란색 텍스트
-            ImGui::TextColored(ImVec4(0.3f, 0.6f, 1.0f, 1.0f), "[ Turn : BLUE Player ]");
-        }
+            // 처음 Red Turn Effect 적용을 위한 boolean
+            static bool bFirstTurn = true;
+
+            // Turn Effect 적용을 위한 previous turn 변수
+            static EPlayer previousTurn = EPlayer::Red;
+
+            // 1. 현재 턴 가져오기
+            EPlayer currentTurn = UGameManager::GetInstance().CurrentPlayerTurn;
+
+            // 첫 차례거나, 차례가 바뀌면 true
+            bool bTurnChanged = bFirstTurn || (previousTurn != currentTurn);
+
+            if (currentTurn == EPlayer::Red)
+            {
+                // Red 턴이면 빨간색 텍스트
+                ImGui::TextColored(ImVec4(1.0f, 0.3f, 0.3f, 1.0f), "[ Turn : RED Player ]");
+                
+                // Turn이 Blue -> Red 순간에만 Effect 발생
+                if (bTurnChanged)
+                {
+                    UEffectManager::GetInstance().PlayEffect(
+                        "Resources/Red_turn.png", // source path
+                        { UGameSetting::GetInstance().ScreendWidth * 0.5f, UGameSetting::GetInstance().ScreenHeight * 0.5f }, // size
+                        1.0f, // duration
+                        1.0f, // scale
+                        1     // frame count
+                    );
+                }
+            }
+            else
+            {
+                // Blue 턴이면 파란색 텍스트
+                ImGui::TextColored(ImVec4(0.3f, 0.6f, 1.0f, 1.0f), "[ Turn : BLUE Player ]");
+
+                // Turn이 Red -> Blue 순간에만 Effect 발생
+                if (bTurnChanged)
+                {
+                    UEffectManager::GetInstance().PlayEffect(
+                        "Resources/Blue_turn.png", // source path
+                        { UGameSetting::GetInstance().ScreendWidth * 0.5f, UGameSetting::GetInstance().ScreenHeight * 0.5f }, // size
+                        1.0f, // duration
+                        1.0f, // scale
+                        1     // frame count    
+                    );
+                }
+            }
+
+            previousTurn = currentTurn;
+            bFirstTurn = false;
+        }   
 
         // 2. 현재 상태 가져오기
         ETurnState currentState = UGameManager::GetInstance().CurrentTurnState;

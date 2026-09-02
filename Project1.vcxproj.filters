@@ -22,9 +22,6 @@
     <Filter Include="inc">
       <UniqueIdentifier>{c0a728df-e3c8-4be3-ae40-cb2664664c91}</UniqueIdentifier>
     </Filter>
-    <Filter Include="Managers">
-      <UniqueIdentifier>{2589084f-1b81-4dbb-81a7-2ef4160ae4e0}</UniqueIdentifier>
-    </Filter>
   </ItemGroup>
   <ItemGroup>
     <FxCompile Include="ShaderW0.hlsl">
