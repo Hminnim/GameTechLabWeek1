@@ -134,5 +134,25 @@ public:
 
 private:
 	std::vector<USkillButton*> m_pickStageSkillButtons; // Init 에서 위치 계산해서 때려넣
+};
 
+class UIntroScene : public UScene
+{
+public:
+    void Initialize() override;
+
+    void Update(float deltaTime) override;
+    void Render(URenderer& renderer) override;
+    void AddIn(UUI* in) { m_in = in; }
+    void AddOut(UUI* out) { m_out = out; }
+
+    void Enter() override;
+
+private:
+    UUI* m_out;
+    UUI* m_in;
+
+    float m_elapsedTime = 0.0f;     // 누적된 시간을 추적
+    float m_renderTime = 3.0f;      // 3초 동안만 연출 (원하는 시간으로 설정)
+    float m_rotationAngle = 0.0f;   // in 객체의 현재 회전각
 };

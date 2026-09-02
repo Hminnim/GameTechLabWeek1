@@ -17,6 +17,7 @@ void USceneManager::AddScene(const std::string& name, UScene* scene)
 
 void USceneManager::RequestChangeScene(const std::string& name)
 {
+	if (m_hasPendingSceneChange) return;
 	m_hasPendingSceneChange = true;
 	m_pendingSceneName = name;
 	if (m_currentScene)
