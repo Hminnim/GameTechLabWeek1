@@ -87,7 +87,7 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLine
     USceneManager::GetInstance().AddScene("Title", new UTitleScene());
 	USceneManager::GetInstance().AddScene("InGame", new UInGameScene());
 	USceneManager::GetInstance().AddScene("GameOver", new UGameOverScene());
-    USceneManager::GetInstance().ChangeScene("Title");
+    USceneManager::GetInstance().RequestChangeScene("Title");
 
     ///////////////////////////////////////////////
     //////////////////EFFECT TEST//////////////////
@@ -291,12 +291,14 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLine
             ImGui::TextColored(ImVec4(0, 1, 0, 1), "[ Ball Selected! ]");
             ImGui::Text("Radius: %.1f | Mass: %.1f", SelectedBall->Radius, SelectedBall->Mass);
             ImGui::Separator();
-            // 💥 5가지 코어 스킬 발동 버튼!
+            // 6가지 코어 스킬 발동 버튼!
             if (ImGui::Button("1. 자폭 (Mine)"))       SelectedBall->ApplySkill(USkillType::Mine);
             if (ImGui::Button("2. 빙결 (Freeze)"))     SelectedBall->ApplySkill(USkillType::Freeze);
             if (ImGui::Button("3. 거대화 (SizeUp)"))   SelectedBall->ApplySkill(USkillType::SizeScaling);
             if (ImGui::Button("4. 질량증가 (MassUp)")) SelectedBall->ApplySkill(USkillType::MassScaling);
             if (ImGui::Button("5. 척력파 (Magnet)"))   SelectedBall->ApplySkill(USkillType::ReverseMagnet);
+            if (ImGui::Button("6. 벽 생성 (Wall)"))   SelectedBall->ApplySkill(USkillType::WallCreate);
+            if (ImGui::Button("선택 해제 (Deselect)")) SelectedBall = nullptr;
             if (ImGui::Button("선택 해제 (Deselect)"))
             {
                 UEffectManager::GetInstance().ClearAura(SelectedBall); // Aura Effect 해제

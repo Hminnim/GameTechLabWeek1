@@ -4,7 +4,7 @@
 
 int UWall::TotalNumWalls = 0;
 
-UWall::UWall(const std::string& meshKey,const FVector spawnLocation, float width)
+UWall::UWall(const std::string& meshKey,const FVector spawnLocation, float width, EPlayer Owner, float angle)
 {
     TotalNumWalls++;
 
@@ -17,12 +17,13 @@ UWall::UWall(const std::string& meshKey,const FVector spawnLocation, float width
     bEnableAngularVelocity = false;
 
     Width = width;
+    
+    wallowner = Owner;
 
     // 벽 스폰 위치
     Location = spawnLocation;
-
+    Rotation = FVector(0,0,angle);
     Velocity = FVector(0, 0, 0);
-    Rotation = FVector(0, 0, 0);
 
     m_vertexBuffer = UResourceManager::GetInstance().GetVertexBuffer(meshKey);
     m_numVertices = UResourceManager::GetInstance().GetNumVertices(meshKey);

@@ -1,6 +1,7 @@
 #include "pch.h"
 #include "UGameManager.h"
 #include "UBall.h"
+#include "UWall.h"
 #include "USceneManager.h"
 #include "UGameSetting.h"
 #include "UEffectManager.h"
@@ -76,23 +77,33 @@ void UGameManager::CheckTurnEnd(std::vector<UPrimitive*>& primitives)
 	if (bIsAllBallStopped)
 	{
 		for (auto* primitive : primitives)
-		{
+		{						
+			UWall* Wall = dynamic_cast<UWall*>(primitive);
+			if (Wall != nullptr && Wall->wallowner != CurrentPlayerTurn)
+			{
+				Wall->bIsDestroyed = true;
+			}						
 			UBall* ball = dynamic_cast<UBall*>(primitive);
 			if (ball && ball->Owner == CurrentPlayerTurn)
 			{
 				ball->isFreezed = false;
 				ball->bEnableFreeze = false;
+				ball->bEnableWallCreate = false;
 				ball->isSelfDestruct = false;
 				ball->TargetRadius = UGameSetting::GetInstance().BallBaseRadius;
 				ball->isSizeScaling = true;
 				ball->TargetMass = UGameSetting::GetInstance().BallBaseRadius * 10.0f;
-				ball->isMassScaling = true;
+				ball->isMassScaling = true;				
 			}
 		}
-		
+		// 스킬 관련 업데이트 사항
+		m_usedSkills[CurrentPlayerTurn][m_currentSelectedSkill] = true;
+
 		CurrentPlayerTurn = (CurrentPlayerTurn == EPlayer::Red ? EPlayer::Blue : EPlayer::Red);
 		CurrentTurnState = ETurnState::WaitInput;
 	}
+
+
 }
 
 void UGameManager::CheckGameOver(std::vector<UPrimitive*>& primitives)

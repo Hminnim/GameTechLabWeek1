@@ -6,6 +6,7 @@
 #include "UMap.h"
 #include "UGameManager.h"
 
+
 class UPrimitive;
 
 // 한 화면을 구성하는 UPrimitive/UUI/UButton 묶음
@@ -19,11 +20,11 @@ class UScene
         virtual void Exit() {};
 
         // 객체 추가
-        void AddPrimitive(UPrimitive* primitive) { _primitives.push_back(primitive); }
+        void AddPrimitive(UPrimitive* primitive) { _pendingPrimitives.push_back(primitive); }
         void AddUI(UUI* ui) { _uis.push_back(ui); }
         void AddButton(UButton* button) { _buttons.push_back(button); }
 
-		void SetBackground(UUI* background) { _background = background; }
+		virtual void SetBackground(UUI* background) { _background = background; }
 		void SetMap(UUI* map) { _map = map; }
 
         virtual void Update(float deltaTime);
@@ -36,7 +37,7 @@ class UScene
 
     protected:
         std::vector<UPrimitive*> _primitives;
-
+        std::vector<UPrimitive*> _pendingPrimitives;
     private:     
         std::vector<UUI*> _uis;
         std::vector<UButton*> _buttons;
@@ -51,19 +52,48 @@ class UTitleScene : public UScene
 {
 public:
 	void Initialize() override;
+
 	void Update(float deltaTime) override;
 	void Render(URenderer& renderer) override;
+};
+
+
+struct FSlotData 
+{
+    ESkillType AssignedSkill = ESkillType::None;
+    float x, y;
+};
+
+enum class ESlot
+{
+	Slot1,
+	Slot2,
+	Slot3,
+	Slot4,
+	Slot5,
+    Slot6,
+    Slot7,
+    Slot8,
+    Slot9,
+    Slot10,
+    MaxCount
 };
 
 class UInGameScene : public UScene
 {
 public:
     void Initialize() override;
+    virtual void SetBackground(UUI* backgroundBlue, UUI* backgroundRed) { m_backgrounds[EPlayer::Blue] = backgroundBlue; m_backgrounds[EPlayer::Red] = backgroundRed; }
 
+	void AddSkillButton(USkillButton* skillButton) { m_skillButtons.push_back(skillButton); }
 	void Update(float deltaTime) override;
 	void Render(URenderer& renderer) override;
-
     void Enter() override;
+
+private:
+	std::unordered_map<EPlayer, UUI*> m_backgrounds;
+	std::map<ESlot, FSlotData> m_slotData;
+	std::vector<USkillButton*> m_skillButtons;
 };
 
 class UGameOverScene : public UScene

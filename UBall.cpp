@@ -5,6 +5,9 @@
 #include "UResourceManager.h"
 #include "UGameSetting.h"
 #include "UEffectManager.h"
+#include "UScene.h"
+#include "USceneManager.h"
+#include "USoundManager.h"
 
 CollisionManager CollisionMan;
 
@@ -171,17 +174,20 @@ void UBall::ApplySkill(USkillType skill)
              break;
 
         case USkillType::SizeScaling:
-            TargetRadius = Radius * 1.5;
+            TargetRadius = Radius * 1.5f;
             isSizeScaling = true;
              break;
 
         case USkillType::MassScaling:
-            TargetMass = Mass * 1.5;
+            TargetMass = Mass * 1.5f;
             isMassScaling = true;
             break;
 
         case USkillType::ReverseMagnet:
             isMagnetActivated = true;
+            break;
+        case USkillType::WallCreate:
+            bEnableWallCreate = true;
             break;
     }
 }
@@ -255,6 +261,7 @@ void UBall::SizeMassScaling(float DeltaTime)
         }
     }
 }
+FVector lastspawnpos;
 
 void UBall::FrictionFloor(float DeltaTime, std::vector<UPrimitive*>& others)
 {
@@ -262,6 +269,26 @@ void UBall::FrictionFloor(float DeltaTime, std::vector<UPrimitive*>& others)
     if (isFreezed)
     {
         FricVal = 200000.0f;
+    }
+    if (bEnableWallCreate && Velocity.Length()>50.0f && currentWallCount<MaxWallCount)
+    {
+        float dx = (Location.x - lastspawnpos.x);
+        float dy = (Location.y - lastspawnpos.y);
+        float dist = sqrtf(dx * dx + dy * dy);
+
+        if (dist >= 150.0f) {
+            FVector dir = Velocity / Velocity.Length();
+            float offset = Radius + 40.0f + 10.0f;
+            FVector spawnpos = Location - (dir * offset);
+
+            float angle = atan2f(Velocity.y, Velocity.x);
+
+            UScene* currentScene = USceneManager::GetInstance().GetCurrentScene();
+            currentScene->AddPrimitive(new UWall("square", FVector(spawnpos.x, spawnpos.y, 0.5f), 75.0f, this->Owner, -angle));
+            
+            lastspawnpos = spawnpos;
+            currentWallCount++;
+        }
     }
 
     //속도에 따른 위치 이동
@@ -303,6 +330,16 @@ void UBall::ReverseMagnetWhenMine(float DeltaTime, std::vector<UPrimitive*>& oth
     // 자폭시 척력 적용
     if (this->bIsDestroyed && this->isSelfDestruct)
     {
+        UEffectManager::GetInstance().PlayEffect(
+            "Resources/self-destruct.png",
+            DirectX::XMFLOAT2(Location.x, Location.y),
+            1.25f,                         // 재생 시간 (1.25초)
+            DirectX::XMFLOAT2(2.0f, 2.0f), // 크기 배율 (2배)
+            9,                             // 총 9프레임 스프라이트 시트
+            false,
+            0.0f
+        );
+        USoundManager::GetInstance().PlaySound("hit");
         float currentMineForce = 500000.0f;
         for (auto* other : others)
         {
@@ -335,4 +372,8 @@ void UBall::CollisionManage(float DeltaTime, std::vector<UPrimitive*>& others)
             }
         }
     }
+}
+
+void UBall::WallCreate()
+{
 }
