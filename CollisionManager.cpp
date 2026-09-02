@@ -100,7 +100,7 @@ void CollisionManager::ResolveCollision(UPrimitive* TargetPrimitive, UPrimitive*
             "Resources/collision.png",
             DirectX::XMFLOAT2(CollisionPoint.x, CollisionPoint.y),
             0.25f,
-            2.0f,
+            DirectX::XMFLOAT2(2.0f, 2.0f),
             7,
             false,
             0.0f
