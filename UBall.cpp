@@ -56,6 +56,7 @@ UBall::~UBall()
 {
     TotalNumBalls--;
     UEffectManager::GetInstance().ClearAura(this);
+    UEffectManager::GetInstance().ClearAura(&_skillAuraKey);
 }
 
 void UBall::Render(URenderer& Renderer)
