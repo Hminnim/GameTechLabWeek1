@@ -25,7 +25,10 @@ enum class ESkillType
 	Mine,
 	Repulse,
 	WallCreate,
-	Shotgun
+	Shotgun,
+	Ghost,
+	Magnet,
+	Return
 };
 
 enum class EGameResult

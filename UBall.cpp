@@ -12,7 +12,7 @@
 CollisionManager CollisionMan;
 FVector lastspawnpos;
 FVector ShotgunstartPos;
-
+FVector Returnpos;
 
 UBall::UBall(const std::string& meshKey, const EPlayer owner, const FVector startLocation)
 {
@@ -95,8 +95,18 @@ void UBall::Update(float DeltaTime, std::vector<UPrimitive*>& others)
         || (Location.y > ScreenHeight - MapMarginY + Radius) 
         || (Location.y < MapMarginY - Radius))
     {
-        this->bIsDestroyed = true;
-        USoundManager::GetInstance().PlaySound("out");
+        
+        if (bEnableReturn)
+        {
+            Location = Returnpos;
+            Velocity = FVector(0, 0, 0);
+            this->bIsDestroyed = false;
+        }
+        else 
+        {
+            this->bIsDestroyed = true;
+            USoundManager::GetInstance().PlaySound("out");
+        }
     }
 
     // 이동하는 중에도 Effect 적용
@@ -158,6 +168,35 @@ void UBall::ApplyReverseMagnetism(UPrimitive* OtherPrimitive, float DeltaTime, f
 
         // 질량이 가벼울 수록 빠르게 접근 F = ma
         Other->Velocity += (ForceVector / Other->Mass); // 작용 반작용
+    }
+}
+
+void UBall::ApplyMagnetism(UPrimitive* OtherPrimitive, float DeltaTime, float MagneticForce, float MaxDist)
+{
+    UBall* Other = dynamic_cast<UBall*>(OtherPrimitive);
+    if (!Other)
+    {
+        return;
+    }
+
+    FVector Delta = Other->Location - Location; // 두 공사이 거리 벡터
+    float DistSq = Delta.LengthSquared();       // 거리 제곱
+
+    // 너무 가까히 말고 일정 거리 이내에서
+    if (DistSq > 0.01f && DistSq < MaxDist)
+    {
+        float Dist = (float)sqrt(DistSq);
+
+        FVector Normal = Delta / Dist; // 법선 벡터
+
+        // 거리에 비례해서 강한 힘
+        float Force = MagneticForce;
+
+        // 힘의 방향 벡터
+        FVector ForceVector = Normal * Force;
+
+        // 질량이 가벼울 수록 빠르게 접근 F = ma
+        Other->Velocity -= (ForceVector / Other->Mass); // 작용 반작용
     }
 }
 
@@ -283,6 +322,18 @@ void UBall::ApplySkill(ESkillType skill)
             ShotgunstartPos = Location;
             break;
 
+        case ESkillType::Ghost:
+            bEnableGhost = true;
+            break;
+        
+        case ESkillType::Magnet:
+            bEnableMagnet = true;
+            break;
+
+        case ESkillType::Return:
+            bEnableReturn = true;
+            Returnpos = Location;
+            break;
         default:
             break;
     }
@@ -293,6 +344,9 @@ void UBall::RemoveAllSkill()
     isFreezed = false;
     bEnableFreeze = false;
     bEnableWallCreate = false;
+    bEnableGhost = false;
+    bEnableMagnet = false;
+    bEnableReturn = false;
     isSelfDestruct = false;
     TargetRadius = UGameSetting::GetInstance().BallBaseRadius;
     isSizeScaling = true;
@@ -302,6 +356,7 @@ void UBall::RemoveAllSkill()
     bEnableShotgun = false;
     isGiantActivated = false;
     isHeavierActivated = false;
+    
 
     UEffectManager::GetInstance().ClearAura(&_skillAuraKey);
 
@@ -485,6 +540,25 @@ void UBall::FrictionFloor(float DeltaTime, std::vector<UPrimitive*>& others)
                 AlreadyActiveMag = true;
 				USoundManager::GetInstance().PlaySound("repulse");
                 UEffectManager::GetInstance().ClearAura(&_skillAuraKey);
+            }
+            if (bEnableMagnet && !AlreadyActiveMagnetism)
+            {
+                float currentMagnetForce = 100000.0f;
+                for (auto* other : others)
+                {
+                    if (other != this)
+                    {
+                        if (other != nullptr)
+                        {
+                            ApplyMagnetism(other, DeltaTime, currentMagnetForce, 40000.0f);
+                        }
+                    }
+                }
+                AlreadyActiveMagnetism = true;
+            }
+            if (bEnableReturn)
+            {
+                Location = Returnpos;                
             }
         }
         else Velocity += NormalizeFricVec * FricVal * DeltaTime;
