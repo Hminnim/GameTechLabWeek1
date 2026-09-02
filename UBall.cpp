@@ -98,6 +98,29 @@ void UBall::Update(float DeltaTime, std::vector<UPrimitive*>& others)
         this->bIsDestroyed = true;
         USoundManager::GetInstance().PlaySound("out");
     }
+
+    // 이동하는 중에도 Effect 적용
+    if ( bEnableFreeze || isSelfDestruct || isMagnetActivated || isGiantActivated || isHeavierActivated )
+    {
+
+        // 각 skill 별 texture-key
+        std::string Texture = ""; // texturekey
+
+        if (bEnableFreeze)              Texture = "Resources/blue_aura.png";
+        else if (isSelfDestruct)        Texture = "Resources/red_aura.png";
+        else if (isMagnetActivated)     Texture = "Resources/purple_aura.png";
+        else if (isGiantActivated)      Texture = "Resources/green_aura.png";
+        else if (isHeavierActivated)    Texture = "Resources/yellow_aura.png";
+
+        UEffectManager::GetInstance().DrawAura(
+            &_skillAuraKey,
+            Texture,
+            DirectX::XMFLOAT2(Location.x, Location.y),
+            1.0f,
+            DirectX::XMFLOAT2(0.6f, 0.6f),
+            16
+        );
+    }
 }
 void UBall::SetElastic(float NewElastic)
 {
@@ -154,34 +177,112 @@ void UBall::ApplySkill(ESkillType skill)
     {
         case ESkillType::Mine:
              isSelfDestruct = true;
+
+            // 기존 effect 해제
+            UEffectManager::GetInstance().ClearAura(this);
+
+            // Self-destruct Selected Ball Effect
+            UEffectManager::GetInstance().DrawAura(
+                &_skillAuraKey,
+                "Resources/red_aura.png",
+                DirectX::XMFLOAT2(this->Location.x, this->Location.y),
+                1.0f,
+                // 1.0f,
+                DirectX::XMFLOAT2(0.5f, 0.5f),
+                16
+            );
+
              break;
 
         case ESkillType::Freeze:
              bEnableFreeze = true;
+
+            // 기존 effect 해제
+            UEffectManager::GetInstance().ClearAura(this);
+
+            // Freeze Selected Ball Effect
+            UEffectManager::GetInstance().DrawAura(
+                &_skillAuraKey,
+                "Resources/blue_aura.png",
+                DirectX::XMFLOAT2(this->Location.x, this->Location.y),
+                1.0f,
+                // 1.0f,
+                DirectX::XMFLOAT2(0.5f, 0.5f),
+                16
+            );
+
              break;
 
         case ESkillType::Giant:
             TargetRadius = UGameSetting::GetInstance().BallBaseRadius * 1.5f;
             isSizeScaling = true;
+            isGiantActivated = true;
 			USoundManager::GetInstance().PlaySound("sizeup");
+            
+            // 기존 effect 해제
+            UEffectManager::GetInstance().ClearAura(this);
+
+            // Giant Selected Ball Effect
+            UEffectManager::GetInstance().DrawAura(
+                &_skillAuraKey,
+                "Resources/green_aura.png",
+                DirectX::XMFLOAT2(this->Location.x, this->Location.y),
+                1.0f,
+                // 1.0f,
+                DirectX::XMFLOAT2(0.5f, 0.5f),
+                16
+            );
             break;
 
         case ESkillType::Heavier:
             TargetMass = UGameSetting::GetInstance().BallBaseRadius * 10.0f * 1.5f;
             isMassScaling = true;
+            isHeavierActivated = true;
 			USoundManager::GetInstance().PlaySound("sizeup");
+
+            // 기존 effect 해제
+            UEffectManager::GetInstance().ClearAura(this);
+
+            // Havier Selected Ball Effect
+            UEffectManager::GetInstance().DrawAura(
+                &_skillAuraKey,
+                "Resources/yellow_aura.png",
+                DirectX::XMFLOAT2(this->Location.x, this->Location.y),
+                1.0f,
+                // 1.0f,
+                DirectX::XMFLOAT2(0.5f, 0.5f),
+                16
+            );
             break;
 
         case ESkillType::Repulse:
             isMagnetActivated = true;
+
+            // 기존 effect 해제
+            UEffectManager::GetInstance().ClearAura(this);
+            
+            // Repulse Selected Ball Effect
+            UEffectManager::GetInstance().DrawAura(
+                &_skillAuraKey,
+                "Resources/purple_aura.png",
+                DirectX::XMFLOAT2(this->Location.x, this->Location.y),
+                1.0f,
+                // 1.0f,
+                DirectX::XMFLOAT2(0.5f, 0.5f),
+                16
+            );
+
             break;
+
         case ESkillType::WallCreate:
             bEnableWallCreate = true;
             break;
+
         case ESkillType::Shotgun:
             bEnableShotgun = true;
             ShotgunstartPos = Location;
             break;
+
         default:
             break;
     }
@@ -199,6 +300,11 @@ void UBall::RemoveAllSkill()
     isMagnetActivated = false;
     isMassScaling = true;
     bEnableShotgun = false;
+    isGiantActivated = false;
+    isHeavierActivated = false;
+
+    UEffectManager::GetInstance().ClearAura(&_skillAuraKey);
+
 }
 
 void UBall::WallCollision()
@@ -276,6 +382,8 @@ void UBall::FrictionFloor(float DeltaTime, std::vector<UPrimitive*>& others)
     float FricVal = 700.0f;
     if (isFreezed)
     {
+        UEffectManager::GetInstance().ClearAura(&_skillAuraKey);   
+
         // Freeze Effect
         UEffectManager::GetInstance().DrawAura(
             this,
@@ -376,6 +484,7 @@ void UBall::FrictionFloor(float DeltaTime, std::vector<UPrimitive*>& others)
                 }
                 AlreadyActiveMag = true;
 				USoundManager::GetInstance().PlaySound("repulse");
+                UEffectManager::GetInstance().ClearAura(&_skillAuraKey);
             }
         }
         else Velocity += NormalizeFricVec * FricVal * DeltaTime;
@@ -391,6 +500,10 @@ void UBall::ReverseMagnetWhenMine(float DeltaTime, std::vector<UPrimitive*>& oth
     // 자폭시 척력 적용
     if (this->bIsDestroyed && this->isSelfDestruct)
     {
+        // 기존 effect 해제
+        UEffectManager::GetInstance().ClearAura(this);
+        UEffectManager::GetInstance().ClearAura(&_skillAuraKey);   
+
         UEffectManager::GetInstance().PlayEffect(
             "Resources/self-destruct.png",
             DirectX::XMFLOAT2(Location.x, Location.y),

@@ -74,11 +74,13 @@ void CollisionManager::ResolveCollision(UPrimitive* TargetPrimitive, UPrimitive*
         {
             OtherBall->isFreezed = true;
 			USoundManager::GetInstance().PlaySound("freeze");
+            UEffectManager::GetInstance().ClearAura(&TargetBall->_skillAuraKey);
         }
         if (OtherBall->bEnableFreeze)
         {
             TargetBall->isFreezed = true;
 			USoundManager::GetInstance().PlaySound("freeze");
+            UEffectManager::GetInstance().ClearAura(&TargetBall->_skillAuraKey);
         }
 
         //Collision Effect, Sound 출력

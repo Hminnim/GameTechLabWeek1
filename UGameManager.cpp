@@ -95,7 +95,7 @@ void UGameManager::CheckTurnEnd(std::vector<UPrimitive*>& primitives)
 			}
 		}		
 
-		CurrentPlayerTurn = (CurrentPlayerTurn == EPlayer::Red ? EPlayer::Blue : EPlayer::Red);
+		CurrentPlayerTurn = (CurrentPlayerTurn == EPlayer::Red ? EPlayer::Blue : EPlayer::Red);		
 		CurrentTurnState = ETurnState::WaitInput;
 
 		USoundManager::GetInstance().PlaySound("change_turn");
