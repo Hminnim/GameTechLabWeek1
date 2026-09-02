@@ -93,7 +93,8 @@ void UGameManager::CheckTurnEnd(std::vector<UPrimitive*>& primitives)
 				ball->TargetRadius = UGameSetting::GetInstance().BallBaseRadius;
 				ball->isSizeScaling = true;
 				ball->TargetMass = UGameSetting::GetInstance().BallBaseRadius * 10.0f;
-				ball->isMassScaling = true;				
+				ball->isMassScaling = true;
+				if (ball->isShotgunbullet) ball->bIsDestroyed = true;
 			}
 		}
 		// 스킬 관련 업데이트 사항

@@ -24,7 +24,8 @@ enum class ESkillType
 	Heavier,
 	Mine,
 	Repulse,
-	WallCreate
+	WallCreate,
+	Shotgun
 };
 
 enum class EGameResult
