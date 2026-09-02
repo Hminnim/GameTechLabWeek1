@@ -17,7 +17,8 @@ class UUI
         // Setter
         void SetActive(bool active) { _isActive = active; }
 		void SetPosition(float x, float y) { _x = x; _y = y; }
-        
+        void SetRotation(float radian) { _rotation = radian; }
+
         // Check the status (item or not)
         bool IsActive() const { return _isActive; }
 
@@ -31,6 +32,9 @@ class UUI
         // position
         float _x = 0.0f;
         float _y = 0.0f;
+
+        // roattion
+        float _rotation = 0.0f;
 
         // scale
         float _width = 0.0f;

@@ -116,8 +116,6 @@ void UTitleScene::Initialize()
     exitbtn->SetOnClick([]() {
         PostQuitMessage(0);
         });
-
-    
 }
 
 void UTitleScene::Update(float deltaTime)
@@ -437,7 +435,8 @@ void UGameOverScene::Render(URenderer& renderer)
 }
 
 void UGameOverScene::Enter()
-{  
+{
+
 }
 
 
@@ -458,5 +457,62 @@ void DraftScene::Render(URenderer& renderer)
 }
 
 void DraftScene::Enter()
+{
+}
+
+/////////////////
+// UIntroScene //
+/////////////////
+void UIntroScene::Initialize()
+{
+    float ScreenWidth = (float)UGameSetting::GetInstance().ScreendWidth;
+    float ScreenHeight = (float)UGameSetting::GetInstance().ScreenHeight;
+
+    UUI* background = new UUI();
+    background->Init("Resources/background_intro.png", 0, 0, ScreenWidth, ScreenHeight);
+    SetBackground(background);
+    
+    float iconSize = 300.0f;
+    float startX = (ScreenWidth / 2.0f) - (iconSize / 2.0f);
+    float yOffset = 200.0f;
+    float startY = (ScreenHeight / 2.0f) - (iconSize / 2.0f) - yOffset;
+
+    UUI* out = new UUI();
+    out->Init("Resources/Jungle_out.png", startX, startY, iconSize, iconSize);
+    AddOut(out);
+
+    UUI* in = new UUI();
+    in->Init("Resources/Jungle_in.png", startX, startY, iconSize, iconSize);
+    AddIn(in);
+}
+
+void UIntroScene::Update(float deltaTime)
+{
+    m_elapsedTime += deltaTime;
+    char buf[128];
+    sprintf_s(buf, "dt=%f, elapsed=%f, renderTime=%f\n", deltaTime, m_elapsedTime, m_renderTime);
+    OutputDebugStringA(buf);
+    if (m_elapsedTime >= m_renderTime) {
+        USceneManager::GetInstance().RequestChangeScene("Title");
+    }
+
+    float rotateSpeed = 1.0f;
+    m_rotationAngle += rotateSpeed * deltaTime;
+
+    if (m_in) {
+        m_in->SetRotation(m_rotationAngle);
+    }
+}
+
+void UIntroScene::Render(URenderer& renderer)
+{
+    renderer.BeginSprite();
+    m_background->Render(renderer);
+    m_out->Render(renderer);
+    m_in->Render(renderer);
+    renderer.EndSprite();
+}
+
+void UIntroScene::Enter()
 {
 }

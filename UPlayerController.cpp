@@ -93,7 +93,7 @@ void UPlayerController::Update(std::vector<UPrimitive*>& primitives)
                     "Resources/shooting.png",
                     DirectX::XMFLOAT2(SelectedBall->Location.x, SelectedBall->Location.y),
                     0.25f,
-                    DirectX::XMFLOAT2(2.0f, 2.0f),
+                    DirectX::XMFLOAT2(1.0f, 1.0f),
                     6,
                     false,
                     launchAngle
