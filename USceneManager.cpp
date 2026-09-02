@@ -21,6 +21,7 @@ void  USceneManager::ChangeScene(const std::string& name)
 		m_currentScene->Exit();
 	}
 	m_currentScene = m_scenes[name];
+	m_currentSceneName = name;
 	if (m_currentScene != nullptr) {
 		m_currentScene->Enter();
 	}
