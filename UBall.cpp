@@ -3,6 +3,7 @@
 #include "UBall.h"
 #include "UResourceManager.h"
 #include "UGameSetting.h"
+#include "UEffectManager.h"
 
 CollisionManager CollisionMan;
 
@@ -117,7 +118,7 @@ void UBall::Update(float DeltaTime, std::vector<UPrimitive*>& others)
             // 척력 발생시 주위 밀어냄
             if (isMagnetActivated && !AlreadyActiveMag)
             {
-                float currentMagnetForce = 700000.0f;
+                float currentMagnetForce = 100000.0f;
                 for (auto* other : others)
                 {
                     if (other != this)
@@ -179,7 +180,7 @@ void UBall::Update(float DeltaTime, std::vector<UPrimitive*>& others)
     // 자폭 적용된 공 충돌시 삭제 + 주변에 척력 적용
     if (this->isDestroyed)
     {
-        float currentMineForce = 300000.0f;
+        float currentMineForce = 500000.0f;
         for (auto* other : others)
         {
             if (other != this)
