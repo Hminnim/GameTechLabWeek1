@@ -391,7 +391,8 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLine
                         { UGameSetting::GetInstance().ScreendWidth * 0.5f, UGameSetting::GetInstance().ScreenHeight * 0.5f }, // size
                         1.0f, // duration
                         DirectX::XMFLOAT2(1.0f, 1.0f), // scale
-                        1     // frame count
+                        false,     // frame count
+                        true
                     );
                 }
             }
@@ -408,7 +409,8 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLine
                         { UGameSetting::GetInstance().ScreendWidth * 0.5f, UGameSetting::GetInstance().ScreenHeight * 0.5f }, // size
                         1.0f, // duration
                         DirectX::XMFLOAT2(1.0f, 1.0f), // scale
-                        1     // frame count    
+                        false,     // frame count
+                        true    
                     );
                 }
             }

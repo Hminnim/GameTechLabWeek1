@@ -214,7 +214,9 @@ void UGameManager::CheckFrozenTurnSkip(std::vector<UPrimitive*>& primitives, flo
 			{ (float)UGameSetting::GetInstance().ScreendWidth * 0.5f, (float)UGameSetting::GetInstance().ScreenHeight * 0.5f },
 			1.0f,
 			DirectX::XMFLOAT2(1.0f, 1.0f),
-			1
+			1.0f,
+			false,
+			0.0f
 		);
 	}
 }
