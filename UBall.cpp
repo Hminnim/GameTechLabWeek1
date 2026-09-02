@@ -69,12 +69,12 @@ void UBall::Update(float DeltaTime, std::vector<UPrimitive*>& others)
     // 마찰력 계수 적용
     if (Velocity.Length() > 0.0f) {
         FVector NormalizeFricVec = Velocity / Velocity.Length() * (-1.0f);
-        if (Velocity.Length() <= 300.0f * DeltaTime)
+        if (Velocity.Length() <= 500.0f * DeltaTime)
         {
             Velocity = FVector(0, 0, 0);
             bEnableFreeze = false;
             // 척력 발생시 주위 밀어냄
-            if (isMagnetActivated && notActiveMag)
+            if (isMagnetActivated && !AlreadyActiveMag)
             {
                 float currentMagnetForce = 700000.0f;
                 for (auto* other : others)
@@ -87,10 +87,10 @@ void UBall::Update(float DeltaTime, std::vector<UPrimitive*>& others)
                         }
                     }
                 }
-                notActiveMag = false;
+                AlreadyActiveMag = true;
             }
         }
-        else Velocity += NormalizeFricVec * 300.0f * DeltaTime;
+        else Velocity += NormalizeFricVec * 500.0f * DeltaTime;
     }
     if (bEnableAngularVelocity)
     {
