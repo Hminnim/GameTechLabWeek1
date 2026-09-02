@@ -34,8 +34,10 @@ class UScene
         // 마우스 클릭 - 버튼 대응
         void HandleClick(float mouseX, float mouseY);
 
-    private:
+    protected:
         std::vector<UPrimitive*> _primitives;
+
+    private:     
         std::vector<UUI*> _uis;
         std::vector<UButton*> _buttons;
         UUI* _background;
@@ -60,6 +62,8 @@ public:
 
 	void Update(float deltaTime) override;
 	void Render(URenderer& renderer) override;
+
+    void Enter() override;
 };
 
 class UGameOverScene : public UScene
@@ -69,4 +73,6 @@ public:
 
 	void Update(float deltaTime) override;
 	void Render(URenderer& renderer) override;
+
+    void Enter() override;
 };

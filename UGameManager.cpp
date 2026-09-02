@@ -27,6 +27,7 @@ void UGameManager::InitGame()
 {
 	CurrentPlayerTurn = EPlayer::Red;
 	CurrentTurnState = ETurnState::WaitInput;
+	CurrentGameResult = EGameResult::None;
 }
 
 bool UGameManager::CanSelectBall(UBall* TargetBall)
@@ -120,22 +121,27 @@ void UGameManager::CheckGameOver(std::vector<UPrimitive*>& primitives)
 	// Blue 승
 	if (RedBallCount == 0 && BlueBallCount > 0)
 	{
-		CurrentTurnState = ETurnState::GameOver;
 		OutputDebugStringA("===== BLUE WIN! =====\n");
-		// Blue 승리 화면 전환
+		CurrentTurnState = ETurnState::GameOver;
+		CurrentGameResult = EGameResult::BlueWin;
 	}
 	// Red 승
 	else if (RedBallCount > 0 && BlueBallCount == 0)
 	{
-		CurrentTurnState = ETurnState::GameOver;
 		OutputDebugStringA("===== RED WIN! =====\n");
-		// Red 승리 화면 전환
+		CurrentTurnState = ETurnState::GameOver;
+		CurrentGameResult = EGameResult::RedWin;
 	}
 	// 무승부
 	else if (RedBallCount == 0 && BlueBallCount == 0)
 	{
-		CurrentTurnState = ETurnState::GameOver;
 		OutputDebugStringA("===== DRAW! =====\n");
-		// 무승부 화면 전환
+		CurrentTurnState = ETurnState::GameOver;		
+		CurrentGameResult = EGameResult::Draw;
+	}
+
+	if (CurrentGameResult != EGameResult::None)
+	{
+		USceneManager::GetInstance().ChangeScene("GameOver");
 	}
 }
