@@ -8,6 +8,7 @@ class USceneManager
 public:
     static USceneManager& GetInstance();
     UScene* GetCurrentScene() { return m_currentScene; }
+    std::string GetCurrentSceneName() { return m_currentSceneName; }
     void Initialize() {};
 
     void AddScene(const std::string& name, UScene* scene);
@@ -22,5 +23,6 @@ private:
 private:
     std::unordered_map<std::string, UScene*> m_scenes;
     UScene* m_currentScene = nullptr;
+    std::string m_currentSceneName;
 };
 
