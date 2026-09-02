@@ -71,6 +71,12 @@ void UGameManager::CheckTurnEnd(std::vector<UPrimitive*>& primitives)
 			if (ball && ball->Owner == CurrentPlayerTurn)
 			{
 				ball->isFreezed = false;
+				ball->bEnableFreeze = false;
+				ball->isSelfDestruct = false;
+				ball->TargetRadius = 50.0f;
+				ball->isSizeScaling = true;
+				ball->TargetMass = 50.0f*10.0f;
+				ball->isMassScaling = true;
 			}
 		}
 		
