@@ -506,8 +506,8 @@ void UIntroScene::Update(float deltaTime)
 
 void UIntroScene::Render(URenderer& renderer)
 {
-    UScene::Render(renderer);
     renderer.BeginSprite();
+    m_background->Render(renderer);
     m_out->Render(renderer);
     m_in->Render(renderer);
     renderer.EndSprite();

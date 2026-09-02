@@ -141,6 +141,8 @@ class UIntroScene : public UScene
 public:
     void Initialize() override;
 
+    void SetBackground(UUI* bg) { m_background = bg; };
+
     void Update(float deltaTime) override;
     void Render(URenderer& renderer) override;
     void AddIn(UUI* in) { m_in = in; }
@@ -149,6 +151,7 @@ public:
     void Enter() override;
 
 private:
+    UUI* m_background;
     UUI* m_out;
     UUI* m_in;
 
