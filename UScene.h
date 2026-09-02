@@ -88,7 +88,7 @@ public:
 	void AddSkillButton(USkillButton* skillButton) { m_skillButtons.push_back(skillButton); }
 	void Update(float deltaTime) override;
 	void Render(URenderer& renderer) override;
-  void Enter() override;
+    void Enter() override;
 
 private:
 	std::unordered_map<EPlayer, UUI*> m_backgrounds;

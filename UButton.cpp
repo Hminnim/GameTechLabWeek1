@@ -49,6 +49,24 @@ void USkillButton::Update(float deltaTime)
 	{
 		_state = ESkillButtonState::Normal;
 	}
+
+    // Clear 시 원상복구
+    bool bIsUsed = UGameManager::GetInstance().m_usedSkills[UGameManager::GetInstance().CurrentPlayerTurn][_skillType];
+    if (bIsUsed)
+    {
+        _state = ESkillButtonState::Used;
+    }
+    else
+    {
+        if (_state == ESkillButtonState::Used)
+        {
+            _state = ESkillButtonState::Normal;
+        }
+        else if (_state == ESkillButtonState::Selected && UGameManager::GetInstance().m_currentSelectedSkill != _skillType)
+        {
+            _state = ESkillButtonState::Normal;
+        }
+    }
 }
 
 void USkillButton::Render(URenderer& renderer)
