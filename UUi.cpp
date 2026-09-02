@@ -36,6 +36,11 @@ void UUI::Render(URenderer& renderer)
     //if (!_isActive || !_srv || !_mesh)
     //    return;
 
+    if (!_isActive)
+    {
+        return;
+    }
+
     // Todo: 렌더링 구현
     _srv = UResourceManager::GetInstance().GetTexture(_textureKey);
     RECT destRect = {

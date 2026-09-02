@@ -70,7 +70,7 @@ void UScene::Update(float Deltatime)
 
             UButton* btn = dynamic_cast<UButton*>(ui);
 
-            if (btn != nullptr && btn->HitTest((float)mouseX, (float)mouseY)) {
+            if (btn != nullptr && btn->HitTest((float)mouseX, (float)mouseY)) {                
                 btn->OnClick();
                 break;
             }
@@ -107,7 +107,8 @@ void UTitleScene::Initialize()
     startbtn->Init("Resources/button_start.png", StartBtnX, ButtonY, ButtonWidth, ButtonHeight);
     AddUI(startbtn);
     startbtn->SetOnClick([]() {
-        USceneManager::GetInstance().RequestChangeScene("InGame");
+        //USceneManager::GetInstance().RequestChangeScene("InGame");
+        USceneManager::GetInstance().RequestChangeScene("Draft");
         });
 
     UButton* exitbtn = new UButton();
@@ -312,6 +313,7 @@ void UInGameScene::Update(float deltaTime)
     }
 
     UGameManager::GetInstance().Update(_primitives,deltaTime);
+
 }
 
 void UInGameScene::Render(URenderer& renderer)
@@ -411,7 +413,8 @@ void UGameOverScene::Initialize()
     temp2->Init("Resources/button_restart.png", RestartBtnX, ButtonY, ButtonWidth, ButtonHeight);
     AddUI(temp2);
     temp2->SetOnClick([]() {
-        USceneManager::GetInstance().RequestChangeScene("InGame");
+        //USceneManager::GetInstance().RequestChangeScene("InGame");
+        USceneManager::GetInstance().RequestChangeScene("Draft");
         });
 
     UButton* temp3 = new UButton();

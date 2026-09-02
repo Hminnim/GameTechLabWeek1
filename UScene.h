@@ -41,9 +41,9 @@ class UScene
     protected:
         std::vector<UPrimitive*> _primitives;
         std::vector<UPrimitive*> _pendingPrimitives;
-    private:     
         std::vector<UUI*> _uis;
         std::vector<UButton*> _buttons;
+    private:             
         UUI* _background;
         UUI* _map;
 

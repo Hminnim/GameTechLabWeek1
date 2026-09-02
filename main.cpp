@@ -16,6 +16,8 @@
 #include "UEffectManager.h"
 #include "UGameManager.h"
 
+#include "UDraftScene.h"
+
 int UBall::TotalNumBalls = 0;
 
 int ListCapacity = 0;
@@ -87,6 +89,7 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLine
 
     // Scene Manager
     USceneManager::GetInstance().AddScene("Title", new UTitleScene());
+    USceneManager::GetInstance().AddScene("Draft", new UDraftScene());
 	USceneManager::GetInstance().AddScene("InGame", new UInGameScene());
 	USceneManager::GetInstance().AddScene("GameOver", new UGameOverScene());
     USceneManager::GetInstance().RequestChangeScene("Title");

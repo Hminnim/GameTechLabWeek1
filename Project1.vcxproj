@@ -163,6 +163,7 @@
     <ClCompile Include="pch.cpp" />
     <ClCompile Include="UBall.cpp" />
     <ClCompile Include="UButton.cpp" />
+    <ClCompile Include="UDraftScene.cpp" />
     <ClCompile Include="UEffectManager.cpp" />
     <ClCompile Include="UFadeOverlay.cpp" />
     <ClCompile Include="UGameManager.cpp" />
@@ -203,6 +204,7 @@
     <ClInclude Include="SquareData.h" />
     <ClInclude Include="UBall.h" />
     <ClInclude Include="UButton.h" />
+    <ClInclude Include="UDraftScene.h" />
     <ClInclude Include="UEffectManager.h" />
     <ClInclude Include="UFadeOverlay.h" />
     <ClInclude Include="UGameManager.h" />

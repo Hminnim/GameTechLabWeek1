@@ -58,6 +58,11 @@ public:
 	EGameResult CurrentGameResult = EGameResult::None;
 	float m_frozenTimer = 0.0f;
 
+	// Draft
+	EPlayer CurrentDraftTurn;
+	std::vector<ESkillType> RedDraftedSkills;
+	std::vector<ESkillType> BlueDrafedSkills;
+
 	void Update(std::vector<UPrimitive*>& primitives,float Deltatime);
 	void InitGame();
 	bool CanSelectBall(UBall* TargetBall);
