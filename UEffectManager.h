@@ -67,6 +67,12 @@ class UEffectManager
         void Update(float deltaTime);
         void Render();
 
+        // 여러 개의 지속 이벤트를 위한 Effect (Ex. Freeze)
+        // key : UBall*
+        void DrawIce(void* key, const std::string& textureKey, const DirectX::XMFLOAT2& position,
+                    float loopDuration, const DirectX::XMFLOAT2 scale = { 1.0f, 1.0f }, int frameCount = 1);
+        void ClearIce(void* key);
+
     private:
         UEffectManager() = default;
         ~UEffectManager() = default;
@@ -77,5 +83,7 @@ class UEffectManager
         // Arrow 관리를 위한 멤버
         bool m_hasArrow = false;
         FActiveEffect m_arrow;
+
+        std::unordered_map<void*, FActiveEffect> m_ices;
 
 };

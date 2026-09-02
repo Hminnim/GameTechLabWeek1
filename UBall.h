@@ -30,6 +30,12 @@ public:
     bool isMagnetActivated = false;
     bool AlreadyActiveMag = true;
 
+    // Freeze Effect용 직전 프레임 freeze 감지 변수
+    bool bWasFreezed = false;
+
+    // Freeze Effect용 직전 프레임 freeze 감지 변수
+    bool bWasFreezed = false;
+
     EPlayer Owner = EPlayer::Red;
  
     UBall(const std::string& meshKey, const EPlayer owner, const FVector startLocation);
