@@ -197,6 +197,7 @@
     <ClInclude Include="MathTypes.h" />
     <ClInclude Include="pch.h" />
     <ClInclude Include="Sphere.h" />
+    <ClInclude Include="SquareData.h" />
     <ClInclude Include="UBall.h" />
     <ClInclude Include="UButton.h" />
     <ClInclude Include="UEffectManager.h" />
