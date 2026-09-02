@@ -30,6 +30,7 @@ void UPlayerController::Update(std::vector<UPrimitive*>& primitives)
                     {
                         UEffectManager::GetInstance().ClearAura(SelectedBall);   // 이전 Ball Aura Effect 삭제
                         SelectedBall->RemoveAllSkill(); // 이전 선택한 Ball의 스킬 해제
+                        UGameManager::GetInstance().m_currentSelectedSkill = ESkillType::None; // 스킬 선택도 해제
                     }                        
 
                     SelectedBall = ball; // 선택만!
