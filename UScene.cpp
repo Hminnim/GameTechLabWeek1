@@ -250,8 +250,6 @@ void UInGameScene::Initialize()
 
 void UInGameScene::Update(float deltaTime)
 {
-    UScene::Update(deltaTime);
-
     bool isRedTurn = (UGameManager::GetInstance().CurrentPlayerTurn == EPlayer::Red);
 
     int halfCount = (int)ESlot::MaxCount / 2;
@@ -265,6 +263,22 @@ void UInGameScene::Update(float deltaTime)
             m_skillButtons[i]->SetActive(bActive);
         }
     }
+
+    // Skill Button 업데이트
+    if (UInputManager::GetInstance().IsKeyDown(VK_LBUTTON)) {
+        LONG mouseX = UInputManager::GetInstance().GetMousePos().x;
+        LONG mouseY = UInputManager::GetInstance().GetMousePos().y;
+
+        for (USkillButton* btn : m_skillButtons)
+        {
+            if (btn != nullptr && btn->HitTest((float)mouseX, (float)mouseY)) {
+                btn->OnClick();
+                break;
+            }
+        }
+    }
+
+    UScene::Update(deltaTime);
 }
 
 void UInGameScene::Render(URenderer& renderer)
