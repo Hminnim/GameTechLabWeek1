@@ -42,11 +42,33 @@ void CollisionManager::ResolveCollision(UPrimitive* TargetPrimitive, UPrimitive*
         if (TargetBall->isSelfDestruct && OtherBall->Owner!=TargetBall->Owner)
         {
             TargetPrimitive->bIsDestroyed = true;
+            FVector CollisionPoint = (TargetPrimitive->Location + OtherPrimitive->Location) * 0.5f;
+            UEffectManager::GetInstance().PlayEffect(
+                "Resources/collision.png",
+                DirectX::XMFLOAT2(CollisionPoint.x, CollisionPoint.y),
+                0.25f,
+                DirectX::XMFLOAT2(2.0f, 2.0f),
+                7,
+                false,
+                0.0f
+            );
+            USoundManager::GetInstance().PlaySound("hit");
             return;
         }
         else if (OtherBall->isSelfDestruct && OtherBall->Owner != TargetBall->Owner)
         {
             OtherPrimitive->bIsDestroyed = true;
+            FVector CollisionPoint = (TargetPrimitive->Location + OtherPrimitive->Location) * 0.5f;
+            UEffectManager::GetInstance().PlayEffect(
+                "Resources/collision.png",
+                DirectX::XMFLOAT2(CollisionPoint.x, CollisionPoint.y),
+                0.25f,
+                DirectX::XMFLOAT2(2.0f, 2.0f),
+                7,
+                false,
+                0.0f
+            );
+            USoundManager::GetInstance().PlaySound("hit");
             return;
         }
         
@@ -93,20 +115,7 @@ void CollisionManager::ResolveCollision(UPrimitive* TargetPrimitive, UPrimitive*
         if (VelAlongNormal > 0.0f)
         {
             return;
-        }
-
-        // 충돌 확정 -> 이펙트 발생
-        FVector CollisionPoint = (TargetPrimitive->Location + OtherPrimitive->Location) * 0.5f;
-        UEffectManager::GetInstance().PlayEffect(
-            "Resources/collision.png",
-            DirectX::XMFLOAT2(CollisionPoint.x, CollisionPoint.y),
-            0.25f,
-            DirectX::XMFLOAT2(2.0f, 2.0f),
-            7,
-            false,
-            0.0f
-        );
-		USoundManager::GetInstance().PlaySound("hit");
+        }     
 
         // 선형 속도
         // 충격량 계산
