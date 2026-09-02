@@ -225,6 +225,7 @@ void UBall::RemoveAllSkill()
     TargetRadius = UGameSetting::GetInstance().BallBaseRadius;
     isSizeScaling = true;
     TargetMass = UGameSetting::GetInstance().BallBaseRadius * 10.0f;
+    isMagnetActivated = false;
     isMassScaling = true;
     bEnableShotgun = false;
 }
