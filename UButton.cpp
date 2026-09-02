@@ -32,6 +32,8 @@ void UButton::Render(URenderer& renderer)
 //////////////////
 void USkillButton::OnClick()
 {
+    UButton::OnClick();
+
 	if (_state == ESkillButtonState::Normal)
 	{
 		_state = ESkillButtonState::Selected;

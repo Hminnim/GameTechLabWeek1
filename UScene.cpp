@@ -218,11 +218,14 @@ void UInGameScene::Initialize()
         std::string normalTex = "Resources/button_" + baseName + ".png";
         std::string usedTex = "Resources/button_" + baseName + "_used.png";
 
-        USkillButton* skillBtn = new USkillButton();
+        USkillButton* skillBtn = new USkillButton();        
 
         skillBtn->Init(normalTex, slotInfo.x, slotInfo.y, BtnWidth, BtnHeight);
         skillBtn->SetUsedTexture(usedTex);
         skillBtn->SetSkillType(slotInfo.AssignedSkill);
+        skillBtn->SetOnClick([this,slotInfo]() {            
+            this->PlayerController.UseSkill(slotInfo.AssignedSkill);
+            });
 
         // skillBtn->SetSlot(currentSlot); 
 
@@ -270,6 +273,9 @@ void UInGameScene::Update(float deltaTime)
     
 
     UScene::Update(deltaTime);
+
+    // 공 발사
+    PlayerController.Update(_primitives);
 
     // 공 판정 업데이트
     for (auto* primitive : _primitives)
@@ -385,7 +391,7 @@ void UGameOverScene::Initialize()
     UUI* backgroundDraw = new UUI();
     backgroundRedWin->Init("Resources/background_red_win.png", 0, 0, ScreenWidth, ScreenHeight);
     backgroundBlueWin->Init("Resources/background_blue_win.png", 0, 0, ScreenWidth, ScreenHeight);
-    backgroundDraw->Init("Resources/background_red_win.png", 0, 0, ScreenWidth, ScreenHeight); // 임시 이미지
+    backgroundDraw->Init("Resources/background_draw.png", 0, 0, ScreenWidth, ScreenHeight); // 임시 이미지
     SetBackground(backgroundRedWin, backgroundBlueWin, backgroundDraw);
 
     float ButtonWidth = 400.0f;
