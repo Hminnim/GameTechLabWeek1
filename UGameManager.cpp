@@ -156,7 +156,7 @@ void UGameManager::CheckGameOver(std::vector<UPrimitive*>& primitives)
 
 	if (CurrentGameResult != EGameResult::None)
 	{
-		USceneManager::GetInstance().ChangeScene("GameOver");
+		USceneManager::GetInstance().RequestChangeScene("GameOver");
 	}
 
 }
