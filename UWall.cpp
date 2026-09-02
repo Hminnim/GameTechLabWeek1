@@ -12,7 +12,6 @@ UWall::UWall(const std::string& meshKey,const FVector spawnLocation, float width
     Radius = 0.0f;
     Mass = 10000000.0f;
     Elastic = 1.0f;
-    GNumber = 0.0f;
     Inertia = 0.0f;
     bEnableAngularVelocity = false;
 

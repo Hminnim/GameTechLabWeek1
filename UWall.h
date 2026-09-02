@@ -25,12 +25,8 @@ public:
 	virtual void Render(URenderer& Renderer) override;
 	virtual void SetTexture(ID3D11ShaderResourceView* srv);
 	virtual void Update(float DeltaTime, std::vector<UPrimitive*>& others) override;
-
-	virtual void ApplyGravity(float DeltaTime) override {}
-	virtual void SetGNumber(float NewG) override {}
 	virtual void SetElastic(float NewElastic) override {}
-	virtual void ApplyReverseMagnetism(UPrimitive* OtherPrimitive, float DeltaTime, float MagneticForce) override {}
+	virtual void ApplyReverseMagnetism(UPrimitive* OtherPrimitive, float DeltaTime, float MagneticForce, float MaxDist) override {}
 	virtual void ApplySelfFreeze() override {}
-	virtual void ApplyAirResistance(float DeltaTime, float AirResistance) override {}
 	virtual void SetEnableAngularMomentum(bool bEnable) override {}
 };
