@@ -5,6 +5,7 @@
 #include "UButton.h"
 #include "UMap.h"
 #include "UGameManager.h"
+#include "UPlayerController.h"
 
 class UPrimitive;
 
@@ -64,6 +65,9 @@ public:
 	void Render(URenderer& renderer) override;
 
     void Enter() override;
+
+private:
+    UPlayerController PlayerController;
 };
 
 class UGameOverScene : public UScene
