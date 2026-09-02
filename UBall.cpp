@@ -5,6 +5,8 @@
 #include "UResourceManager.h"
 #include "UGameSetting.h"
 #include "UEffectManager.h"
+#include "UScene.h"
+#include "USceneManager.h"
 
 CollisionManager CollisionMan;
 
@@ -183,6 +185,9 @@ void UBall::ApplySkill(USkillType skill)
         case USkillType::ReverseMagnet:
             isMagnetActivated = true;
             break;
+        case USkillType::WallCreate:
+            bEnableWallCreate = true;
+            break;
     }
 }
 
@@ -263,6 +268,16 @@ void UBall::FrictionFloor(float DeltaTime, std::vector<UPrimitive*>& others)
     {
         FricVal = 200000.0f;
     }
+    if (bEnableWallCreate && Velocity.Length()>50.0f && currentWallCount<MaxWallCount)
+    {
+        FVector dir = Velocity / Velocity.Length();
+        float offset = Radius + 40.0f + 10.0f;
+        FVector spawnpos = Location - (dir * offset);
+
+        UScene* currentScene = USceneManager::GetInstance().GetCurrentScene();
+        currentScene->AddPrimitive(new UWall("square", FVector(spawnpos.x, spawnpos.y,0.5f), 75.0f));
+        currentWallCount++;
+    }
 
     //속도에 따른 위치 이동
     Location += Velocity * DeltaTime;
@@ -335,4 +350,8 @@ void UBall::CollisionManage(float DeltaTime, std::vector<UPrimitive*>& others)
             }
         }
     }
+}
+
+void UBall::WallCreate()
+{
 }
