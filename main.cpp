@@ -90,13 +90,13 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLine
     ///////////////////////////////////////////////
 
     UEffectManager::GetInstance().Init(renderer.DeviceContext);
-    UEffectManager::GetInstance().PlayEffect(
-        "Resources/shooting.png",
-        { 500.0f, 500.0f },
-        1.0f,
-        2.0f,
-        6                
-    );
+    // UEffectManager::GetInstance().PlayEffect(
+    //     "Resources/Blue_turn.png", // source path
+    //     { UGameSetting::GetInstance().ScreendWidth * 0.5f, UGameSetting::GetInstance().ScreenHeight * 0.5f }, // size
+    //     1.0f, // duration
+    //     1.0f, // scale
+    //     1     // frame count    
+    // );
 
     ///////////////////////////////////////////////
     //////////////////EFFECT TEST//////////////////
@@ -237,6 +237,76 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLine
         MousePointValue[0] = UInputManager::GetInstance().GetMousePos().x;
         MousePointValue[1] = UInputManager::GetInstance().GetMousePos().y;
         ImGui::InputInt2("Mouse Point", MousePointValue);
+
+        ImGui::Separator();
+        ImGui::Text("=== Game Manager Status ===");
+
+        if (USceneManager::GetInstance().GetCurrentSceneName() == "InGame")
+        {
+            // 처음 Red Turn Effect 적용을 위한 boolean
+            static bool bFirstTurn = true;
+
+            // Turn Effect 적용을 위한 previous turn 변수
+            static EPlayer previousTurn = EPlayer::Red;
+
+            // 1. 현재 턴 가져오기
+            EPlayer currentTurn = UGameManager::GetInstance().CurrentPlayerTurn;
+
+            // 첫 차례거나, 차례가 바뀌면 true
+            bool bTurnChanged = bFirstTurn || (previousTurn != currentTurn);
+
+            if (currentTurn == EPlayer::Red)
+            {
+                // Red 턴이면 빨간색 텍스트
+                ImGui::TextColored(ImVec4(1.0f, 0.3f, 0.3f, 1.0f), "[ Turn : RED Player ]");
+                
+                // Turn이 Blue -> Red 순간에만 Effect 발생
+                if (bTurnChanged)
+                {
+                    UEffectManager::GetInstance().PlayEffect(
+                        "Resources/Red_turn.png", // source path
+                        { UGameSetting::GetInstance().ScreendWidth * 0.5f, UGameSetting::GetInstance().ScreenHeight * 0.5f }, // size
+                        1.0f, // duration
+                        1.0f, // scale
+                        1     // frame count
+                    );
+                }
+            }
+            else
+            {
+                // Blue 턴이면 파란색 텍스트
+                ImGui::TextColored(ImVec4(0.3f, 0.6f, 1.0f, 1.0f), "[ Turn : BLUE Player ]");
+
+                // Turn이 Red -> Blue 순간에만 Effect 발생
+                if (bTurnChanged)
+                {
+                    UEffectManager::GetInstance().PlayEffect(
+                        "Resources/Blue_turn.png", // source path
+                        { UGameSetting::GetInstance().ScreendWidth * 0.5f, UGameSetting::GetInstance().ScreenHeight * 0.5f }, // size
+                        1.0f, // duration
+                        1.0f, // scale
+                        1     // frame count    
+                    );
+                }
+            }
+
+            previousTurn = currentTurn;
+            bFirstTurn = false;
+        }   
+
+        // 2. 현재 상태 가져오기
+        ETurnState currentState = UGameManager::GetInstance().CurrentTurnState;
+        const char* stateStr = "Unknown";
+        switch (currentState)
+        {
+        case ETurnState::WaitInput:  stateStr = "Waiting for Input..."; break;
+        case ETurnState::BallMoving: stateStr = "Balls are Moving!";    break;
+        case ETurnState::GameOver:   stateStr = "Game Over!";           break;
+        }
+
+        // 노란색 텍스트로 현재 상태 출력
+        ImGui::TextColored(ImVec4(1.0f, 1.0f, 0.0f, 1.0f), "State: %s", stateStr);
+        ImGui::Separator();
 
         ImGui::End();
 
