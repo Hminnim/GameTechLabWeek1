@@ -318,7 +318,7 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLine
         if (bIsDragging && UInputManager::GetInstance().IsKeyUp(VK_LBUTTON))
         {
             if (SelectedBall != nullptr)
-            {
+            {                
                 POINT mouse = UInputManager::GetInstance().GetMousePos();
                 FVector launchVec(SelectedBall->Location.x - (float)mouse.x, SelectedBall->Location.y - (float)mouse.y, 0.0f);
 

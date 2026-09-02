@@ -83,6 +83,11 @@ void CollisionManager::ResolveCollision(UPrimitive* TargetPrimitive, UPrimitive*
             UEffectManager::GetInstance().ClearAura(&TargetBall->_skillAuraKey);
         }
 
+        if ((TargetBall->bEnableGhost || OtherBall->bEnableGhost) && (TargetBall->Owner == OtherBall->Owner))
+        {
+            return;
+        }
+
         //Collision Effect, Sound 출력
         FVector CollisionPoint = (TargetPrimitive->Location + OtherPrimitive->Location) * 0.5f;
         UEffectManager::GetInstance().PlayEffect(
