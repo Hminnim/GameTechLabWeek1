@@ -342,8 +342,8 @@ void UInGameScene::Enter()
     float ScreenWidth = (float)UGameSetting::GetInstance().ScreendWidth;
     float ScreenHeight = (float)UGameSetting::GetInstance().ScreenHeight;
 
-    float MapMarginX = 300.0f;
-    float MapMarginY = 100.0f;
+    float MapMarginX = UGameSetting::GetInstance().MapMarginX;
+    float MapMarginY = UGameSetting::GetInstance().MapMarginY;
     float MapWidth = ScreenWidth - (MapMarginX * 2);
     float MapHeight = ScreenHeight - (MapMarginY * 2);
 
