@@ -391,7 +391,7 @@ void UGameOverScene::Initialize()
     UUI* backgroundDraw = new UUI();
     backgroundRedWin->Init("Resources/background_red_win.png", 0, 0, ScreenWidth, ScreenHeight);
     backgroundBlueWin->Init("Resources/background_blue_win.png", 0, 0, ScreenWidth, ScreenHeight);
-    backgroundDraw->Init("Resources/background_red_win.png", 0, 0, ScreenWidth, ScreenHeight); // 임시 이미지
+    backgroundDraw->Init("Resources/background_draw.png", 0, 0, ScreenWidth, ScreenHeight); // 임시 이미지
     SetBackground(backgroundRedWin, backgroundBlueWin, backgroundDraw);
 
     float ButtonWidth = 400.0f;
