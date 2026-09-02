@@ -81,6 +81,7 @@ void UBall::Update(float DeltaTime, std::vector<UPrimitive*>& others)
     if ((Location.x < Radius) || (Location.x > ScreendWidth - Radius) || (Location.y < Radius) || (Location.y > ScreenHeight - Radius))
     {
         this->bIsDestroyed = true;
+		USoundManager::GetInstance().PlaySound("out");
     }
 }
     
@@ -339,7 +340,7 @@ void UBall::ReverseMagnetWhenMine(float DeltaTime, std::vector<UPrimitive*>& oth
             false,
             0.0f
         );
-        USoundManager::GetInstance().PlaySound("hit");
+        USoundManager::GetInstance().PlaySound("mine");
         float currentMineForce = 500000.0f;
         for (auto* other : others)
         {

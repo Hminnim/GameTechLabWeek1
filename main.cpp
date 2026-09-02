@@ -23,6 +23,8 @@ int ListCapacity = 0;
 static UBall* SelectedBall = nullptr;
 static bool bIsDragging = false;
 
+static bool g_bHasPlayedChargeSound = false;
+
 int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLine, int nShowCmd){
     // SoundManager 초기화 및 재생할 음원 파일 설정
     USoundManager::GetInstance().Init();
@@ -160,6 +162,7 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLine
                             if (dx * dx + dy * dy < ball->Radius * ball->Radius)
                             {
                                 SelectedBall = ball; // 선택만!
+								USoundManager::GetInstance().PlaySound("select_stone");
                                 break;
                             }
                         }
@@ -179,7 +182,13 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLine
                 POINT mouse = UInputManager::GetInstance().GetMousePos();
                 FVector launchVec(SelectedBall->Location.x - (float)mouse.x, SelectedBall->Location.y - (float)mouse.y, 0.0f);
                 float pullDistance = launchVec.Length();
-                
+
+                if (!g_bHasPlayedChargeSound)
+                {
+                    USoundManager::GetInstance().PlaySound("charge");
+                    g_bHasPlayedChargeSound = true;
+                }
+
                 if (UInputManager::GetInstance().IsKeyUp(VK_RBUTTON))
                 {
                     // 발사 처리
@@ -205,6 +214,7 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLine
                             false,
                             launchAngle
                         );
+						USoundManager::GetInstance().PlaySound("shoot");
                     }
 
                     SelectedBall = nullptr;
