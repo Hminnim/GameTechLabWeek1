@@ -33,13 +33,11 @@ void UButton::Render(URenderer& renderer)
 // USkillButton //
 //////////////////
 void USkillButton::OnClick()
-{
-    UButton::OnClick();
-
+{        
 	if (_state == ESkillButtonState::Normal)
 	{
-		_state = ESkillButtonState::Selected;
-		UGameManager::GetInstance().m_currentSelectedSkill = _skillType;
+        UButton::OnClick();
+		_state = ESkillButtonState::Selected;        
 	}
 }
 
