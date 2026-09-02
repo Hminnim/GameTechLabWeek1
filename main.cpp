@@ -94,13 +94,17 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLine
     ///////////////////////////////////////////////
 
     UEffectManager::GetInstance().Init(renderer.DeviceContext);
-    // UEffectManager::GetInstance().PlayEffect(
-    //     "Resources/shooting.png",
-    //     { 500.0f, 500.0f },
+    // OutputDebugStringA("Init 이후 지점 도달\n");   // 이 줄 추가
+
+    // UEffectManager::GetInstance().DrawArrow(
+    //     "Resources/main_aura.png",
+    //     {UGameSetting::GetInstance().ScreendWidth * 0.5f, UGameSetting::GetInstance().ScreenHeight * 0.5f},
+    //     0.0f,
     //     1.0f,
-    //     2.0f,
-    //     6                
+    //     DirectX::XMFLOAT2(1.0f, 1.0f),
+    //     1
     // );
+    // OutputDebugStringA("DrawArrow 이후 지점 도달\n");  // 이 줄도 추가
 
     ///////////////////////////////////////////////
     //////////////////EFFECT TEST//////////////////
@@ -139,6 +143,7 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLine
 
         renderer.Prepare();
         renderer.PrepareShader();
+
 		USceneManager::GetInstance().Render(renderer);
 
         if (UGameManager::GetInstance().CurrentTurnState == ETurnState::WaitInput)
@@ -155,11 +160,28 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLine
                         UBall* ball = dynamic_cast<UBall*>(prim);
                         if (ball && UGameManager::GetInstance().CanSelectBall(ball))
                         {
+                            // OutputDebugStringA("Condition Pass\n");   // DEBUG
+
                             float dx = ball->Location.x - (float)mouse.x;
                             float dy = ball->Location.y - (float)mouse.y;
                             if (dx * dx + dy * dy < ball->Radius * ball->Radius)
                             {
+                                if (ball != nullptr)
+                                    UEffectManager::GetInstance().ClearAura(SelectedBall);   // 이전 Ball Aura Effect 삭제
+
                                 SelectedBall = ball; // 선택만!
+
+                                // 선택된 공 뒤에 aura effect
+                                UEffectManager::GetInstance().DrawAura(
+                                    SelectedBall,
+                                    "Resources/ball_aura.png",
+                                    DirectX::XMFLOAT2(SelectedBall->Location.x, SelectedBall->Location.y),
+                                    1.0f,
+                                    DirectX::XMFLOAT2(0.5f, 0.5f),
+                                    16
+                                );
+                                // OutputDebugStringA("DrawAura Finished\n");  // DEBUG
+
                                 break;
                             }
                         }
@@ -171,6 +193,7 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLine
             {
                 bIsDragging = true;
                 SelectedBall->Velocity = FVector(0, 0, 0);
+                UEffectManager::GetInstance().ClearAura(SelectedBall);   // aura Effect 해제
             }
 
             // 3. 드래그 중이면 매 프레임 화살표 update 하다가, 마우스 클릭 떼면 발사
@@ -207,6 +230,7 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLine
                         );
                     }
 
+                    UEffectManager::GetInstance().ClearAura(SelectedBall);
                     SelectedBall = nullptr;
                     UGameManager::GetInstance().CurrentTurnState = ETurnState::BallMoving;
                     bIsDragging = false;
@@ -248,6 +272,7 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLine
             else
             {
                 UEffectManager::GetInstance().ClearArrow();
+
             }
         }
         
@@ -274,6 +299,11 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLine
             if (ImGui::Button("5. 척력파 (Magnet)"))   SelectedBall->ApplySkill(USkillType::ReverseMagnet);
             if (ImGui::Button("6. 벽 생성 (Wall)"))   SelectedBall->ApplySkill(USkillType::WallCreate);
             if (ImGui::Button("선택 해제 (Deselect)")) SelectedBall = nullptr;
+            if (ImGui::Button("선택 해제 (Deselect)"))
+            {
+                UEffectManager::GetInstance().ClearAura(SelectedBall); // Aura Effect 해제
+                SelectedBall = nullptr;
+            }
         }
         else
         {

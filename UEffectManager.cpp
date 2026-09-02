@@ -76,7 +76,7 @@ void UEffectManager::Update(float deltaTime)
             m_arrow.ElapsedTime = fmodf(m_arrow.ElapsedTime, m_arrow.Duration);
     }
 
-    for (auto& pair : m_ices) // pair: <key, FActiveEffect>
+    for (auto& pair : m_stayEffects) // pair: <key, FActiveEffect>
     {
         FActiveEffect& effect = pair.second;
         effect.ElapsedTime += deltaTime;
@@ -138,13 +138,13 @@ void UEffectManager::ClearArrow()
     m_hasArrow = false;
 }
 
-void UEffectManager::DrawIce(void* key, const std::string& textureKey, const DirectX::XMFLOAT2& position,
+void UEffectManager::DrawAura(void* key, const std::string& textureKey, const DirectX::XMFLOAT2& position,
                     float loopDuration, const DirectX::XMFLOAT2 scale, int frameCount)
 {
-    auto it = m_ices.find(key); // <key, FActiveEffect>
+    auto it = m_stayEffects.find(key); // <key, FActiveEffect>
     
     // 이미 얼음이 재생되고 있는 경우, 위치/크기 조절 가능 (사용하지는 않을듯)
-    if (it != m_ices.end())
+    if (it != m_stayEffects.end())
     {
         it->second.Position = position;
         it->second.Scale = scale;
@@ -178,16 +178,76 @@ void UEffectManager::DrawIce(void* key, const std::string& textureKey, const Dir
     effect.Duration = loopDuration;
     effect.ElapsedTime = 0.0f;
     effect.FrameCount = frameCount;
-    effect.FrameWidth = (int)desc.Width / m_arrow.FrameCount;
+    effect.FrameWidth = (int)desc.Width / effect.FrameCount;
     effect.FrameHeight = (int)desc.Height;
     effect.bFadeOut = false;
 
-    m_ices[key] = effect;
+    m_stayEffects[key] = effect;
 }
 
-void UEffectManager::ClearIce(void* key)
+void UEffectManager::ClearAura(void* key)
 {
-    m_ices.erase(key);
+    m_stayEffects.erase(key);
+}
+
+void UEffectManager::RenderAuras()
+{
+    if (m_stayEffects.empty())
+        return;
+
+    m_spriteBatch->Begin();
+
+    
+    // Freeze Effect
+    for (const auto& pair : m_stayEffects)
+    {
+        const FActiveEffect effect = pair.second;
+
+        char buf2[256];
+        sprintf_s(buf2, "Aura Draw - Pos(%.1f,%.1f) Scale(%.2f,%.2f) FW=%d FH=%d FrameCount=%d\n",
+        effect.Position.x, effect.Position.y,
+        effect.Scale.x, effect.Scale.y,
+        effect.FrameWidth, effect.FrameHeight, effect.FrameCount);
+        OutputDebugStringA(buf2);
+
+        float progress = effect.GetProgress();
+
+        int frameIdx = (int)(progress * effect.FrameCount); // 진행률 * 총 프레임 개수 = 현재 프레임 인덱스
+        
+        // progress가 1.0이면, idx error 발생하므로 보정 필요
+        if (frameIdx >= effect.FrameCount)
+            frameIdx = effect.FrameCount - 1;
+        
+        RECT sourceRECT =
+        {
+            frameIdx * effect.FrameWidth,       // left
+            0,                                  // top
+            (frameIdx + 1) * effect.FrameWidth, // right
+            effect.FrameHeight                  // bottom
+        };
+
+        // Todo: FadeOut 처리
+        
+        // Effect 중심부터 Draw
+        DirectX::XMFLOAT2 origin =
+        {
+            effect.FrameWidth * 0.5f,
+            effect.FrameHeight * 0.5f
+        };
+
+        m_spriteBatch->Draw(
+            effect.Texture,
+            effect.Position,
+            &sourceRECT,
+            DirectX::XMVECTORF32{ 1.0f, 1.0f, 1.0f, 0.5f },   // 알파(투명도)
+            effect.Rotation,                                  // NO rotation
+            origin,
+            effect.Scale
+
+        );
+    }
+    m_spriteBatch->End();
+
 }
 
 void UEffectManager::Render()
@@ -197,6 +257,11 @@ void UEffectManager::Render()
 
     m_spriteBatch->Begin();
     // renderer.BeginSprite();
+
+    char buf[64];
+    sprintf_s(buf, "Render calling, m_hasArrow=%d\n", m_hasArrow);
+    OutputDebugStringA(buf);
+
 
     // Normal Effect
     for (const auto& effect : m_activeEffects)
@@ -279,45 +344,5 @@ void UEffectManager::Render()
         );
     }
 
-    // Freeze Effect
-    for (const auto& pair : m_ices)
-    {
-        const FActiveEffect effect = pair.second;
-        float progress = effect.GetProgress();
-
-        int frameIdx = (int)(progress * effect.FrameCount); // 진행률 * 총 프레임 개수 = 현재 프레임 인덱스
-        
-        // progress가 1.0이면, idx error 발생하므로 보정 필요
-        if (frameIdx >= effect.FrameCount)
-            frameIdx = effect.FrameCount - 1;
-        
-        RECT sourceRECT =
-        {
-            frameIdx * effect.FrameWidth,       // left
-            0,                                  // top
-            (frameIdx + 1) * effect.FrameWidth, // right
-            effect.FrameHeight                  // bottom
-        };
-
-        // Todo: FadeOut 처리
-        
-        // Effect 중심부터 Draw
-        DirectX::XMFLOAT2 origin =
-        {
-            effect.FrameWidth * 0.5f,
-            effect.FrameHeight * 0.5f
-        };
-
-        m_spriteBatch->Draw(
-            effect.Texture,
-            effect.Position,
-            &sourceRECT,
-            DirectX::Colors::White,
-            effect.Rotation,                       // NO rotation
-            origin,
-            effect.Scale
-
-        );
-    }
     m_spriteBatch->End();
 }

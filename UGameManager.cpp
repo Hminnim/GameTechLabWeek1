@@ -4,6 +4,7 @@
 #include "UWall.h"
 #include "USceneManager.h"
 #include "UGameSetting.h"
+#include "UEffectManager.h"
 
 UGameManager::UGameManager()
 {
