@@ -78,7 +78,7 @@ void UGameManager::CheckTurnEnd(std::vector<UPrimitive*>& primitives)
 		for (auto* primitive : primitives)
 		{						
 			UWall* Wall = dynamic_cast<UWall*>(primitive);
-			if (Wall != nullptr && Wall->Owner != CurrentPlayerTurn)
+			if (Wall != nullptr && Wall->wallowner != CurrentPlayerTurn)
 			{
 				Wall->bIsDestroyed = true;
 			}						
