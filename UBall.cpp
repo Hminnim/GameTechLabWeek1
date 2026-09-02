@@ -214,6 +214,7 @@ void UBall::RemoveAllSkill()
     isSizeScaling = true;
     TargetMass = UGameSetting::GetInstance().BallBaseRadius * 10.0f;
     isMassScaling = true;
+    bEnableShotgun = false;
 }
 
 void UBall::WallCollision()

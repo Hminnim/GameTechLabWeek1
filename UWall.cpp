@@ -28,7 +28,7 @@ UWall::UWall(const std::string& meshKey,const FVector spawnLocation, float width
     m_vertexBuffer = UResourceManager::GetInstance().GetVertexBuffer(meshKey);
     m_numVertices = UResourceManager::GetInstance().GetNumVertices(meshKey);
 
-    m_textureKey = "Resources/button_repulse.png";
+    m_textureKey = "Resources/wall.png";
     m_textureView = UResourceManager::GetInstance().GetTexture(m_textureKey);
 }
 
