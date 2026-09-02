@@ -10,6 +10,9 @@
 #include "USoundManager.h"
 
 CollisionManager CollisionMan;
+FVector lastspawnpos;
+FVector ShotgunstartPos;
+
 
 UBall::UBall(const std::string& meshKey, const EPlayer owner, const FVector startLocation)
 {
@@ -192,6 +195,10 @@ void UBall::ApplySkill(ESkillType skill)
         case ESkillType::WallCreate:
             bEnableWallCreate = true;
             break;
+        case ESkillType::Shotgun:
+            bEnableShotgun = true;
+            ShotgunstartPos = Location;
+            break;
         default:
             break;
     }
@@ -278,7 +285,6 @@ void UBall::SizeMassScaling(float DeltaTime)
         }
     }
 }
-FVector lastspawnpos;
 
 void UBall::FrictionFloor(float DeltaTime, std::vector<UPrimitive*>& others)
 {
@@ -335,6 +341,31 @@ void UBall::FrictionFloor(float DeltaTime, std::vector<UPrimitive*>& others)
         }
     }
 
+
+    if (bEnableShotgun)
+    {       
+        float dx = (Location.x - ShotgunstartPos.x);
+        float dy = (Location.y - ShotgunstartPos.y);
+        float dist = sqrtf(dx * dx + dy * dy);
+        
+        if (dist >= 150.0f) {
+            float angle = atan2f(Velocity.y, Velocity.x);
+            FVector leftdir = FVector(cosf(angle - 0.20f), sin(angle - 0.20f), 0.0f);
+            UBall* leftBall = new UBall("sphere", this->Owner, Location);
+            leftBall->Velocity = leftdir * Velocity.Length();
+            leftBall->isShotgunbullet = true;
+            FVector rightdir = FVector(cosf(angle + 0.20f), sin(angle + 0.20f), 0.0f);
+            UBall* rightBall = new UBall("sphere", this->Owner, Location);
+            rightBall->Velocity = rightdir * Velocity.Length();
+            rightBall->isShotgunbullet = true;
+            UScene* currentScene = USceneManager::GetInstance().GetCurrentScene();
+            currentScene->AddPrimitive(leftBall);
+            currentScene->AddPrimitive(rightBall);
+            bEnableShotgun = false;
+        }
+    }
+    
+
     //속도에 따른 위치 이동
     Location += Velocity * DeltaTime;
 
@@ -347,7 +378,7 @@ void UBall::FrictionFloor(float DeltaTime, std::vector<UPrimitive*>& others)
             // 척력 발생시 주위 밀어냄
             if (isMagnetActivated && !AlreadyActiveMag)
             {
-                float currentMagnetForce = 500000.0f;
+                float currentMagnetForce = 300000.0f;
                 for (auto* other : others)
                 {
                     if (other != this)
@@ -417,8 +448,4 @@ void UBall::CollisionManage(float DeltaTime, std::vector<UPrimitive*>& others)
             }
         }
     }
-}
-
-void UBall::WallCreate()
-{
 }

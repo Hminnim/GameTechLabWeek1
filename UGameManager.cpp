@@ -15,7 +15,7 @@ UGameManager::~UGameManager()
 {
 }
 
-void UGameManager::Update(std::vector<UPrimitive*>& primitives)
+void UGameManager::Update(std::vector<UPrimitive*>& primitives, float deltaTime)
 {
 	// InGame 씬에서만 필요한 게임 판정
 	if (USceneManager::GetInstance().GetCurrentSceneName() != "InGame")
@@ -25,6 +25,7 @@ void UGameManager::Update(std::vector<UPrimitive*>& primitives)
 
 	UGameManager::CheckTurnEnd(primitives);
 	UGameManager::CheckGameOver(primitives);
+	UGameManager::CheckFrozenTurnSkip(primitives,deltaTime);
 }
 
 void UGameManager::InitGame()
@@ -154,5 +155,56 @@ void UGameManager::CheckGameOver(std::vector<UPrimitive*>& primitives)
 	if (CurrentGameResult != EGameResult::None)
 	{
 		USceneManager::GetInstance().ChangeScene("GameOver");
+	}
+
+}
+
+void UGameManager::CheckFrozenTurnSkip(std::vector<UPrimitive*>& primitives, float deltaTime)
+{
+	int myBallCount = 0;
+	int frozenBallCount = 0;
+	for (auto* primitive : primitives)
+	{
+		UBall* ball = dynamic_cast<UBall*>(primitive);
+		if (ball != nullptr && !ball->bIsDestroyed && ball->Owner == CurrentPlayerTurn)
+		{
+			myBallCount++;
+			if (ball->isFreezed)
+			{
+				frozenBallCount++;
+			}
+		}
+	}
+
+	if (myBallCount > 0 && myBallCount == frozenBallCount) 
+	{
+		m_frozenTimer += deltaTime;
+		if (m_frozenTimer < 1.5f)
+		{
+			return;
+		}
+		
+		m_frozenTimer = 0.0f;
+
+		for (auto* primitive : primitives)
+		{
+			UBall* ball = dynamic_cast<UBall*>(primitive);
+			if (ball != nullptr && ball->Owner == CurrentPlayerTurn)
+			{
+				ball->isFreezed = false;
+			}
+		}
+		
+		CurrentPlayerTurn = (CurrentPlayerTurn == EPlayer::Red ? EPlayer::Blue : EPlayer::Red);
+		CurrentTurnState = ETurnState::WaitInput;
+
+		std::string turnTexture = (CurrentPlayerTurn == EPlayer::Red) ? "Resources/Red_turn.png" : "Resources/Blue_turn.png";
+		UEffectManager::GetInstance().PlayEffect(
+			turnTexture,
+			{ (float)UGameSetting::GetInstance().ScreendWidth * 0.5f, (float)UGameSetting::GetInstance().ScreenHeight * 0.5f },
+			1.0f,
+			DirectX::XMFLOAT2(1.0f, 1.0f),
+			1
+		);
 	}
 }
