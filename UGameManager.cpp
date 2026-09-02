@@ -81,6 +81,7 @@ void UGameManager::CheckTurnEnd(std::vector<UPrimitive*>& primitives)
 	{
 		for (auto* primitive : primitives)
 		{						
+			
 			UWall* Wall = dynamic_cast<UWall*>(primitive);
 			if (Wall != nullptr && Wall->wallowner != CurrentPlayerTurn)
 			{
@@ -90,6 +91,7 @@ void UGameManager::CheckTurnEnd(std::vector<UPrimitive*>& primitives)
 			if (ball && ball->Owner == CurrentPlayerTurn)
 			{
 				ball->RemoveAllSkill();
+				if (ball->isShotgunbullet) ball->bIsDestroyed = true;
 			}
 		}		
 
