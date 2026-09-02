@@ -15,7 +15,7 @@ struct FActiveEffect
 {
     ID3D11ShaderResourceView* Texture = nullptr;
     DirectX::XMFLOAT2 Position = { 0.0f, 0.0f };
-    float Scale = 1.0f;
+    DirectX::XMFLOAT2 Scale = { 1.0f, 1.0f };
     float Rotation = 0.0f; // radian (Rotation for shooting)
 
     // 총 재생 시간(s)
@@ -56,8 +56,13 @@ class UEffectManager
 
         // 이펙트 재생 (텍스처키, 이펙트 위치, 재생시간, 비율, 프레임개수, 페이드아웃 여부)
         void PlayEffect(const std::string& textureKey, const DirectX::XMFLOAT2& position, 
-                        float duration, float scale = 1.0f, int frameCount = 1, bool fadeOut = false, float rotation = 0.0f);
-
+                        float duration, const DirectX::XMFLOAT2 scale = { 1.0f, 1.0f }, int frameCount = 1, bool fadeOut = false, float rotation = 0.0f);
+        
+        // 드래그 하는동안 떠 있는 Arrow Effect
+        // 매 프레임 위치/회전 update. 애니메이션은 loop
+        void DrawArrow(const std::string& textureKey, const DirectX::XMFLOAT2& position,
+                        float rotation, float loopDuration, const DirectX::XMFLOAT2 scale = { 1.0f, 1.0f }, int frameCount = 1);
+        void ClearArrow();
 
         void Update(float deltaTime);
         void Render();
@@ -68,5 +73,9 @@ class UEffectManager
 
         std::unique_ptr<DirectX::SpriteBatch> m_spriteBatch;
         std::vector<FActiveEffect> m_activeEffects;
+
+        // Arrow 관리를 위한 멤버
+        bool m_hasArrow = false;
+        FActiveEffect m_arrow;
 
 };
