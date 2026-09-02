@@ -118,7 +118,7 @@ void UBall::Update(float DeltaTime, std::vector<UPrimitive*>& others)
             // 척력 발생시 주위 밀어냄
             if (isMagnetActivated && !AlreadyActiveMag)
             {
-                float currentMagnetForce = 100000.0f;
+                float currentMagnetForce = 500000.0f;
                 for (auto* other : others)
                 {
                     if (other != this)
@@ -192,16 +192,6 @@ void UBall::Update(float DeltaTime, std::vector<UPrimitive*>& others)
                 }
             }
         }
-
-        //for (auto it = others.begin();it != others.end();it++)
-        //{
-        //    if (*it == this)
-        //    {
-        //        others.erase(it);
-        //        delete this;
-        //        return;
-        //    }
-        //}
     }
 }
     
