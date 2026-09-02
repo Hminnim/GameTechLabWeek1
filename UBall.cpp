@@ -22,7 +22,6 @@ UBall::UBall(const std::string& meshKey, const EPlayer owner, const FVector star
 
     // 기본 값
     Elastic = 1.0f;
-    GNumber = 1.0f;
     bIsDestroyed = false;
     bEnableAngularVelocity = false;
 
@@ -56,6 +55,7 @@ UBall::UBall(const std::string& meshKey, const EPlayer owner, const FVector star
 UBall::~UBall()
 {
     TotalNumBalls--;
+    UEffectManager::GetInstance().ClearAura(this);
 }
 
 void UBall::Render(URenderer& Renderer)
@@ -99,17 +99,6 @@ void UBall::Update(float DeltaTime, std::vector<UPrimitive*>& others)
         USoundManager::GetInstance().PlaySound("out");
     }
 }
-    
-void UBall::ApplyGravity(float DeltaTime)
-{
-    Velocity.y += 9800.0f * GNumber * DeltaTime;
-}
-
-void UBall::SetGNumber(float NewG)
-{
-    GNumber = NewG;
-}
-
 void UBall::SetElastic(float NewElastic)
 {
     Elastic = NewElastic;
@@ -153,24 +142,6 @@ void UBall::ApplySelfFreeze()
 {
     isFreezed = true;
 }
-
-void UBall::ApplyAirResistance(float DeltaTime, float AirResistance)
-{
-    float LinearSpeed = Velocity.Length();
-    // 속도가 있을 때에 적용
-    if (LinearSpeed > 0.0f)
-    {
-        // 항력 구하기
-        FVector DragForce = Velocity * LinearSpeed * -AirResistance;
-
-        // 드래그 가속도 구하기
-        FVector DragAccelration = DragForce / Mass;
-
-        // 속도에 적용
-        Velocity += DragAccelration * DeltaTime;
-    }
-}
-
 
 void UBall::SetEnableAngularMomentum(bool bEnable)
 {
