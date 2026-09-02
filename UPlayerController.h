@@ -11,4 +11,6 @@ private:
 public:
 	void Update(std::vector<UPrimitive*>& primitives);
 	void ApplySkill(ESkillType skillType);
+
+	bool bHasSelectedBall() { return SelectedBall != nullptr; }
 };

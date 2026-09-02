@@ -258,7 +258,7 @@ void UInGameScene::Update(float deltaTime)
         btn->Update(deltaTime);
     }
 
-    if (UInputManager::GetInstance().IsKeyDown(VK_LBUTTON)) {
+    if (UInputManager::GetInstance().IsKeyDown(VK_LBUTTON) && PlayerController.bHasSelectedBall()) {
         LONG mouseX = UInputManager::GetInstance().GetMousePos().x;
         LONG mouseY = UInputManager::GetInstance().GetMousePos().y;
 
