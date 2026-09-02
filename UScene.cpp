@@ -309,7 +309,7 @@ void UInGameScene::Update(float deltaTime)
         }
     }
 
-    UGameManager::GetInstance().Update(_primitives);
+    UGameManager::GetInstance().Update(_primitives,deltaTime);
 }
 
 void UInGameScene::Render(URenderer& renderer)
