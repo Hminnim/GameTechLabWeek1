@@ -237,7 +237,7 @@ void UEffectManager::RenderAuras()
             effect.Texture,
             effect.Position,
             &sourceRECT,
-            tintColor,             // Progress에 따른 fadeout 
+            DirectX::Colors::White,
             effect.Rotation,       // NO rotation
             origin,
             effect.Scale
@@ -293,7 +293,7 @@ void UEffectManager::Render()
             effect.Texture,
             effect.Position,
             &sourceRECT,
-            tintColor,
+            DirectX::Colors::White,
             effect.Rotation,                       // NO rotation
             origin,
             effect.Scale
@@ -336,7 +336,7 @@ void UEffectManager::Render()
             m_arrow.Texture,
             m_arrow.Position,
             &sourceRECT,
-            tintColor,
+            DirectX::Colors::White,
             m_arrow.Rotation,                       // NO rotation
             origin,
             m_arrow.Scale
