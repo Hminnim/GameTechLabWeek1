@@ -2,6 +2,9 @@
 #include "UPlayerController.h"
 #include "UInputManager.h"
 #include "UEffectManager.h"
+#include "USoundManager.h"
+
+bool g_bHasPlayedChargeSound = false;
 
 void UPlayerController::Update(std::vector<UPrimitive*>& primitives)
 {
@@ -38,7 +41,7 @@ void UPlayerController::Update(std::vector<UPrimitive*>& primitives)
                         16
                     );
                     // OutputDebugStringA("DrawAura Finished\n");  // DEBUG
-
+                    USoundManager::GetInstance().PlaySound("select_stone");
                     break;
                 }
             }
@@ -58,10 +61,15 @@ void UPlayerController::Update(std::vector<UPrimitive*>& primitives)
         POINT mouse = UInputManager::GetInstance().GetMousePos();
         FVector launchVec(SelectedBall->Location.x - (float)mouse.x, SelectedBall->Location.y - (float)mouse.y, 0.0f);
         float pullDistance = launchVec.Length();
-
+        if (!g_bHasPlayedChargeSound)
+        {
+            USoundManager::GetInstance().PlaySound("charge");
+            g_bHasPlayedChargeSound = true;
+        }
         if (UInputManager::GetInstance().IsKeyUp(VK_RBUTTON))
         {
             // 발사 처리
+            g_bHasPlayedChargeSound = false;
             if (pullDistance > 5.0f)
             {
                 float launchPower = 8.0f;
@@ -84,6 +92,7 @@ void UPlayerController::Update(std::vector<UPrimitive*>& primitives)
                     false,
                     launchAngle
                 );
+				USoundManager::GetInstance().PlaySound("shoot");
             }
 
             UEffectManager::GetInstance().ClearAura(SelectedBall);
