@@ -10,7 +10,8 @@ enum class USkillType
     Mine,
     Freeze,
     SizeScaling,
-    MassScaling
+    MassScaling,
+    WallCreate
 };
 
 class UBall : public UPrimitive
@@ -25,17 +26,25 @@ public:
 	UINT            m_numVertices;
 
     bool bEnableFreeze = false;
+    bool bEnableWallCreate = false;
     bool isFreezed = false;
     bool isSelfDestruct = false;
     bool isSizeScaling = false;
     bool isMassScaling = false;
-    bool isMagnetActivated = false;
+    bool isMagnetActivated = false;   
     bool AlreadyActiveMag = false;
+
+
+    // Freeze Effect용 직전 프레임 freeze 감지 변수
+    bool bWasFreezed = false;
 
     EPlayer Owner = EPlayer::Red;
 
     float TargetRadius;
     float TargetMass;
+
+    int currentWallCount = 0;
+    int MaxWallCount = 20;
 
     UBall(const std::string& meshKey, const EPlayer owner, const FVector startLocation);
     virtual ~UBall();
@@ -50,5 +59,11 @@ public:
     virtual void SetEnableAngularMomentum(bool bEnable) override;
     virtual void ApplySkill(USkillType Skill);
     virtual void Update(float DeltaTime, std::vector<UPrimitive*>& others) override;
-
+    void CollisionManage(float DeltaTime, std::vector<UPrimitive*>& others);
+    void ReverseMagnetWhenMine(float DeltaTime, std::vector<UPrimitive*>& others);
+    void FrictionFloor(float DeltaTime, std::vector<UPrimitive*>& others);
+    void SizeMassScaling(float DeltaTime);
+    void WallCollision();
+    void WallCreate();
+    
 };

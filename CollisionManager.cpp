@@ -1,6 +1,7 @@
 #include "pch.h"
 #include "CollisionManager.h"
 #include "UBall.h"
+#include "UWall.h"
 #include "UEffectManager.h"
 #include "USoundManager.h"
 
@@ -40,12 +41,34 @@ void CollisionManager::ResolveCollision(UPrimitive* TargetPrimitive, UPrimitive*
     {
         if (TargetBall->isSelfDestruct && OtherBall->Owner!=TargetBall->Owner)
         {
-            TargetPrimitive->bIsDestroyed = true;
+            FVector CollisionPoint = (TargetPrimitive->Location + OtherPrimitive->Location) * 0.5f;
+            UEffectManager::GetInstance().PlayEffect(
+                "Resources/collision.png",
+                DirectX::XMFLOAT2(CollisionPoint.x, CollisionPoint.y),
+                0.25f,
+                DirectX::XMFLOAT2(2.0f, 2.0f),
+                7,
+                false,
+                0.0f
+            );
+            USoundManager::GetInstance().PlaySound("hit");
+            TargetPrimitive->bIsDestroyed = true;          
             return;
         }
         else if (OtherBall->isSelfDestruct && OtherBall->Owner != TargetBall->Owner)
         {
-            OtherPrimitive->bIsDestroyed = true;
+            FVector CollisionPoint = (TargetPrimitive->Location + OtherPrimitive->Location) * 0.5f;
+            UEffectManager::GetInstance().PlayEffect(
+                "Resources/collision.png",
+                DirectX::XMFLOAT2(CollisionPoint.x, CollisionPoint.y),
+                0.25f,
+                DirectX::XMFLOAT2(2.0f, 2.0f),
+                7,
+                false,
+                0.0f
+            );
+            USoundManager::GetInstance().PlaySound("hit");
+            OtherPrimitive->bIsDestroyed = true;            
             return;
         }
         
@@ -57,6 +80,19 @@ void CollisionManager::ResolveCollision(UPrimitive* TargetPrimitive, UPrimitive*
         {
             TargetBall->isFreezed = true;
         }
+
+        //Collision Effect, Sound 출력
+        FVector CollisionPoint = (TargetPrimitive->Location + OtherPrimitive->Location) * 0.5f;
+        UEffectManager::GetInstance().PlayEffect(
+            "Resources/collision.png",
+            DirectX::XMFLOAT2(CollisionPoint.x, CollisionPoint.y),
+            0.25f,
+            DirectX::XMFLOAT2(2.0f, 2.0f),
+            7,
+            false,
+            0.0f
+        );
+        USoundManager::GetInstance().PlaySound("hit");
 
         // 거리 계산
         float Dist = (float)sqrt(DistSq);
@@ -92,20 +128,7 @@ void CollisionManager::ResolveCollision(UPrimitive* TargetPrimitive, UPrimitive*
         if (VelAlongNormal > 0.0f)
         {
             return;
-        }
-
-        // 충돌 확정 -> 이펙트 발생
-        FVector CollisionPoint = (TargetPrimitive->Location + OtherPrimitive->Location) * 0.5f;
-        UEffectManager::GetInstance().PlayEffect(
-            "Resources/collision.png",
-            DirectX::XMFLOAT2(CollisionPoint.x, CollisionPoint.y),
-            0.25f,
-            2.0f,
-            7,
-            false,
-            0.0f
-        );
-		USoundManager::GetInstance().PlaySound("hit");
+        }     
 
         // 선형 속도
         // 충격량 계산
@@ -151,3 +174,90 @@ void CollisionManager::ResolveCollision(UPrimitive* TargetPrimitive, UPrimitive*
     }
     
 }
+
+bool CollisionManager::DetectWallCollision(UPrimitive* TargetPrimitive, UPrimitive* OtherPrimitive)
+{
+    UBall* Ball = dynamic_cast<UBall*>(TargetPrimitive);
+    UWall* Wall = dynamic_cast<UWall*>(OtherPrimitive);
+
+    if (!Ball || !Wall)
+    {
+        Ball = dynamic_cast<UBall*>(OtherPrimitive);
+        Wall = dynamic_cast<UWall*>(TargetPrimitive);
+    }if (!Ball || !Wall) return false;
+
+    float halfpoint = Wall->Width * 0.5f;
+    float left = Wall->Location.x - halfpoint;
+    float right = Wall->Location.x + halfpoint;
+    float top = Wall->Location.y - halfpoint;
+    float bottom = Wall->Location.y + halfpoint;
+
+    float closestX;
+    float closestY;
+
+    if (Ball->Location.x < left) closestX = left;
+    else if (Ball->Location.x > right) closestX = right;
+    else closestX = Ball->Location.x;
+
+    if (Ball->Location.y < top) closestY = top;
+    else if (Ball->Location.y > bottom) closestY = bottom;
+    else closestY = Ball->Location.y;
+    
+    float dx = Ball->Location.x - closestX;
+    float dy = Ball->Location.y - closestY;
+
+    float distsq = (dx * dx + dy * dy);
+
+    return distsq < (Ball->Radius * Ball->Radius);
+}
+
+void CollisionManager::ResolveWallCollision(UPrimitive* TargetPrimitive, UPrimitive* OtherPrimitive)
+{
+    UBall* Ball = dynamic_cast<UBall*>(TargetPrimitive);
+    UWall* Wall = dynamic_cast<UWall*>(OtherPrimitive);
+
+    if (!Ball || !Wall)
+    {
+        Ball = dynamic_cast<UBall*>(OtherPrimitive);
+        Wall = dynamic_cast<UWall*>(TargetPrimitive);
+    }if (!Ball || !Wall) return;
+
+
+    if (!DetectWallCollision(TargetPrimitive, OtherPrimitive)) return;
+  
+    float halfpoint = Wall->Width * 0.5f;
+    float left = Wall->Location.x - halfpoint;
+    float right = Wall->Location.x + halfpoint;
+    float top = Wall->Location.y - halfpoint;
+    float bottom = Wall->Location.y + halfpoint;
+
+    float closestX;
+    float closestY;
+
+    if (Ball->Location.x < left) closestX = left;
+    else if (Ball->Location.x > right) closestX = right;
+    else closestX = Ball->Location.x;
+
+    if (Ball->Location.y < top) closestY = top;
+    else if (Ball->Location.y > bottom) closestY = bottom;
+    else closestY = Ball->Location.y;
+
+    float dx = Ball->Location.x - closestX;
+    float dy = Ball->Location.y - closestY;
+
+    float dist = sqrtf(dx * dx + dy * dy);
+
+    if (dist == 0.0f) { dx = 1.0f; dist=1.0f; }
+    FVector normal(dx / dist, dy / dist, 0.0f);
+
+    float overlap = Ball->Radius - dist;
+    Ball->Location += normal * overlap;
+
+    float velAlongNormal = Ball->Velocity.Dot(normal);
+    if (velAlongNormal < 0.0f)
+    {
+        Ball->Velocity -= normal * (2.0f * velAlongNormal) * Ball->Elastic;
+    }
+}
+
+

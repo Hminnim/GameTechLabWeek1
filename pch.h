@@ -32,3 +32,4 @@
 #include <DirectXMath.h>
 
 #include <filesystem>
+#include <algorithm>

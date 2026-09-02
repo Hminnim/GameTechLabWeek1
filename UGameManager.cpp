@@ -1,6 +1,9 @@
 #include "pch.h"
 #include "UGameManager.h"
 #include "UBall.h"
+#include "UWall.h"
+#include "USceneManager.h"
+#include "UGameSetting.h"
 
 UGameManager::UGameManager()
 {
@@ -12,6 +15,12 @@ UGameManager::~UGameManager()
 
 void UGameManager::Update(std::vector<UPrimitive*>& primitives)
 {
+	// InGame 씬에서만 필요한 게임 판정
+	if (USceneManager::GetInstance().GetCurrentSceneName() != "InGame")
+	{
+		return;
+	}
+
 	UGameManager::CheckTurnEnd(primitives);
 	UGameManager::CheckGameOver(primitives);
 }
@@ -20,11 +29,12 @@ void UGameManager::InitGame()
 {
 	CurrentPlayerTurn = EPlayer::Red;
 	CurrentTurnState = ETurnState::WaitInput;
+	CurrentGameResult = EGameResult::None;
 }
 
 bool UGameManager::CanSelectBall(UBall* TargetBall)
 {
-	if (CurrentTurnState != ETurnState::WaitInput)
+	if (CurrentTurnState != ETurnState::WaitInput && TargetBall == nullptr)
 	{
 		return false;
 	}
@@ -66,17 +76,23 @@ void UGameManager::CheckTurnEnd(std::vector<UPrimitive*>& primitives)
 	if (bIsAllBallStopped)
 	{
 		for (auto* primitive : primitives)
-		{
+		{						
+			UWall* Wall = dynamic_cast<UWall*>(primitive);
+			if (Wall != nullptr && Wall->Owner != CurrentPlayerTurn)
+			{
+				Wall->bIsDestroyed = true;
+			}						
 			UBall* ball = dynamic_cast<UBall*>(primitive);
 			if (ball && ball->Owner == CurrentPlayerTurn)
 			{
 				ball->isFreezed = false;
 				ball->bEnableFreeze = false;
+				ball->bEnableWallCreate = false;
 				ball->isSelfDestruct = false;
-				ball->TargetRadius = 50.0f;
+				ball->TargetRadius = UGameSetting::GetInstance().BallBaseRadius;
 				ball->isSizeScaling = true;
-				ball->TargetMass = 50.0f*10.0f;
-				ball->isMassScaling = true;
+				ball->TargetMass = UGameSetting::GetInstance().BallBaseRadius * 10.0f;
+				ball->isMassScaling = true;				
 			}
 		}
 		// 스킬 관련 업데이트 사항
@@ -91,19 +107,53 @@ void UGameManager::CheckTurnEnd(std::vector<UPrimitive*>& primitives)
 
 void UGameManager::CheckGameOver(std::vector<UPrimitive*>& primitives)
 {
+	if (CurrentTurnState != ETurnState::WaitInput)
+	{
+		return;
+	}
+
 	int RedBallCount = 0;
 	int BlueBallCount = 0;
 
 	for (auto* primitive : primitives)
 	{
-		if (primitive->Owner == EPlayer::Red)
+		if (UBall* ball = dynamic_cast<UBall*>(primitive))
 		{
-			RedBallCount += 1;
-		}
-		if (primitive->Owner == EPlayer::Blue)
-		{
-			BlueBallCount += 1;
-		}
+			if (ball->Owner == EPlayer::Red)
+			{
+				RedBallCount += 1;				
+			}
+			else if (ball->Owner == EPlayer::Blue)
+			{
+				BlueBallCount += 1;				
+			}
+		}		
+	}
+
+	// Blue 승
+	if (RedBallCount == 0 && BlueBallCount > 0)
+	{
+		OutputDebugStringA("===== BLUE WIN! =====\n");
+		CurrentTurnState = ETurnState::GameOver;
+		CurrentGameResult = EGameResult::BlueWin;
+	}
+	// Red 승
+	else if (RedBallCount > 0 && BlueBallCount == 0)
+	{
+		OutputDebugStringA("===== RED WIN! =====\n");
+		CurrentTurnState = ETurnState::GameOver;
+		CurrentGameResult = EGameResult::RedWin;
+	}
+	// 무승부
+	else if (RedBallCount == 0 && BlueBallCount == 0)
+	{
+		OutputDebugStringA("===== DRAW! =====\n");
+		CurrentTurnState = ETurnState::GameOver;		
+		CurrentGameResult = EGameResult::Draw;
+	}
+
+	if (CurrentGameResult != EGameResult::None)
+	{
+		USceneManager::GetInstance().ChangeScene("GameOver");
 	}
 }
-

@@ -4,6 +4,7 @@
 
 #include "MathTypes.h"
 #include "Sphere.h"
+#include "SquareData.h"
 
 class URenderer
 {

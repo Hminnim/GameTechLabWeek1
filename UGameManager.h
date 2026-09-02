@@ -26,6 +26,14 @@ enum class ESkillType
 	Repulse
 };
 
+enum class EGameResult
+{
+	None,
+	RedWin,
+	BlueWin,
+	Draw
+};
+
 class UGameManager
 {
 public:
@@ -45,6 +53,7 @@ public:
 	ETurnState CurrentTurnState;
 	ESkillType m_currentSelectedSkill;
 	std::map<EPlayer, std::map<ESkillType, bool>> m_usedSkills;
+	EGameResult CurrentGameResult = EGameResult::None;
 
 	void Update(std::vector<UPrimitive*>& primitives);
 	void InitGame();

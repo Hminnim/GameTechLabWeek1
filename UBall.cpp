@@ -1,27 +1,33 @@
 #pragma once
 #include "pch.h"
 #include "UBall.h"
+#include "UWall.h"
 #include "UResourceManager.h"
 #include "UGameSetting.h"
+#include "UEffectManager.h"
+#include "UScene.h"
+#include "USceneManager.h"
+#include "USoundManager.h"
 
 CollisionManager CollisionMan;
 
 UBall::UBall(const std::string& meshKey, const EPlayer owner, const FVector startLocation)
 {
     TotalNumBalls++;
-
+    
     Owner = owner;
 
     // 기본 값
     Elastic = 1.0f;
     GNumber = 1.0f;
+    bIsDestroyed = false;
     bEnableAngularVelocity = false;
 
     // 꽉찬 구의 관성 모멘트
     Inertia = 0.4f * Mass * Radius * Radius;
 
     // 반지름, 반지름에 비례한 질량
-    Radius = 50.0f;
+    Radius = UGameSetting::GetInstance().BallBaseRadius;
     Mass = Radius * 10.0f;
 
     // 공 시작 위치
@@ -58,153 +64,26 @@ void UBall::Render(URenderer& Renderer)
 
 void UBall::Update(float DeltaTime, std::vector<UPrimitive*>& others)
 {
-    if (isSizeScaling)
-    {
-        if (Radius < TargetRadius) {
-            Radius += 30.0f * DeltaTime;
-            if (Radius > TargetRadius)
-            {
-                Radius = TargetRadius;
-                isSizeScaling = false;
-            }
-        }
-        if (Radius > TargetRadius) {
-            Radius -= 30.0f * DeltaTime;
-            if (Radius < TargetRadius)
-            {
-                Radius = TargetRadius;
-                isSizeScaling = false;
-            }
-        }
-    }
+    UBall::SizeMassScaling(DeltaTime);
 
-    if (isMassScaling)
-    {
-        if (Mass < TargetMass) {
-            Mass += 30.0f * DeltaTime;
-            if (Mass > TargetMass)
-            {
-                Mass = TargetMass;
-                isMassScaling = false;
-            }
-        }
-        if (Mass > TargetMass) {
-            Mass -= 30.0f * DeltaTime;
-            if (Mass < TargetMass)
-            {
-                Mass = TargetMass;
-                isMassScaling = false;
-            }
-        }
-    }
+    UBall::WallCollision();
 
-    
-    float FricVal=500.0f;
-    if (isFreezed)
-    {
-        FricVal = 200000.0f;
-    }
+    UBall::FrictionFloor(DeltaTime, others);
 
-    //속도에 따른 위치 이동
-    Location += Velocity * DeltaTime;
+    UBall::CollisionManage(DeltaTime, others);
 
-    // 마찰력 계수 적용
-    if (Velocity.Length() > 0.0f) {
-        FVector NormalizeFricVec = Velocity / Velocity.Length() * (-1.0f);
-        if (Velocity.Length() <= FricVal * DeltaTime)
-        {
-            Velocity = FVector(0, 0, 0);
-            // 척력 발생시 주위 밀어냄
-            if (isMagnetActivated && !AlreadyActiveMag)
-            {
-                float currentMagnetForce = 700000.0f;
-                for (auto* other : others)
-                {
-                    if (other != this)
-                    {
-                        if (other != nullptr)
-                        {
-                            ApplyReverseMagnetism(other, DeltaTime, currentMagnetForce);
-                        }
-                    }
-                }
-                AlreadyActiveMag = true;
-            }
-        }
-        else Velocity += NormalizeFricVec * FricVal * DeltaTime;
-    }
-    if (bEnableAngularVelocity)
-    {
-        Rotation += AngularVelocity * DeltaTime;
-    }
+    UBall::ReverseMagnetWhenMine(DeltaTime, others);
 
     int ScreendWidth = UGameSetting::GetInstance().ScreendWidth;
     int ScreenHeight = UGameSetting::GetInstance().ScreenHeight;
 
-    // 벽에 부딫칠때 감속 및 방향 전환
-    if (Location.x < Radius)
+    // 벽에 부딪칠때 공 파괴 (임시)
+    if ((Location.x < Radius) || (Location.x > ScreendWidth - Radius) || (Location.y < Radius) || (Location.y > ScreenHeight - Radius))
     {
-        Velocity.x *= -0.9f * Elastic;
-        Location.x = Radius;
-    }
-    if (Location.x > ScreendWidth - Radius)
-    {
-        Velocity.x *= -0.9f * Elastic;
-        Location.x = ScreendWidth - Radius;
-    }
-    if (Location.y < Radius)
-    {
-        Velocity.y *= -0.9f * Elastic;
-        Location.y = Radius;
-    }
-    if (Location.y > ScreenHeight - Radius)
-    {
-        Velocity.y *= -0.9f * Elastic;
-        Location.y = ScreenHeight - Radius;
-    }
-
-    //충돌 처리
-    for (auto* other : others)
-    {
-        if (other != this && !other->bIsDestroyed)
-        {
-            UBall* otherBall = dynamic_cast<UBall*>(other);
-            if (otherBall != nullptr && !otherBall->bIsDestroyed)
-            {
-                CollisionMan.ResolveCollision(this, otherBall);
-
-            }
-        }
-    }
-
-    // 자폭 적용된 공 삭제 전 주변에 척력 적용
-    if (this->bIsDestroyed && this->isSelfDestruct)
-    {
-        float currentMineForce = 300000.0f;
-        for (auto* other : others)
-        {
-            if (other != this)
-            {
-                if (other != nullptr)
-                {
-                    ApplyReverseMagnetism(other, DeltaTime, currentMineForce);
-                }
-            }
-        }
-
-        //for (auto it = others.begin();it != others.end();it++)
-        //{
-        //    if (*it == this)
-        //    {
-        //        others.erase(it);
-        //        delete this;
-        //        return;
-        //    }
-        //}
+        this->bIsDestroyed = true;
     }
 }
     
-
 void UBall::ApplyGravity(float DeltaTime)
 {
     Velocity.y += 9800.0f * GNumber * DeltaTime;
@@ -307,5 +186,191 @@ void UBall::ApplySkill(USkillType skill)
         case USkillType::ReverseMagnet:
             isMagnetActivated = true;
             break;
+        case USkillType::WallCreate:
+            bEnableWallCreate = true;
+            break;
     }
+}
+
+void UBall::WallCollision()
+{
+    int ScreendWidth = UGameSetting::GetInstance().ScreendWidth;
+    int ScreenHeight = UGameSetting::GetInstance().ScreenHeight;
+    
+    if (Location.x < Radius)
+    {
+        Velocity.x *= -0.9f * Elastic;
+        Location.x = Radius;
+    }
+    if (Location.x > ScreendWidth - Radius)
+    {
+        Velocity.x *= -0.9f * Elastic;
+        Location.x = ScreendWidth - Radius;
+    }
+    if (Location.y < Radius)
+    {
+        Velocity.y *= -0.9f * Elastic;
+        Location.y = Radius;
+    }
+    if (Location.y > ScreenHeight - Radius)
+    {
+        Velocity.y *= -0.9f * Elastic;
+        Location.y = ScreenHeight - Radius;
+    }
+}
+
+void UBall::SizeMassScaling(float DeltaTime)
+{
+    if (isSizeScaling)
+    {
+        if (Radius < TargetRadius) {
+            Radius += 30.0f * DeltaTime;
+            if (Radius > TargetRadius)
+            {
+                Radius = TargetRadius;
+                isSizeScaling = false;
+            }
+        }
+        if (Radius > TargetRadius) {
+            Radius -= 30.0f * DeltaTime;
+            if (Radius < TargetRadius)
+            {
+                Radius = TargetRadius;
+                isSizeScaling = false;
+            }
+        }
+    }
+
+    if (isMassScaling)
+    {
+        if (Mass < TargetMass) {
+            Mass += 30.0f * DeltaTime;
+            if (Mass > TargetMass)
+            {
+                Mass = TargetMass;
+                isMassScaling = false;
+            }
+        }
+        if (Mass > TargetMass) {
+            Mass -= 30.0f * DeltaTime;
+            if (Mass < TargetMass)
+            {
+                Mass = TargetMass;
+                isMassScaling = false;
+            }
+        }
+    }
+}
+FVector lastspawnpos;
+
+void UBall::FrictionFloor(float DeltaTime, std::vector<UPrimitive*>& others)
+{
+    float FricVal = 500.0f;
+    if (isFreezed)
+    {
+        FricVal = 200000.0f;
+    }
+    if (bEnableWallCreate && Velocity.Length()>50.0f && currentWallCount<MaxWallCount)
+    {
+        float dx = (Location.x - lastspawnpos.x);
+        float dy = (Location.y - lastspawnpos.y);
+        float dist = sqrtf(dx * dx + dy * dy);
+
+        if (dist >= 150.0f) {
+            FVector dir = Velocity / Velocity.Length();
+            float offset = Radius + 40.0f + 10.0f;
+            FVector spawnpos = Location - (dir * offset);
+
+            UScene* currentScene = USceneManager::GetInstance().GetCurrentScene();
+            currentScene->AddPrimitive(new UWall("square", FVector(spawnpos.x, spawnpos.y, 0.5f), 75.0f, this->Owner));
+            lastspawnpos = spawnpos;
+            currentWallCount++;
+        }
+    }
+
+    //속도에 따른 위치 이동
+    Location += Velocity * DeltaTime;
+
+    // 마찰력 계수 적용
+    if (Velocity.Length() > 0.0f) {
+        FVector NormalizeFricVec = Velocity / Velocity.Length() * (-1.0f);
+        if (Velocity.Length() <= FricVal * DeltaTime)
+        {
+            Velocity = FVector(0, 0, 0);
+            // 척력 발생시 주위 밀어냄
+            if (isMagnetActivated && !AlreadyActiveMag)
+            {
+                float currentMagnetForce = 500000.0f;
+                for (auto* other : others)
+                {
+                    if (other != this)
+                    {
+                        if (other != nullptr)
+                        {
+                            ApplyReverseMagnetism(other, DeltaTime, currentMagnetForce);
+                        }
+                    }
+                }
+                AlreadyActiveMag = true;
+            }
+        }
+        else Velocity += NormalizeFricVec * FricVal * DeltaTime;
+    }
+    if (bEnableAngularVelocity)
+    {
+        Rotation += AngularVelocity * DeltaTime;
+    }
+}
+
+void UBall::ReverseMagnetWhenMine(float DeltaTime, std::vector<UPrimitive*>& others)
+{
+    // 자폭시 척력 적용
+    if (this->bIsDestroyed && this->isSelfDestruct)
+    {
+        UEffectManager::GetInstance().PlayEffect(
+            "Resources/self-destruct.png",
+            DirectX::XMFLOAT2(Location.x, Location.y),
+            1.25f,                         // 재생 시간 (1.25초)
+            DirectX::XMFLOAT2(2.0f, 2.0f), // 크기 배율 (2배)
+            9,                             // 총 9프레임 스프라이트 시트
+            false,
+            0.0f
+        );
+        USoundManager::GetInstance().PlaySound("hit");
+        float currentMineForce = 500000.0f;
+        for (auto* other : others)
+        {
+            if (other != this)
+            {
+                if (other != nullptr)
+                {
+                    ApplyReverseMagnetism(other, DeltaTime, currentMineForce);
+                }
+            }
+        }
+    }
+}
+
+void UBall::CollisionManage(float DeltaTime, std::vector<UPrimitive*>& others)
+{
+    for (auto* other : others)
+    {
+        if (other != this && !other->bIsDestroyed)
+        {
+            UWall* otherWall = dynamic_cast<UWall*>(other);
+            if (otherWall != nullptr)
+            {
+                CollisionMan.ResolveWallCollision(this, otherWall);
+            }
+            UBall* otherBall = dynamic_cast<UBall*>(other);
+            if (otherBall != nullptr)
+            {
+                CollisionMan.ResolveCollision(this, otherBall);
+            }
+        }
+    }
+}
+
+void UBall::WallCreate()
+{
 }

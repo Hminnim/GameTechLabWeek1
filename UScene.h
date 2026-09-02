@@ -20,7 +20,7 @@ class UScene
         virtual void Exit() {};
 
         // 객체 추가
-        void AddPrimitive(UPrimitive* primitive) { _primitives.push_back(primitive); }
+        void AddPrimitive(UPrimitive* primitive) { _pendingPrimitives.push_back(primitive); }
         void AddUI(UUI* ui) { _uis.push_back(ui); }
         void AddButton(UButton* button) { _buttons.push_back(button); }
 
@@ -35,8 +35,10 @@ class UScene
         // 마우스 클릭 - 버튼 대응
         void HandleClick(float mouseX, float mouseY);
 
-    private:
+    protected:
         std::vector<UPrimitive*> _primitives;
+        std::vector<UPrimitive*> _pendingPrimitives;
+    private:     
         std::vector<UUI*> _uis;
         std::vector<UButton*> _buttons;
         UUI* _background;
@@ -86,6 +88,7 @@ public:
 	void AddSkillButton(USkillButton* skillButton) { m_skillButtons.push_back(skillButton); }
 	void Update(float deltaTime) override;
 	void Render(URenderer& renderer) override;
+  void Enter() override;
 
 private:
 	std::unordered_map<EPlayer, UUI*> m_backgrounds;
@@ -100,4 +103,14 @@ public:
 
 	void Update(float deltaTime) override;
 	void Render(URenderer& renderer) override;
+
+    virtual void SetBackground(UUI* backgroundRedWin, UUI* backgroundBlueWin, UUI* backgroundDraw) {
+        _resultBackgrounds[EGameResult::RedWin] = backgroundRedWin, _resultBackgrounds[EGameResult::BlueWin] = backgroundBlueWin
+            , _resultBackgrounds[EGameResult::Draw] = backgroundDraw;
+    }
+
+    void Enter() override;
+
+private:
+    std::unordered_map<EGameResult, UUI*> _resultBackgrounds;
 };

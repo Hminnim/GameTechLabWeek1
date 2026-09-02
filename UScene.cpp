@@ -9,6 +9,7 @@
 #include "UMap.h"
 #include "UGameManager.h"
 #include "UButton.h"
+#include "UWall.h"
 
 void UScene::Render(URenderer& renderer)
 {
@@ -130,6 +131,8 @@ void UTitleScene::Initialize()
     exitbtn->SetOnClick([]() {
         USceneManager::GetInstance().RequestChangeScene("GameOver");
         });
+
+    
 }
 
 void UTitleScene::Update(float deltaTime)
@@ -158,22 +161,31 @@ void UInGameScene::Initialize()
     float MapWidth = ScreenWidth - (MapMarginX * 2);
     float MapHeight = ScreenHeight - (MapMarginY * 2);
 
-    int NumBallsPerTeam = 3;
+    //int NumBallsPerTeam = 3;
 
-    float RedStartX = MapMarginX + (MapWidth * 0.85f);
-    float BlueStartX = MapMarginX + (MapWidth * 0.15f);
+    //float RedStartX = MapMarginX + (MapWidth * 0.15f);
+    //float BlueStartX = MapMarginX + (MapWidth * 0.85f);
 
-    std::vector<FVector> RedSpawnPoints;
-    std::vector<FVector> BlueSpawnPoints;
+    //std::vector<FVector> RedSpawnPoints;
+    //std::vector<FVector> BlueSpawnPoints;
 
-    float YInterval = MapHeight / (NumBallsPerTeam + 1);
+    //float YInterval = MapHeight / (NumBallsPerTeam + 1);
 
-    for (int i = 1; i <= NumBallsPerTeam; ++i)
-    {
-        float SpawnY = MapMarginY + (YInterval * i);
-        RedSpawnPoints.push_back(FVector(RedStartX, SpawnY, 0.0f));
-        BlueSpawnPoints.push_back(FVector(BlueStartX, SpawnY, 0.0f));
-    }
+    //for (int i = 1; i <= NumBallsPerTeam; ++i)
+    //{
+    //    float SpawnY = MapMarginY + (YInterval * i);
+    //    RedSpawnPoints.push_back(FVector(RedStartX, SpawnY, 0.0f));
+    //    BlueSpawnPoints.push_back(FVector(BlueStartX, SpawnY, 0.0f));
+    //}
+
+    //for (const FVector& spawnPos : RedSpawnPoints)
+    //{
+    //    AddPrimitive(new UBall("sphere", EPlayer::Red, spawnPos));
+    //}
+    //for (const FVector& spawnPos : BlueSpawnPoints)
+    //{
+    //    AddPrimitive(new UBall("sphere", EPlayer::Blue, spawnPos));
+    //}
 
     float BtnWidth = ScreenWidth * (120.0f / 2040.0f);
     float BtnHeight = BtnWidth;
@@ -182,16 +194,6 @@ void UInGameScene::Initialize()
     int NumButtons = 5;
     float BtnYInterval = ScreenHeight / (NumButtons + 1);
     // 화면 크기에 따른 보정 ----------------------------------------------
-
-    for (const FVector& spawnPos : RedSpawnPoints)
-    {
-        AddPrimitive(new UBall("sphere", EPlayer::Red, spawnPos));
-    }
-    for (const FVector& spawnPos : BlueSpawnPoints)
-    {
-        AddPrimitive(new UBall("sphere", EPlayer::Blue, spawnPos));
-    }
-
     UMap* map = new UMap();
     map->Init("Resources/map.png", MapMarginX, MapMarginY, MapWidth, MapHeight);
     SetMap(map);
@@ -285,6 +287,40 @@ void UInGameScene::Update(float deltaTime)
     
 
     UScene::Update(deltaTime);
+
+    // 공 판정 업데이트
+    for (auto* primitive : _primitives)
+    {
+        if (primitive != nullptr && !primitive->bIsDestroyed)
+        {
+            primitive->Update(deltaTime, _primitives);
+        }
+    }
+
+    if (!_pendingPrimitives.empty())
+    {
+        for (auto* p : _pendingPrimitives)
+        {
+            _primitives.push_back(p);
+        }
+        _pendingPrimitives.clear(); // 대기실 비우기
+    }
+
+    // 공 파괴 업데이트
+    for (auto it = _primitives.begin(); it != _primitives.end();)
+    {
+        if ((*it)->bIsDestroyed)
+        {
+            delete* it;
+            it = _primitives.erase(it);
+        }
+        else
+        {
+            ++it;
+        }
+    }
+
+    UGameManager::GetInstance().Update(_primitives);
 }
 
 void UInGameScene::Render(URenderer& renderer)
@@ -301,6 +337,52 @@ void UInGameScene::Render(URenderer& renderer)
     renderer.EndSprite();
 }
 
+void UInGameScene::Enter()
+{
+    // 공 소환 전 기존에 있던 공 제거
+    for (auto it = _primitives.begin(); it != _primitives.end();)
+    {
+        delete* it;
+        it = _primitives.erase(it);
+    }
+
+    // 지정된 위치 공 소환
+    float ScreenWidth = (float)UGameSetting::GetInstance().ScreendWidth;
+    float ScreenHeight = (float)UGameSetting::GetInstance().ScreenHeight;
+
+    float MapMarginX = 300.0f;
+    float MapMarginY = 100.0f;
+    float MapWidth = ScreenWidth - (MapMarginX * 2);
+    float MapHeight = ScreenHeight - (MapMarginY * 2);
+
+    int NumBallsPerTeam = UGameSetting::GetInstance().BallsPerTeam;
+
+    float RedStartX = MapMarginX + (MapWidth * 0.15f);
+    float BlueStartX = MapMarginX + (MapWidth * 0.85f);
+
+    std::vector<FVector> RedSpawnPoints;
+    std::vector<FVector> BlueSpawnPoints;
+
+    float YInterval = MapHeight / (NumBallsPerTeam + 1);
+
+    for (int i = 1; i <= NumBallsPerTeam; ++i)
+    {
+        float SpawnY = MapMarginY + (YInterval * i);
+        RedSpawnPoints.push_back(FVector(RedStartX, SpawnY, 0.0f));
+        BlueSpawnPoints.push_back(FVector(BlueStartX, SpawnY, 0.0f));
+    }
+
+    for (const FVector& spawnPos : RedSpawnPoints)
+    {
+        AddPrimitive(new UBall("sphere", EPlayer::Red, spawnPos));
+    }
+    for (const FVector& spawnPos : BlueSpawnPoints)
+    {
+        AddPrimitive(new UBall("sphere", EPlayer::Blue, spawnPos));
+    }
+    UGameManager::GetInstance().InitGame();
+}
+
 
 
 ////////////////////
@@ -312,9 +394,13 @@ void UGameOverScene::Initialize()
     float ScreenWidth = (float)UGameSetting::GetInstance().ScreendWidth;
     float ScreenHeight = (float)UGameSetting::GetInstance().ScreenHeight;
 
-    UUI* temp = new UUI();
-    temp->Init("Resources/background_red_win.png", 0, 0, ScreenWidth, ScreenHeight);
-    AddUI(temp);
+    UUI* backgroundRedWin = new UUI();
+    UUI* backgroundBlueWin = new UUI();
+    UUI* backgroundDraw = new UUI();
+    backgroundRedWin->Init("Resources/background_red_win.png", 0, 0, ScreenWidth, ScreenHeight);
+    backgroundBlueWin->Init("Resources/background_blue_win.png", 0, 0, ScreenWidth, ScreenHeight);
+    backgroundDraw->Init("Resources/background_red_win.png", 0, 0, ScreenWidth, ScreenHeight); // 임시 이미지
+    SetBackground(backgroundRedWin, backgroundBlueWin, backgroundDraw);
 
     float ButtonWidth = 400.0f;
     float ButtonHeight = 400.0f;
@@ -349,5 +435,13 @@ void UGameOverScene::Update(float deltaTime)
 
 void UGameOverScene::Render(URenderer& renderer)
 {
+    renderer.BeginSprite();
+    _resultBackgrounds[UGameManager::GetInstance().CurrentGameResult]->Render(renderer);
+    renderer.EndSprite();
+
     UScene::Render(renderer);
+}
+
+void UGameOverScene::Enter()
+{  
 }
