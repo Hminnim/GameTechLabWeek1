@@ -4,7 +4,7 @@
 #include "UUI.h"
 #include "UButton.h"
 #include "UMap.h"
-
+#include "UGameManager.h"
 
 class UPrimitive;
 
@@ -74,5 +74,13 @@ public:
 	void Update(float deltaTime) override;
 	void Render(URenderer& renderer) override;
 
+    virtual void SetBackground(UUI* backgroundRedWin, UUI* backgroundBlueWin, UUI* backgroundDraw) {
+        _resultBackgrounds[EGameResult::RedWin] = backgroundRedWin, _resultBackgrounds[EGameResult::BlueWin] = backgroundBlueWin
+            , _resultBackgrounds[EGameResult::Draw] = backgroundDraw;
+    }
+
     void Enter() override;
+
+private:
+    std::unordered_map<EGameResult, UUI*> _resultBackgrounds;
 };

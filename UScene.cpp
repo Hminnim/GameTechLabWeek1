@@ -293,9 +293,13 @@ void UGameOverScene::Initialize()
     float ScreenWidth = (float)UGameSetting::GetInstance().ScreendWidth;
     float ScreenHeight = (float)UGameSetting::GetInstance().ScreenHeight;
 
-    UUI* temp = new UUI();
-    temp->Init("Resources/background_red_win.png", 0, 0, ScreenWidth, ScreenHeight);
-    AddUI(temp);
+    UUI* backgroundRedWin = new UUI();
+    UUI* backgroundBlueWin = new UUI();
+    UUI* backgroundDraw = new UUI();
+    backgroundRedWin->Init("Resources/background_red_win.png", 0, 0, ScreenWidth, ScreenHeight);
+    backgroundBlueWin->Init("Resources/background_blue_win.png", 0, 0, ScreenWidth, ScreenHeight);
+    backgroundDraw->Init("Resources/background_red_win.png", 0, 0, ScreenWidth, ScreenHeight); // 임시 이미지
+    SetBackground(backgroundRedWin, backgroundBlueWin, backgroundDraw);
 
     float ButtonWidth = 400.0f;
     float ButtonHeight = 400.0f;
@@ -330,26 +334,13 @@ void UGameOverScene::Update(float deltaTime)
 
 void UGameOverScene::Render(URenderer& renderer)
 {
+    renderer.BeginSprite();
+    _resultBackgrounds[UGameManager::GetInstance().CurrentGameResult]->Render(renderer);
+    renderer.EndSprite();
+
     UScene::Render(renderer);
 }
 
 void UGameOverScene::Enter()
-{
-    EGameResult CurrentGameResult = UGameManager::GetInstance().CurrentGameResult;
-
-    switch (CurrentGameResult)
-    {
-    case EGameResult::None:
-        return;
-        break;
-    case EGameResult::RedWin:
-        break;
-    case EGameResult::BlueWin:
-        break;
-    case EGameResult::Draw:
-        break;
-    default:
-        return;
-        break;
-    }
+{  
 }
