@@ -79,10 +79,14 @@ void UGameManager::CheckTurnEnd(std::vector<UPrimitive*>& primitives)
 				ball->isMassScaling = true;
 			}
 		}
-		
+		// 스킬 관련 업데이트 사항
+		m_usedSkills[CurrentPlayerTurn][m_currentSelectedSkill] = true;
+
 		CurrentPlayerTurn = (CurrentPlayerTurn == EPlayer::Red ? EPlayer::Blue : EPlayer::Red);
 		CurrentTurnState = ETurnState::WaitInput;
 	}
+
+
 }
 
 void UGameManager::CheckGameOver(std::vector<UPrimitive*>& primitives)

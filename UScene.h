@@ -55,17 +55,40 @@ public:
 	void Render(URenderer& renderer) override;
 };
 
+
+struct FSlotData 
+{
+    ESkillType AssignedSkill = ESkillType::None;
+    float x, y;
+};
+
+enum class ESlot
+{
+	Slot1,
+	Slot2,
+	Slot3,
+	Slot4,
+	Slot5,
+    Slot6,
+    Slot7,
+    Slot8,
+    Slot9,
+    Slot10,
+    MaxCount
+};
+
 class UInGameScene : public UScene
 {
 public:
     void Initialize() override;
-    virtual void SetBackground(UUI* backgroundBlue, UUI* backgroundRed) { _backgrounds[EPlayer::Blue] = backgroundBlue; _backgrounds[EPlayer::Red] = backgroundRed; }
+    virtual void SetBackground(UUI* backgroundBlue, UUI* backgroundRed) { m_backgrounds[EPlayer::Blue] = backgroundBlue; m_backgrounds[EPlayer::Red] = backgroundRed; }
 
 	void Update(float deltaTime) override;
 	void Render(URenderer& renderer) override;
 
 private:
-	std::unordered_map<EPlayer, UUI*> _backgrounds;
+	std::unordered_map<EPlayer, UUI*> m_backgrounds;
+	std::map<ESlot, FSlotData> m_slotData;
 };
 
 class UGameOverScene : public UScene

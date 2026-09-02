@@ -84,7 +84,7 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLine
     USceneManager::GetInstance().AddScene("Title", new UTitleScene());
 	USceneManager::GetInstance().AddScene("InGame", new UInGameScene());
 	USceneManager::GetInstance().AddScene("GameOver", new UGameOverScene());
-    USceneManager::GetInstance().ChangeScene("Title");
+    USceneManager::GetInstance().ChangeScene("InGame");
 
     ///////////////////////////////////////////////
     //////////////////EFFECT TEST//////////////////

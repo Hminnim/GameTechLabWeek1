@@ -3,6 +3,8 @@
 #include "UButton.h"
 #include "URenderer.h"
 #include "UResourceManager.h"
+#include "UGameManager.h"
+#include "UGameSetting.h"
 
 bool UButton::HitTest(float mouseX, float mouseY) const
 {
@@ -16,23 +18,53 @@ void UButton::OnClick()
     {
         _onClick();
     }
-	if (!_usedTextureKey.empty())
-	{
-		_textureKey = _usedTextureKey;
-		_isUsed = true;
-	}
 }
 
 void UButton::Render(URenderer& renderer)
 {
-	//if (!_isActive || !_srv)
-	//	return;
-    if (!_isUsed)
+	UUI::Render(renderer);
+}
+
+//////////////////
+// USkillButton //
+//////////////////
+void USkillButton::OnClick()
+{
+	if (_state == ESkillButtonState::Normal)
+	{
+		_state = ESkillButtonState::Selected;
+		UGameManager::GetInstance().m_currentSelectedSkill = _skillType;
+	}
+}
+
+void USkillButton::Update(float deltaTime)
+{
+	if (UGameManager::GetInstance().m_usedSkills[UGameManager::GetInstance().CurrentPlayerTurn][_skillType])
+	{
+		_state = ESkillButtonState::Used;
+	}
+	else if (_state == ESkillButtonState::Selected && UGameManager::GetInstance().m_currentSelectedSkill != _skillType)
+	{
+		_state = ESkillButtonState::Normal;
+	}
+}
+
+void USkillButton::Render(URenderer& renderer)
+{
+    switch (_state)
     {
-		UUI::Render(renderer);
-    }
-    else
-    {
+    case ESkillButtonState::Normal:
+        UUI::Render(renderer);
+        break;
+    case ESkillButtonState::Hovered:
+        UUI::Render(renderer);
+        // @Effect
+        break;
+    case ESkillButtonState::Selected:
+        UUI::Render(renderer);
+        // @Effect
+        break;
+    case ESkillButtonState::Used:
         _srv = UResourceManager::GetInstance().GetTexture(_usedTextureKey);
         RECT destRect = {
             (LONG)_x,
@@ -41,5 +73,6 @@ void UButton::Render(URenderer& renderer)
             (LONG)(_y + _height)
         };
         renderer.m_spriteBatch->Draw(_srv, destRect);
+        break;
     }
 }
