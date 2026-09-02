@@ -1,6 +1,8 @@
 #include "pch.h"
 #include "CollisionManager.h"
 #include "UBall.h"
+#include "UEffectManager.h"
+#include "USoundManager.h"
 
 CollisionManager::CollisionManager()
 {
@@ -46,7 +48,7 @@ void CollisionManager::ResolveCollision(UPrimitive* TargetPrimitive, UPrimitive*
             OtherPrimitive->isDestroyed = true;
             return;
         }
-
+        
         if (TargetBall->bEnableFreeze)
         {
             OtherBall->isFreezed = true;
@@ -80,7 +82,8 @@ void CollisionManager::ResolveCollision(UPrimitive* TargetPrimitive, UPrimitive*
         TargetPrimitive->Location += NormalVector * Overlap * M1Ratio;
         OtherPrimitive->Location -= NormalVector * Overlap * M2Ratio;
 
-            
+ 
+
         // Impulse 구하기
         FVector vRel = TargetPrimitive->Velocity - OtherPrimitive->Velocity;  // 상대 속도
         float VelAlongNormal = vRel.Dot(NormalVector);    // 법선 방향(충돌 축)의 속도 성분
@@ -90,6 +93,19 @@ void CollisionManager::ResolveCollision(UPrimitive* TargetPrimitive, UPrimitive*
         {
             return;
         }
+
+        // 충돌 확정 -> 이펙트 발생
+        FVector CollisionPoint = (TargetPrimitive->Location + OtherPrimitive->Location) * 0.5f;
+        UEffectManager::GetInstance().PlayEffect(
+            "Resources/collision.png",
+            DirectX::XMFLOAT2(CollisionPoint.x, CollisionPoint.y),
+            0.25f,
+            2.0f,
+            7,
+            false,
+            0.0f
+        );
+		USoundManager::GetInstance().PlaySound("hit");
 
         // 선형 속도
         // 충격량 계산

@@ -37,6 +37,25 @@ bool USoundManager::LoadSound(std::string soundName, const char* filename)
 	return true;
 }
 
+void USoundManager::LoadAllSounds(const std::string& folderPath)
+{
+	for (const auto& entry : std::filesystem::directory_iterator(folderPath))
+	{
+		if (entry.is_regular_file())
+		{
+			std::string ext = entry.path().extension().string();
+
+			if (ext == ".wav" || ext == ".mp3" || ext == ".ogg")
+			{
+				std::string soundName = entry.path().stem().string();
+				std::string filePath = entry.path().string();
+
+				LoadSound(soundName, filePath.c_str());
+			}
+		}
+	}
+}
+
 void USoundManager::PlaySound(std::string soundName)
 {
 	auto it = SoundMap.find(soundName);

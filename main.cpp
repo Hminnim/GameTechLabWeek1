@@ -15,6 +15,7 @@
 #include "UGameSetting.h"
 #include "UEffectManager.h"
 
+#include "UGameManager.h"
 
 int UBall::TotalNumBalls = 0;
 
@@ -25,9 +26,9 @@ static bool bIsDragging = false;
 
 int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLine, int nShowCmd){
     // SoundManager 초기화 및 재생할 음원 파일 설정
-    USoundManager SoundManager;
-    SoundManager.Init();
-	SoundManager.LoadSound("TestSound", "Resources/AlarmSound.wav");
+    USoundManager::GetInstance().Init();
+    USoundManager::GetInstance().LoadAllSounds("Resources/Sounds/");
+	USoundManager::GetInstance().PlaySound("title2");
 
     // Window
     WCHAR WindowClass[] = L"JungleWindowClass";
@@ -90,13 +91,13 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLine
     ///////////////////////////////////////////////
 
     UEffectManager::GetInstance().Init(renderer.DeviceContext);
-    UEffectManager::GetInstance().PlayEffect(
-        "Resources/effect_test.png",
-        { 500.0f, 500.0f },
-        2.0f,
-        1.0f,
-        6
-    );
+    // UEffectManager::GetInstance().PlayEffect(
+    //     "Resources/shooting.png",
+    //     { 500.0f, 500.0f },
+    //     1.0f,
+    //     2.0f,
+    //     6                
+    // );
 
     ///////////////////////////////////////////////
     //////////////////EFFECT TEST//////////////////
@@ -123,7 +124,7 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLine
             }
         }
 		// SoundManager 업데이트
-        SoundManager.Update();
+        USoundManager::GetInstance().Update();
         DeltaTime = Timer.GetDeltaTime();
         UInputManager::GetInstance().Update();
 
@@ -146,20 +147,58 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLine
                 for (auto* prim : primitives)
                 {
                     UBall* ball = dynamic_cast<UBall*>(prim);
-                    if (ball)
+                    if (ball && UGameManager::GetInstance().CanSelectBall(ball))
                     {
                         float dx = ball->Location.x - (float)mouse.x;
                         float dy = ball->Location.y - (float)mouse.y;
                         if (dx * dx + dy * dy < ball->Radius * ball->Radius)
                         {
-                            SelectedBall = ball;
-                            bIsDragging = true; // ⭐ 드래그 조준 시작!
-                            SelectedBall->Velocity = FVector(0, 0, 0); // 조준할 땐 공을 정지
+                            SelectedBall = ball; // 선택만!
                             break;
                         }
                     }
                 }
             }
+        }
+        // 2. 우클릭 드래그: 발사 조작 (스킬 걸고 나서 쏘기!)
+        if (SelectedBall != nullptr && UInputManager::GetInstance().IsKeyDown(VK_RBUTTON) && !ImGui::GetIO().WantCaptureMouse)
+        {
+            bIsDragging = true;
+            SelectedBall->Velocity = FVector(0, 0, 0);
+        }
+        if (bIsDragging && UInputManager::GetInstance().IsKeyUp(VK_RBUTTON))
+        {
+            if (SelectedBall != nullptr)
+            {
+                POINT mouse = UInputManager::GetInstance().GetMousePos();
+                FVector launchVec(SelectedBall->Location.x - (float)mouse.x, SelectedBall->Location.y - (float)mouse.y, 0.0f);
+                float pullDistance = launchVec.Length();
+                if (pullDistance > 5.0f)
+                {
+                    float launchPower = 8.0f;
+                    SelectedBall->Velocity = launchVec * launchPower;
+                    float maxSpeed = 3000.0f;
+                    if (SelectedBall->Velocity.Length() > maxSpeed)
+                    {
+                        SelectedBall->Velocity = (SelectedBall->Velocity / SelectedBall->Velocity.Length()) * maxSpeed;
+                    }
+
+                    // Shooting Effect 적용을 위한 발사각 계산 (좌클릭 -> 우클릭으로 변경)
+                    float launchAngle = atan2f(SelectedBall->Velocity.y, SelectedBall->Velocity.x);
+
+                    UEffectManager::GetInstance().PlayEffect(
+                        "Resources/shooting.png",
+                        DirectX::XMFLOAT2(SelectedBall->Location.x, SelectedBall->Location.y),
+                        0.25f,
+                        1.5f,
+                        6,
+                        false,
+                        launchAngle
+                    );
+                }
+                UGameManager::GetInstance().CurrentTurnState = ETurnState::BallMoving;
+            }
+            bIsDragging = false;
         }
         UEffectManager::GetInstance().Render(); // EFFECT TEST
 
@@ -193,7 +232,6 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLine
             if (SelectedBall != nullptr)
             {
                 POINT mouse = UInputManager::GetInstance().GetMousePos();
-                // 💥 당긴 방향의 반대 방향으로 발사 벡터 계산 (새총 원리)
                 FVector launchVec(SelectedBall->Location.x - (float)mouse.x, SelectedBall->Location.y - (float)mouse.y, 0.0f);
 
                 float pullDistance = launchVec.Length();
@@ -207,16 +245,27 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLine
                     {
                         SelectedBall->Velocity = (SelectedBall->Velocity / SelectedBall->Velocity.Length()) * maxSpeed;
                     }
+
+                    // Shooting Effect 적용을 위한 발사각 계산
+                    // float launchAngle = atan2f(SelectedBall->Velocity.y, SelectedBall->Velocity.x);
+
+                    // UEffectManager::GetInstance().PlayEffect(
+                    //     "Resources/shooting.png",
+                    //     DirectX::XMFLOAT2(SelectedBall->Location.x, SelectedBall->Location.y),
+                    //     0.25f,
+                    //     1.5f,
+                    //     6,
+                    //     false,
+                    //     launchAngle
+                    // );
                 }
+
+                UGameManager::GetInstance().CurrentTurnState = ETurnState::BallMoving;
             }
             bIsDragging = false; // 드래그 종료
         }
         // main.cpp ImGui 창 안에서
      
-        if (ImGui::Button("Sound"))
-        {
-            SoundManager.PlaySound("TestSound");
-        }
         // 마우스 값 보기
         bool bIsLeftPress = UInputManager::GetInstance().IsKeyPress(VK_LBUTTON);
         ImGui::Checkbox("Mouse Left", &bIsLeftPress);
@@ -224,6 +273,36 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLine
         MousePointValue[0] = UInputManager::GetInstance().GetMousePos().x;
         MousePointValue[1] = UInputManager::GetInstance().GetMousePos().y;
         ImGui::InputInt2("Mouse Point", MousePointValue);
+
+        ImGui::Separator();
+        ImGui::Text("=== Game Manager Status ===");
+
+        // 1. 현재 턴 가져오기
+        EPlayer currentTurn = UGameManager::GetInstance().CurrentPlayerTurn;
+        if (currentTurn == EPlayer::Red)
+        {
+            // Red 턴이면 빨간색 텍스트
+            ImGui::TextColored(ImVec4(1.0f, 0.3f, 0.3f, 1.0f), "[ Turn : RED Player ]");
+        }
+        else
+        {
+            // Blue 턴이면 파란색 텍스트
+            ImGui::TextColored(ImVec4(0.3f, 0.6f, 1.0f, 1.0f), "[ Turn : BLUE Player ]");
+        }
+
+        // 2. 현재 상태 가져오기
+        ETurnState currentState = UGameManager::GetInstance().CurrentTurnState;
+        const char* stateStr = "Unknown";
+        switch (currentState)
+        {
+        case ETurnState::WaitInput:  stateStr = "Waiting for Input..."; break;
+        case ETurnState::BallMoving: stateStr = "Balls are Moving!";    break;
+        case ETurnState::GameOver:   stateStr = "Game Over!";           break;
+        }
+
+        // 노란색 텍스트로 현재 상태 출력
+        ImGui::TextColored(ImVec4(1.0f, 1.0f, 0.0f, 1.0f), "State: %s", stateStr);
+        ImGui::Separator();
 
         ImGui::End();
 
@@ -245,7 +324,7 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLine
     renderer.ReleaseConstantBuffer();
     renderer.ReleaseShader();
     renderer.Release();
-	SoundManager.Release();
+	USoundManager::GetInstance().Release();
 
 	return 0;
 }

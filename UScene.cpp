@@ -47,6 +47,8 @@ void UScene::Update(float Deltatime)
         primitive->Update(Deltatime, _primitives);
     }
 
+    UGameManager::GetInstance().Update(_primitives);
+
     if (UInputManager::GetInstance().IsKeyDown(VK_LBUTTON)) {
         float mouseX = UInputManager::GetInstance().GetMousePos().x;
         float mouseY = UInputManager::GetInstance().GetMousePos().y;
@@ -106,11 +108,29 @@ void UTitleScene::Render(URenderer& renderer)
 //////////////////
 void UInGameScene::Initialize()
 {
-    AddPrimitive(new UBall("sphere", "Resources/red.png"));
-    AddPrimitive(new UBall("sphere", "Resources/red.png"));
-    AddPrimitive(new UBall("sphere", "Resources/blue.png"));
-    AddPrimitive(new UBall("sphere", "Resources/blue.png"));
-    AddPrimitive(new UBall("sphere", "Resources/blue.png"));
+    // 팀별 공 배치 하드 코딩
+    std::vector<FVector> RedSpawnPoints = {
+        FVector(550.0f, 310.0f, 0.0f),
+        FVector(550.0f, 700.0f, 0.0f),
+        FVector(550.0f, 1090.0f, 0.0f)
+    };
+    std::vector<FVector> BlueSpawnPoints = {
+        FVector(1485.0f, 310.0f, 0.0f),
+        FVector(1485.0f, 700.0f, 0.0f),
+        FVector(1485.0f, 1090.0f,0.0f)
+    };
+
+    // Ball 소환
+    for (FVector& spawnPos : RedSpawnPoints)
+    {
+        AddPrimitive(new UBall("sphere", EPlayer::Red, spawnPos));
+    }
+    for (FVector& spawnPos : BlueSpawnPoints)
+    {
+        AddPrimitive(new UBall("sphere", EPlayer::Blue, spawnPos));
+    }
+
+    UGameManager::GetInstance().InitGame();
 
     UMap* map = new UMap();
     map->Init("Resources/map.png", 300, 100, UGameSetting::GetInstance().ScreendWidth - 600, UGameSetting::GetInstance().ScreenHeight - 200);

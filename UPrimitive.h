@@ -1,6 +1,7 @@
 #pragma once
 #include "URenderer.h"
 #include "pch.h"
+#include "UGameManager.h"
 
 class UPrimitive
 {
@@ -21,6 +22,8 @@ public:
     // States
     bool bEnableAngularVelocity;
     bool isDestroyed = false;
+
+    EPlayer Owner = EPlayer::Red;
 
 public:
     virtual ~UPrimitive() {}

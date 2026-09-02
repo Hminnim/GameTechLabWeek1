@@ -29,3 +29,5 @@
 #include <SpriteBatch.h>
 
 #include <DirectXMath.h>
+
+#include <filesystem>
