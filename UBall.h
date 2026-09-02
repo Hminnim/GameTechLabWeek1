@@ -28,13 +28,15 @@ public:
     bool isFreezed = false;
     bool isSelfDestruct = false;
     bool isSizeScaling = false;
+    bool isMassScaling = false;
     bool isMagnetActivated = false;
     bool AlreadyActiveMag = false;
 
     EPlayer Owner = EPlayer::Red;
 
     float TargetRadius;
- 
+    float TargetMass;
+
     UBall(const std::string& meshKey, const EPlayer owner, const FVector startLocation);
     virtual ~UBall();
     virtual void Render(URenderer& Renderer) override;
