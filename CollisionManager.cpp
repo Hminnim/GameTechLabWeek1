@@ -41,34 +41,32 @@ void CollisionManager::ResolveCollision(UPrimitive* TargetPrimitive, UPrimitive*
     {
         if (TargetBall->isSelfDestruct && OtherBall->Owner!=TargetBall->Owner)
         {
-            FVector CollisionPoint = (TargetPrimitive->Location + OtherPrimitive->Location) * 0.5f;
+            TargetPrimitive->bIsDestroyed = true;
+
+            // Self-Destruct Effect
             UEffectManager::GetInstance().PlayEffect(
-                "Resources/collision.png",
-                DirectX::XMFLOAT2(CollisionPoint.x, CollisionPoint.y),
-                0.25f,
+                "Resources/self-destruct2.png",
+                DirectX::XMFLOAT2(TargetPrimitive->Location.x, TargetPrimitive->Location.y),
+                1.25f,
                 DirectX::XMFLOAT2(2.0f, 2.0f),
-                7,
-                false,
-                0.0f
+                9
             );
-            USoundManager::GetInstance().PlaySound("hit");
-            TargetPrimitive->bIsDestroyed = true;          
+
             return;
         }
         else if (OtherBall->isSelfDestruct && OtherBall->Owner != TargetBall->Owner)
         {
-            FVector CollisionPoint = (TargetPrimitive->Location + OtherPrimitive->Location) * 0.5f;
+            OtherPrimitive->bIsDestroyed = true;
+
+            // Self-Destruct Effect
             UEffectManager::GetInstance().PlayEffect(
-                "Resources/collision.png",
-                DirectX::XMFLOAT2(CollisionPoint.x, CollisionPoint.y),
-                0.25f,
+                "Resources/self-destruct2.png",
+                DirectX::XMFLOAT2(OtherPrimitive->Location.x, OtherPrimitive->Location.y),
+                1.25f,
                 DirectX::XMFLOAT2(2.0f, 2.0f),
-                7,
-                false,
-                0.0f
+                9
             );
-            USoundManager::GetInstance().PlaySound("hit");
-            OtherPrimitive->bIsDestroyed = true;            
+
             return;
         }
         
