@@ -4,6 +4,7 @@
 #include "UUI.h"
 #include "UButton.h"
 #include "UMap.h"
+#include "UGameManager.h"
 
 
 class UPrimitive;
@@ -23,7 +24,7 @@ class UScene
         void AddUI(UUI* ui) { _uis.push_back(ui); }
         void AddButton(UButton* button) { _buttons.push_back(button); }
 
-		void SetBackground(UUI* background) { _background = background; }
+		virtual void SetBackground(UUI* background) { _background = background; }
 		void SetMap(UUI* map) { _map = map; }
 
         virtual void Update(float deltaTime);
@@ -49,6 +50,7 @@ class UTitleScene : public UScene
 {
 public:
 	void Initialize() override;
+
 	void Update(float deltaTime) override;
 	void Render(URenderer& renderer) override;
 };
@@ -57,9 +59,13 @@ class UInGameScene : public UScene
 {
 public:
     void Initialize() override;
+    virtual void SetBackground(UUI* backgroundBlue, UUI* backgroundRed) { _backgrounds[EPlayer::Blue] = backgroundBlue; _backgrounds[EPlayer::Red] = backgroundRed; }
 
 	void Update(float deltaTime) override;
 	void Render(URenderer& renderer) override;
+
+private:
+	std::unordered_map<EPlayer, UUI*> _backgrounds;
 };
 
 class UGameOverScene : public UScene

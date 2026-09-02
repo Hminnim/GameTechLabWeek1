@@ -7,6 +7,7 @@
 #include "UInputManager.h"
 #include "UGameSetting.h"
 #include "UMap.h"
+#include "UGameManager.h"
 
 void UScene::Render(URenderer& renderer)
 {
@@ -17,20 +18,14 @@ void UScene::Render(URenderer& renderer)
 		_map->Render(renderer);
     renderer.EndSprite();
 
-    // Game World Object
     for (auto* primitive : _primitives)
         primitive->Render(renderer);
 
 	renderer.BeginSprite();
-
-    // UI
     for (auto* ui : _uis)
         ui->Render(renderer);
-
-    // Button
     for (auto* button : _buttons)
         button->Render(renderer);
-
 	renderer.EndSprite();
 }
 
@@ -188,9 +183,11 @@ void UInGameScene::Initialize()
     map->Init("Resources/map.png", MapMarginX, MapMarginY, MapWidth, MapHeight);
     SetMap(map);
 
-    UUI* background = new UUI();
-    background->Init("Resources/background_blue.png", 0, 0, ScreenWidth, ScreenHeight);
-    SetBackground(background);
+    UUI* backgroundRed = new UUI();
+	UUI* backgroundBlue = new UUI();
+    backgroundRed->Init("Resources/background_red.png", 0, 0, ScreenWidth, ScreenHeight);
+    backgroundBlue->Init("Resources/background_blue.png", 0, 0, ScreenWidth, ScreenHeight);
+    SetBackground(backgroundBlue, backgroundRed);
 
     UButton* freezeBtn = new UButton();
     float Y1 = (BtnYInterval * 1) - (BtnHeight * 0.5f);
@@ -232,6 +229,9 @@ void UInGameScene::Update(float deltaTime)
 
 void UInGameScene::Render(URenderer& renderer)
 {
+    renderer.BeginSprite();
+    _backgrounds[UGameManager::GetInstance().CurrentPlayerTurn]->Render(renderer);
+    renderer.EndSprite();
     UScene::Render(renderer);
 }
 
