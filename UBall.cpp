@@ -541,7 +541,7 @@ void UBall::FrictionFloor(float DeltaTime, std::vector<UPrimitive*>& others)
             // 척력 발생시 주위 밀어냄
             if (isMagnetActivated && !AlreadyActiveMag)
             {
-                float currentMagnetForce = 100000.0f;
+                float currentMagnetForce = 200000.0f;
                 for (auto* other : others)
                 {
                     if (other != this)
@@ -558,7 +558,7 @@ void UBall::FrictionFloor(float DeltaTime, std::vector<UPrimitive*>& others)
             }
             if (bEnableMagnet && !AlreadyActiveMagnetism)
             {
-                float currentMagnetForce = 100000.0f;
+                float currentMagnetForce = 200000.0f;
                 for (auto* other : others)
                 {
                     if (other != this)
