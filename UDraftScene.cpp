@@ -73,6 +73,7 @@ void UDraftScene::Initialize()
                 UGameManager::GetInstance().ChangeDraftTurn();
             }
 
+            this->SetDraftedUI(CurrentSkill);
             UGameManager::GetInstance().NumRemainDraftSkills--;
 
             // 한번 클릭 시 비활성화
@@ -80,7 +81,32 @@ void UDraftScene::Initialize()
         });
 
         AddUI(draftBtn);
-    }    
+    }
+
+    // 고른 스킬 UI
+    float DraftedWidth = ScreenWidth * (120.0f / 2040.0f);
+    float DraftedHeight = DraftedWidth;
+    float DraftedX = ScreenWidth * (92.0f / 2040.0f);
+    float RightDraftedX = ScreenWidth - DraftedX - DraftedWidth;
+    int NumDrafted = 5;
+    float DraftedYInterval = ScreenHeight / (NumDrafted + 1);
+
+    for (int i = 0; i < (int)ESlot::MaxCount; ++i)
+    {
+        std::string defaulTex = "Resources/button_freeze.png";
+
+        int yIndex = (i % 5) + 1;
+        float slotY = (DraftedYInterval * yIndex) - (DraftedWidth * 0.5f);
+        float slotX = (i < (int)ESlot::MaxCount / 2) ? DraftedX : RightDraftedX;
+
+        UUI* draftedUI = new UUI();
+
+        draftedUI->Init(defaulTex, slotX, slotY, DraftedWidth, DraftedHeight);
+
+        draftedUI->SetActive(false);
+
+        AddDraftedUI(draftedUI);
+    }
 }
 
 void UDraftScene::Update(float deltaTime)
@@ -89,13 +115,21 @@ void UDraftScene::Update(float deltaTime)
 
     if (UGameManager::GetInstance().NumRemainDraftSkills <= 0)
     {
-        USceneManager::GetInstance().ChangeScene("InGame");
+        USceneManager::GetInstance().RequestChangeScene("InGame");
     }
 }
 
 void UDraftScene::Render(URenderer& renderer)
 {
     UScene::Render(renderer);
+
+    renderer.BeginSprite();
+    for (UUI* draftedUI : UDraftScene::m_draftedUIs)
+    {
+        draftedUI->Render(renderer);
+    }
+    renderer.EndSprite();
+   
 }
 
 void UDraftScene::Enter()
@@ -107,5 +141,37 @@ void UDraftScene::Enter()
         btn->SetActive(true);
     }
 
+    for (UUI* draftedUI : UDraftScene::m_draftedUIs)
+    {
+        draftedUI->SetActive(false);
+    }
+
     UGameManager::GetInstance().NumRemainDraftSkills = DraftSkills.size();
+}
+
+void UDraftScene::SetDraftedUI(ESkillType skillType)
+{
+    int pickCount = (int)ESlot::MaxCount - UGameManager::GetInstance().NumRemainDraftSkills;
+    int currentIdx = (pickCount / 2) + ((UGameManager::GetInstance().CurrentDraftTurn == EPlayer::Red) ? 0 : 5);
+
+    std::string SkillNames[] = {
+        "none",
+        "freeze",
+        "giant",
+        "heavier",
+        "mine",
+        "repulse",
+        "wall",
+        "shotgun",
+        "ghost",
+        "magnetic",
+        "return"
+    };
+
+    std::string baseName = SkillNames[(int)skillType];
+    std::string normalTex = "Resources/button_" + baseName + ".png";
+
+    m_draftedUIs[currentIdx]->ChangeTextureByTexturePath(normalTex);
+    m_draftedUIs[currentIdx]->SetActive(true);
+
 }

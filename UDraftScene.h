@@ -9,6 +9,10 @@ public:
 	void Render(URenderer& renderer) override;
 	void Enter() override;
 
+	void AddDraftedUI(UUI* draftedUI) { m_draftedUIs.push_back(draftedUI); }
+	void SetDraftedUI(ESkillType skillType);
+
 private:
 	std::vector<ESkillType> DraftSkills;
+	std::vector<UUI*> m_draftedUIs;
 };
