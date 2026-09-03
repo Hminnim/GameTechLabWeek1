@@ -148,6 +148,8 @@ public:
     void AddIn(UUI* in) { m_in = in; }
     void AddOut(UUI* out) { m_out = out; }
 
+    virtual UFadeOverlay& GetFadeOverlay() { return m_fadeoverlay; };
+
     void Enter() override;
 
 private:

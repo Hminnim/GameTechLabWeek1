@@ -9,6 +9,8 @@ public:
 	void Render(URenderer& renderer) override;
 	void Enter() override;
 
+	virtual UFadeOverlay& GetFadeOverlay() { return m_fadeoverlay; };
+
 	void AddDraftedUI(UUI* draftedUI) { m_draftedUIs.push_back(draftedUI); }
 	void SetDraftedUI(ESkillType skillType);
 

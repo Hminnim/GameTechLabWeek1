@@ -236,6 +236,7 @@ void UGameManager::InitDraft()
 		DirectX::XMFLOAT2(1.0f, 1.0f),
 		1
 	);
+	
 }
 
 void UGameManager::ChangeDraftTurn()
