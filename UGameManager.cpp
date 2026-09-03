@@ -88,9 +88,20 @@ void UGameManager::CheckTurnEnd(std::vector<UPrimitive*>& primitives)
 				Wall->bIsDestroyed = true;
 			}						
 			UBall* ball = dynamic_cast<UBall*>(primitive);
+
+			// Return 하는 경우
 			if (ball && ball->bEnableReturn)
 			{
 				ball->Location = ball->Returnpos;
+				UEffectManager::GetInstance().ClearAura(&ball->_skillAuraKey);
+
+				UEffectManager::GetInstance().PlayEffect(
+                "Resources/return_aura.png",
+                DirectX::XMFLOAT2(ball->Location.x, ball->Location.y),
+                1.0f,
+                DirectX::XMFLOAT2(0.5f, 0.5f),
+                16
+            );
 			}
 			if (ball && ball->Owner == CurrentPlayerTurn)
 			{

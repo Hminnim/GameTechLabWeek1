@@ -85,6 +85,7 @@ void CollisionManager::ResolveCollision(UPrimitive* TargetPrimitive, UPrimitive*
 
         if ((TargetBall->bEnableGhost || OtherBall->bEnableGhost) && (TargetBall->Owner == OtherBall->Owner))
         {
+            UEffectManager::GetInstance().ClearAura(&TargetBall->_skillAuraKey);
             return;
         }
 
