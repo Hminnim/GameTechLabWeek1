@@ -53,7 +53,7 @@ public:
 	UGameManager(const UGameManager&) = delete;
 	UGameManager& operator=(const UGameManager&) = delete;
 
-	// State
+	// InGame State
 	EPlayer CurrentPlayerTurn;
 	ETurnState CurrentTurnState;
 	ESkillType m_currentSelectedSkill;

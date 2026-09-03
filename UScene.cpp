@@ -234,14 +234,6 @@ void UInGameScene::Initialize()
         AddSkillButton(skillBtn);
     }
 
-    //std::vector<ESkillType>& redSkills = UGameManager::GetInstance().RedDraftedSkills;
-    //std::vector<ESkillType>& blueSkills = UGameManager::GetInstance().BlueDraftedSkills;
-
-    //for (int i = 0; i < (int)ESlot::MaxCount; ++i)
-    //{
-
-    //}
-
 
     UGameManager::GetInstance().InitGame();
 }
@@ -346,9 +338,6 @@ void UInGameScene::Enter()
         it = _primitives.erase(it);
     }
 
-    // 스킬들 리셋
-	UGameManager::GetInstance().ResetSkiils();
-
     // 지정된 위치 공 소환
     float ScreenWidth = (float)UGameSetting::GetInstance().ScreendWidth;
     float ScreenHeight = (float)UGameSetting::GetInstance().ScreenHeight;
@@ -383,6 +372,66 @@ void UInGameScene::Enter()
     {
         AddPrimitive(new UBall("sphere", EPlayer::Blue, spawnPos));
     }
+
+    // Set Drafted skills
+
+    float BtnWidth = ScreenWidth * (120.0f / 2040.0f);
+    float BtnHeight = BtnWidth;
+    float BtnX = ScreenWidth * (92.0f / 2040.0f);
+    float RightBtnX = ScreenWidth - BtnX - BtnWidth;
+    int NumButtons = 5;
+    float BtnYInterval = ScreenHeight / (NumButtons + 1);
+
+    std::vector<ESkillType>& redSkills = UGameManager::GetInstance().RedDraftedSkills;
+    std::vector<ESkillType>& blueSkills = UGameManager::GetInstance().BlueDraftedSkills;
+
+    for (int i = 0; i < (int)ESlot::MaxCount; ++i)
+    {
+        int yIndex = (i % 5) + 1;
+        float slotY = (BtnYInterval * yIndex) - (BtnHeight * 0.5f);
+        float slotX = (i < (int)ESlot::MaxCount / 2) ? BtnX : RightBtnX;
+
+        if (i < (int)ESlot::MaxCount / 2)
+        {
+            m_slotData[(ESlot)i] = { blueSkills[i],slotX, slotY };
+        }
+        else
+        {
+            m_slotData[(ESlot)i] = { redSkills[i % 5],slotX, slotY };
+        }
+    }
+
+    std::string skillNames[] = {
+    "none",     // 0: None
+    "freeze",   // 1: Freeze
+    "giant",    // 2: Giant
+    "heavier",  // 3: Heavier
+    "mine",     // 4: Mine
+    "repulse",  // 5: Repulse
+    "wall"      // 6: Wall
+    };
+
+    for (int i = 0; i < (int)ESlot::MaxCount; ++i)
+    {
+        ESlot currentSlot = (ESlot)i;
+        FSlotData slotInfo = m_slotData[currentSlot];
+
+        std::string baseName = skillNames[(int)slotInfo.AssignedSkill];
+
+        std::string normalTex = "Resources/button_" + baseName + ".png";
+        std::string usedTex = "Resources/button_" + baseName + "_used.png";
+
+        m_skillButtons[i]->Init(normalTex, slotInfo.x, slotInfo.y, BtnWidth, BtnHeight);
+        m_skillButtons[i]->SetUsedTexture(usedTex);
+        m_skillButtons[i]->SetSkillType(slotInfo.AssignedSkill);
+        m_skillButtons[i]->SetOnClick([this, slotInfo]() {
+            this->PlayerController.ApplySkill(slotInfo.AssignedSkill);
+            });        
+    }
+
+    // 스킬들 리셋
+    UGameManager::GetInstance().ResetSkiils();
+
     UGameManager::GetInstance().InitGame();
 }
 

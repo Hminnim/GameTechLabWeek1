@@ -97,7 +97,7 @@ void UDraftScene::Enter()
 {
     // 골라둔 스킬 비우기
     UGameManager::GetInstance().RedDraftedSkills.clear();
-    UGameManager::GetInstance().BlueDrafedSkills.clear();
+    UGameManager::GetInstance().BlueDraftedSkills.clear();
 
     for (UUI* btn : UDraftScene::_uis)
     {

@@ -34,6 +34,8 @@ void UUI::Render(URenderer& renderer) {
     _srv = UResourceManager::GetInstance().GetTexture(_textureKey);
     if (!_srv) return;
 
+    if (!_isActive) return;
+
     // 1. 텍스처의 원본 해상도를 알아내서 회전 중심점(Origin) 구하기
     Microsoft::WRL::ComPtr<ID3D11Resource> resource;
     _srv->GetResource(resource.GetAddressOf());
