@@ -88,11 +88,15 @@ void UGameManager::CheckTurnEnd(std::vector<UPrimitive*>& primitives)
 				Wall->bIsDestroyed = true;
 			}						
 			UBall* ball = dynamic_cast<UBall*>(primitive);
+			if (ball && ball->bEnableReturn)
+			{
+				ball->Location = ball->Returnpos;
+			}
 			if (ball && ball->Owner == CurrentPlayerTurn)
 			{
 				ball->RemoveAllSkill();
 				if (ball->isShotgunbullet) ball->bIsDestroyed = true;
-			}
+			}			
 		}		
 
 		CurrentPlayerTurn = (CurrentPlayerTurn == EPlayer::Red ? EPlayer::Blue : EPlayer::Red);		

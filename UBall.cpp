@@ -12,7 +12,6 @@
 CollisionManager CollisionMan;
 FVector lastspawnpos;
 FVector ShotgunstartPos;
-FVector Returnpos;
 
 UBall::UBall(const std::string& meshKey, const EPlayer owner, const FVector startLocation)
 {
@@ -556,10 +555,6 @@ void UBall::FrictionFloor(float DeltaTime, std::vector<UPrimitive*>& others)
                     }
                 }
                 AlreadyActiveMagnetism = true;
-            }
-            if (bEnableReturn)
-            {
-                Location = Returnpos;                
             }
         }
         else Velocity += NormalizeFricVec * FricVal * DeltaTime;
