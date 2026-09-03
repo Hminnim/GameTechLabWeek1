@@ -12,7 +12,7 @@ class UUI
         // virtual functions
         virtual bool Init(const std::string& texturePath, float x, float y, float width, float height);
         virtual void Update(float deltaTime) {};
-        virtual void Render(URenderer& renderer);
+        virtual void Render(URenderer& renderer);     
 
         // Setter
         void SetActive(bool active) { _isActive = active; }
@@ -27,6 +27,8 @@ class UUI
         float GetY() const { return _y; }
         float GetWidth() const { return _width; }
         float GetHeight() const { return _height; }
+
+        void ChangeTextureByTexturePath(const std::string& texturePath) { _textureKey = texturePath; }
 
     protected:
         // position
