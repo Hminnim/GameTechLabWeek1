@@ -48,6 +48,8 @@ public:
     int currentWallCount = 0;
     int MaxWallCount = 20;
 
+    FVector Returnpos;
+
     UBall(const std::string& meshKey, const EPlayer owner, const FVector startLocation);
     virtual ~UBall();
     virtual void Render(URenderer& Renderer) override;
