@@ -89,7 +89,7 @@ void UDraftScene::Update(float deltaTime)
 
     if (UGameManager::GetInstance().NumRemainDraftSkills <= 0)
     {
-        USceneManager::GetInstance().ChangeScene("InGame");
+        USceneManager::GetInstance().RequestChangeScene("InGame");
     }
 }
 
