@@ -151,6 +151,9 @@ public:
     void Enter() override;
 
 private:
+    bool m_bisNowEnter = true;
+    bool m_bIsFadingOut = false;
+
     UUI* m_background;
     UUI* m_out;
     UUI* m_in;
@@ -158,4 +161,6 @@ private:
     float m_elapsedTime = 0.0f;     // 누적된 시간을 추적
     float m_renderTime = 3.0f;      // 3초 동안만 연출 (원하는 시간으로 설정)
     float m_rotationAngle = 0.0f;   // in 객체의 현재 회전각
+
+    UFadeOverlay m_fadeoverlay;
 };
