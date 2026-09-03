@@ -95,26 +95,7 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLine
 	USceneManager::GetInstance().AddScene("GameOver", new UGameOverScene());
     USceneManager::GetInstance().RequestChangeScene("Intro");
 
-    ///////////////////////////////////////////////
-    //////////////////EFFECT TEST//////////////////
-    ///////////////////////////////////////////////
-
     UEffectManager::GetInstance().Init(renderer.DeviceContext);
-    // OutputDebugStringA("Init 이후 지점 도달\n");   // 이 줄 추가
-
-    // UEffectManager::GetInstance().DrawArrow(
-    //     "Resources/main_aura.png",
-    //     {UGameSetting::GetInstance().ScreendWidth * 0.5f, UGameSetting::GetInstance().ScreenHeight * 0.5f},
-    //     0.0f,
-    //     1.0f,
-    //     DirectX::XMFLOAT2(1.0f, 1.0f),
-    //     1
-    // );
-    // OutputDebugStringA("DrawArrow 이후 지점 도달\n");  // 이 줄도 추가
-
-    ///////////////////////////////////////////////
-    //////////////////EFFECT TEST//////////////////
-    ///////////////////////////////////////////////
 
     bool bIsExit = false;
 
@@ -150,172 +131,40 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLine
         renderer.Prepare();
         renderer.PrepareShader();
 
-		    USceneManager::GetInstance().Render(renderer);
+		USceneManager::GetInstance().Render(renderer);
 
-        //if (UGameManager::GetInstance().CurrentTurnState == ETurnState::WaitInput)
-        //{
-        //    // 1. 공 선택 하기
-        //    if (UInputManager::GetInstance().IsKeyDown(VK_LBUTTON) && !ImGui::GetIO().WantCaptureMouse)
-        //    {
-        //        POINT mouse = UInputManager::GetInstance().GetMousePos();
-        //        if (USceneManager::GetInstance().GetCurrentScene())
-        //        {
-        //            auto& primitives = USceneManager::GetInstance().GetCurrentScene()->GetPrimitives();
-        //            for (auto* prim : primitives)
-        //            {
-        //                UBall* ball = dynamic_cast<UBall*>(prim);
-        //                if (ball && UGameManager::GetInstance().CanSelectBall(ball))
-        //                {
-        //                    // OutputDebugStringA("Condition Pass\n");   // DEBUG
-
-        //                    float dx = ball->Location.x - (float)mouse.x;
-        //                    float dy = ball->Location.y - (float)mouse.y;
-        //                    if (dx * dx + dy * dy < ball->Radius * ball->Radius)
-        //                    {
-        //                        if (ball != nullptr)
-        //                            UEffectManager::GetInstance().ClearAura(SelectedBall);   // 이전 Ball Aura Effect 삭제
-
-        //                        SelectedBall = ball; // 선택만!
-
-        //                        // 선택된 공 뒤에 aura effect
-        //                        UEffectManager::GetInstance().DrawAura(
-        //                            SelectedBall,
-        //                            "Resources/ball_aura.png",
-        //                            DirectX::XMFLOAT2(SelectedBall->Location.x, SelectedBall->Location.y),
-        //                            1.0f,
-        //                            DirectX::XMFLOAT2(0.5f, 0.5f),
-        //                            16
-        //                        );
-        //                        // OutputDebugStringA("DrawAura Finished\n");  // DEBUG
-
-        //                        break;
-        //                    }
-        //                }
-        //            }
-        //        }
-        //    }
-        //    // 2. 우클릭 드래그: 발사 조작 (스킬 걸고 나서 쏘기!)
-        //    if (SelectedBall != nullptr && UInputManager::GetInstance().IsKeyDown(VK_RBUTTON) && !ImGui::GetIO().WantCaptureMouse)
-        //    {
-        //        bIsDragging = true;
-        //        SelectedBall->Velocity = FVector(0, 0, 0);
-        //        UEffectManager::GetInstance().ClearAura(SelectedBall);   // aura Effect 해제
-        //    }
-
-
-        //    // 3. 드래그 중이면 매 프레임 화살표 update 하다가, 마우스 클릭 떼면 발사
-        //    if (bIsDragging && SelectedBall != nullptr)
-        //    {
-        //        POINT mouse = UInputManager::GetInstance().GetMousePos();
-        //        FVector launchVec(SelectedBall->Location.x - (float)mouse.x, SelectedBall->Location.y - (float)mouse.y, 0.0f);
-        //        float pullDistance = launchVec.Length();
-        //        
-        //        if (UInputManager::GetInstance().IsKeyUp(VK_RBUTTON))
-        //        {
-        //            // 발사 처리
-        //            if (pullDistance > 5.0f)
-        //            {
-        //                float launchPower = 8.0f;
-        //                SelectedBall->Velocity = launchVec * launchPower;
-        //                float maxSpeed = 3000.0f;
-        //                if (SelectedBall->Velocity.Length() > maxSpeed)
-        //                {
-        //                    SelectedBall->Velocity = (SelectedBall->Velocity / SelectedBall->Velocity.Length()) * maxSpeed;
-        //                }
-
-        //                // Shooting Effect 적용을 위한 발사각 계산 (좌클릭 -> 우클릭으로 변경)
-        //                float launchAngle = atan2f(SelectedBall->Velocity.y, SelectedBall->Velocity.x);
-
-        //                UEffectManager::GetInstance().PlayEffect(
-        //                    "Resources/shooting.png",
-        //                    DirectX::XMFLOAT2(SelectedBall->Location.x, SelectedBall->Location.y),
-        //                    0.25f,
-        //                    DirectX::XMFLOAT2(2.0f, 2.0f),
-        //                    6,
-        //                    false,
-        //                    launchAngle
-        //                );
-        //            }
-
-        //            UEffectManager::GetInstance().ClearAura(SelectedBall);
-        //            SelectedBall = nullptr;
-        //            UGameManager::GetInstance().CurrentTurnState = ETurnState::BallMoving;
-        //            bIsDragging = false;
-        //            UEffectManager::GetInstance().ClearArrow(); // 발사 완료 및 화살 삭제
-        //        }
-        //        else if (pullDistance > 5.0f)
-        //        {
-        //            // 드래그 중
-        //            float launchAngle = atan2f(launchVec.y, launchVec.x);
-        //            std::string arrowTexture = (UGameManager::GetInstance().CurrentPlayerTurn == EPlayer::Red)
-        //                                        ? "Resources/Red_arrow.png"
-        //                                        : "Resources/Blue_arrow.png";
-
-
-        //            // 조준 방향
-        //            FVector aimDir = launchVec / pullDistance;
-        //            DirectX::XMFLOAT2 arrowPos =
-        //            {
-        //                SelectedBall->Location.x + aimDir.x * SelectedBall->Radius,
-        //                SelectedBall->Location.y + aimDir.y * SelectedBall->Radius
-        //            };
-        //            
-        //            // 당긴 거리에 비례하여 화살표 크기 조절
-        //            float arrowScale = pullDistance / 200.0f;
-        //            float minScale = 0.5f;
-        //            float maxScale = 2.5f;
-        //            arrowScale = std::clamp(arrowScale, minScale, maxScale);
-        //            
-        //            UEffectManager::GetInstance().DrawArrow(
-        //                arrowTexture,
-        //                arrowPos,
-        //                launchAngle,
-        //                1.0f,   // loop duration 
-        //                DirectX::XMFLOAT2(arrowScale, 1.0f),
-        //                30      // frame count
-        //            );
-        //        }
-        //    }
-        //    else
-        //    {
-        //        UEffectManager::GetInstance().ClearArrow();
-
-        //    }
-        //}
-
-        
         UEffectManager::GetInstance().Render(); // EFFECT TEST
 
         // ImGui
-        ImGui_ImplDX11_NewFrame();
-        ImGui_ImplWin32_NewFrame();
-        ImGui::NewFrame();
+        //ImGui_ImplDX11_NewFrame();
+        //ImGui_ImplWin32_NewFrame();
+        //ImGui::NewFrame();
 
         // 이후 ImGui UI 컨트롤 추가는 ImGui::NewFrame()과 ImGui::Render() 사이인 여기에 위치합니다.
-        ImGui::Begin("Jungle Property Window");
-        ImGui::Text("Hello Jungle World!");
+        //ImGui::Begin("Jungle Property Window");
+        //ImGui::Text("Hello Jungle World!");
 
         if (SelectedBall != nullptr)
         {
-            ImGui::TextColored(ImVec4(0, 1, 0, 1), "[ Ball Selected! ]");
-            ImGui::Text("Radius: %.1f | Mass: %.1f", SelectedBall->Radius, SelectedBall->Mass);
-            ImGui::Separator();
-            if (ImGui::Button("1. 자폭 (Mine)"))       SelectedBall->ApplySkill(ESkillType::Mine);
-            if (ImGui::Button("2. 빙결 (Freeze)"))     SelectedBall->ApplySkill(ESkillType::Freeze);
-            if (ImGui::Button("3. 거대화 (SizeUp)"))   SelectedBall->ApplySkill(ESkillType::Giant);
-            if (ImGui::Button("4. 질량증가 (MassUp)")) SelectedBall->ApplySkill(ESkillType::Heavier);
-            if (ImGui::Button("5. 척력파 (Magnet)"))   SelectedBall->ApplySkill(ESkillType::Repulse);
-            if (ImGui::Button("6. 벽 생성 (Wall)"))   SelectedBall->ApplySkill(ESkillType::WallCreate);
-            if (ImGui::Button("7. 산탄 (Shotgun)"))   SelectedBall->ApplySkill(ESkillType::Shotgun);
-            if (ImGui::Button("선택 해제 (Deselect)"))
-            {
-                UEffectManager::GetInstance().ClearAura(SelectedBall); // Aura Effect 해제
-                SelectedBall = nullptr;
-            }
+            //ImGui::TextColored(ImVec4(0, 1, 0, 1), "[ Ball Selected! ]");
+            //ImGui::Text("Radius: %.1f | Mass: %.1f", SelectedBall->Radius, SelectedBall->Mass);
+            //ImGui::Separator();
+            //if (ImGui::Button("1. 자폭 (Mine)"))       SelectedBall->ApplySkill(ESkillType::Mine);
+            //if (ImGui::Button("2. 빙결 (Freeze)"))     SelectedBall->ApplySkill(ESkillType::Freeze);
+            //if (ImGui::Button("3. 거대화 (SizeUp)"))   SelectedBall->ApplySkill(ESkillType::Giant);
+            //if (ImGui::Button("4. 질량증가 (MassUp)")) SelectedBall->ApplySkill(ESkillType::Heavier);
+            //if (ImGui::Button("5. 척력파 (Magnet)"))   SelectedBall->ApplySkill(ESkillType::Repulse);
+            //if (ImGui::Button("6. 벽 생성 (Wall)"))   SelectedBall->ApplySkill(ESkillType::WallCreate);
+            //if (ImGui::Button("7. 산탄 (Shotgun)"))   SelectedBall->ApplySkill(ESkillType::Shotgun);
+            //if (ImGui::Button("선택 해제 (Deselect)"))
+            //{
+            //    UEffectManager::GetInstance().ClearAura(SelectedBall); // Aura Effect 해제
+            //    SelectedBall = nullptr;
+            //}
         }
         else
         {
-            ImGui::TextColored(ImVec4(1, 1, 0, 1), "Click a ball to select!");
+            //ImGui::TextColored(ImVec4(1, 1, 0, 1), "Click a ball to select!");
         }
 
         if (bIsDragging && UInputManager::GetInstance().IsKeyUp(VK_LBUTTON))
@@ -336,19 +185,6 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLine
                     {
                         SelectedBall->Velocity = (SelectedBall->Velocity / SelectedBall->Velocity.Length()) * maxSpeed;
                     }
-
-                    // Shooting Effect 적용을 위한 발사각 계산
-                    // float launchAngle = atan2f(SelectedBall->Velocity.y, SelectedBall->Velocity.x);
-
-                    // UEffectManager::GetInstance().PlayEffect(
-                    //     "Resources/shooting.png",
-                    //     DirectX::XMFLOAT2(SelectedBall->Location.x, SelectedBall->Location.y),
-                    //     0.25f,
-                    //     1.5f,
-                    //     6,
-                    //     false,
-                    //     launchAngle
-                    // );
                 }
 
                 UGameManager::GetInstance().CurrentTurnState = ETurnState::BallMoving;
@@ -358,15 +194,15 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLine
         // main.cpp ImGui 창 안에서
      
         // 마우스 값 보기
-        bool bIsLeftPress = UInputManager::GetInstance().IsKeyPress(VK_LBUTTON);
-        ImGui::Checkbox("Mouse Left", &bIsLeftPress);
-        int MousePointValue[2] = { 0, };
-        MousePointValue[0] = UInputManager::GetInstance().GetMousePos().x;
-        MousePointValue[1] = UInputManager::GetInstance().GetMousePos().y;
-        ImGui::InputInt2("Mouse Point", MousePointValue);
+        //bool bIsLeftPress = UInputManager::GetInstance().IsKeyPress(VK_LBUTTON);
+        //ImGui::Checkbox("Mouse Left", &bIsLeftPress);
+        //int MousePointValue[2] = { 0, };
+        //MousePointValue[0] = UInputManager::GetInstance().GetMousePos().x;
+        //MousePointValue[1] = UInputManager::GetInstance().GetMousePos().y;
+        //ImGui::InputInt2("Mouse Point", MousePointValue);
 
-        ImGui::Separator();
-        ImGui::Text("=== Game Manager Status ===");
+        //ImGui::Separator();
+        //ImGui::Text("=== Game Manager Status ===");
 
         if (USceneManager::GetInstance().GetCurrentSceneName() == "InGame")
         {
@@ -385,7 +221,7 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLine
             if (currentTurn == EPlayer::Red)
             {
                 // Red 턴이면 빨간색 텍스트
-                ImGui::TextColored(ImVec4(1.0f, 0.3f, 0.3f, 1.0f), "[ Turn : RED Player ]");
+                //ImGui::TextColored(ImVec4(1.0f, 0.3f, 0.3f, 1.0f), "[ Turn : RED Player ]");
                 
                 // Turn이 Blue -> Red 순간에만 Effect 발생
                 if (bTurnChanged)
@@ -402,7 +238,7 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLine
             else
             {
                 // Blue 턴이면 파란색 텍스트
-                ImGui::TextColored(ImVec4(0.3f, 0.6f, 1.0f, 1.0f), "[ Turn : BLUE Player ]");
+                //ImGui::TextColored(ImVec4(0.3f, 0.6f, 1.0f, 1.0f), "[ Turn : BLUE Player ]");
 
                 // Turn이 Red -> Blue 순간에만 Effect 발생
                 if (bTurnChanged)
@@ -421,7 +257,7 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLine
             bFirstTurn = false;
         }   
 
-        // 2. 현재 상태 가져오기
+        // 현재 상태 가져오기
         ETurnState currentState = UGameManager::GetInstance().CurrentTurnState;
         const char* stateStr = "Unknown";
         switch (currentState)
@@ -432,22 +268,22 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLine
         }
 
         // 노란색 텍스트로 현재 상태 출력
-        ImGui::TextColored(ImVec4(1.0f, 1.0f, 0.0f, 1.0f), "State: %s", stateStr);
-        ImGui::Separator();
+        //ImGui::TextColored(ImVec4(1.0f, 1.0f, 0.0f, 1.0f), "State: %s", stateStr);
+        //mGui::Separator();
 
-        ImGui::End();
+        //ImGui::End();
 
-        ImGui::Render();
-        ImGui_ImplDX11_RenderDrawData(ImGui::GetDrawData());
+        //ImGui::Render();
+        //ImGui_ImplDX11_RenderDrawData(ImGui::GetDrawData());
 
         // 현재 화면에 보여지는 버퍼와 그리기 작업을 위한 버퍼를 서로 교환합니다.
         renderer.SwapBuffer();
     }
 
     // 여기에서 ImGui 소멸
-    ImGui_ImplDX11_Shutdown();
-    ImGui_ImplWin32_Shutdown();
-    ImGui::DestroyContext();
+    //ImGui_ImplDX11_Shutdown();
+    //ImGui_ImplWin32_Shutdown();
+    //ImGui::DestroyContext();
 
     // 소멸하는 코드를 여기에 추가합니다.
     renderer.ReleaseVertexBuffer(VertexBufferSphere);
