@@ -70,7 +70,7 @@ void UScene::Update(float Deltatime)
 
             UButton* btn = dynamic_cast<UButton*>(ui);
 
-            if (btn != nullptr && btn->HitTest((float)mouseX, (float)mouseY)) {
+            if (btn != nullptr && btn->HitTest((float)mouseX, (float)mouseY)) {                
                 btn->OnClick();
                 break;
             }
@@ -107,7 +107,8 @@ void UTitleScene::Initialize()
     startbtn->Init("Resources/button_start.png", StartBtnX, ButtonY, ButtonWidth, ButtonHeight);
     AddUI(startbtn);
     startbtn->SetOnClick([]() {
-        USceneManager::GetInstance().RequestChangeScene("InGame");
+        //USceneManager::GetInstance().RequestChangeScene("InGame");
+        USceneManager::GetInstance().RequestChangeScene("Draft");
         });
 
     UButton* exitbtn = new UButton();
@@ -206,6 +207,7 @@ void UInGameScene::Initialize()
     "heavier",  // 3: Heavier
     "mine",     // 4: Mine
     "repulse"   // 5: Repulse
+    "wall"      // 6: Wall
     };
 
     for (int i = 0; i < (int)ESlot::MaxCount; ++i)
@@ -310,6 +312,7 @@ void UInGameScene::Update(float deltaTime)
     }
 
     UGameManager::GetInstance().Update(_primitives,deltaTime);
+
 }
 
 void UInGameScene::Render(URenderer& renderer)
@@ -334,9 +337,6 @@ void UInGameScene::Enter()
         delete* it;
         it = _primitives.erase(it);
     }
-
-    // 스킬들 리셋
-	UGameManager::GetInstance().ResetSkiils();
 
     // 지정된 위치 공 소환
     float ScreenWidth = (float)UGameSetting::GetInstance().ScreendWidth;
@@ -372,6 +372,70 @@ void UInGameScene::Enter()
     {
         AddPrimitive(new UBall("sphere", EPlayer::Blue, spawnPos));
     }
+
+    // Set Drafted skills
+
+    float BtnWidth = ScreenWidth * (120.0f / 2040.0f);
+    float BtnHeight = BtnWidth;
+    float BtnX = ScreenWidth * (92.0f / 2040.0f);
+    float RightBtnX = ScreenWidth - BtnX - BtnWidth;
+    int NumButtons = 5;
+    float BtnYInterval = ScreenHeight / (NumButtons + 1);
+
+    std::vector<ESkillType>& redSkills = UGameManager::GetInstance().RedDraftedSkills;
+    std::vector<ESkillType>& blueSkills = UGameManager::GetInstance().BlueDraftedSkills;
+
+    for (int i = 0; i < (int)ESlot::MaxCount; ++i)
+    {
+        int yIndex = (i % 5) + 1;
+        float slotY = (BtnYInterval * yIndex) - (BtnHeight * 0.5f);
+        float slotX = (i < (int)ESlot::MaxCount / 2) ? BtnX : RightBtnX;
+
+        if (i < (int)ESlot::MaxCount / 2)
+        {
+            m_slotData[(ESlot)i] = { blueSkills[i],slotX, slotY };
+        }
+        else
+        {
+            m_slotData[(ESlot)i] = { redSkills[i % 5],slotX, slotY };
+        }
+    }
+
+    std::string skillNames[] = {
+        "none",
+        "freeze",
+        "giant",
+        "heavier",
+        "mine",
+        "repulse",
+        "wall",
+        "shotgun",
+        "ghost",
+        "magnetic",
+        "return"
+    };
+
+    for (int i = 0; i < (int)ESlot::MaxCount; ++i)
+    {
+        ESlot currentSlot = (ESlot)i;
+        FSlotData slotInfo = m_slotData[currentSlot];
+
+        std::string baseName = skillNames[(int)slotInfo.AssignedSkill];
+
+        std::string normalTex = "Resources/button_" + baseName + ".png";
+        std::string usedTex = "Resources/button_" + baseName + "_used.png";
+
+        m_skillButtons[i]->Init(normalTex, slotInfo.x, slotInfo.y, BtnWidth, BtnHeight);
+        m_skillButtons[i]->SetUsedTexture(usedTex);
+        m_skillButtons[i]->SetSkillType(slotInfo.AssignedSkill);
+        m_skillButtons[i]->SetOnClick([this, slotInfo]() {
+            this->PlayerController.ApplySkill(slotInfo.AssignedSkill);
+            });        
+    }
+
+    // 스킬들 리셋
+    UGameManager::GetInstance().ResetSkiils();
+
     UGameManager::GetInstance().InitGame();
 }
 
@@ -409,7 +473,8 @@ void UGameOverScene::Initialize()
     temp2->Init("Resources/button_restart.png", RestartBtnX, ButtonY, ButtonWidth, ButtonHeight);
     AddUI(temp2);
     temp2->SetOnClick([]() {
-        USceneManager::GetInstance().RequestChangeScene("InGame");
+        //USceneManager::GetInstance().RequestChangeScene("InGame");
+        USceneManager::GetInstance().RequestChangeScene("Draft");
         });
 
     UButton* temp3 = new UButton();

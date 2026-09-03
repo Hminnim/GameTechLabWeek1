@@ -53,13 +53,18 @@ public:
 	UGameManager(const UGameManager&) = delete;
 	UGameManager& operator=(const UGameManager&) = delete;
 
-	// State
+	// InGame State
 	EPlayer CurrentPlayerTurn;
 	ETurnState CurrentTurnState;
 	ESkillType m_currentSelectedSkill;
 	std::map<EPlayer, std::map<ESkillType, bool>> m_usedSkills;
 	EGameResult CurrentGameResult = EGameResult::None;
 	float m_frozenTimer = 0.0f;
+
+	// Draft
+	EPlayer CurrentDraftTurn;
+	std::vector<ESkillType> RedDraftedSkills;
+	std::vector<ESkillType> BlueDraftedSkills;
 
 	void Update(std::vector<UPrimitive*>& primitives,float Deltatime);
 	void InitGame();
