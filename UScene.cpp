@@ -402,13 +402,17 @@ void UInGameScene::Enter()
     }
 
     std::string skillNames[] = {
-    "none",     // 0: None
-    "freeze",   // 1: Freeze
-    "giant",    // 2: Giant
-    "heavier",  // 3: Heavier
-    "mine",     // 4: Mine
-    "repulse",  // 5: Repulse
-    "wall"      // 6: Wall
+        "none",
+        "freeze",
+        "giant",
+        "heavier",
+        "mine",
+        "repulse",
+        "wall",
+        "shotgun",
+        "ghost",
+        "magnetic",
+        "return"
     };
 
     for (int i = 0; i < (int)ESlot::MaxCount; ++i)

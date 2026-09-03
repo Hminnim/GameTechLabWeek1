@@ -316,24 +316,39 @@ void UBall::ApplySkill(ESkillType skill)
 
         case ESkillType::WallCreate:
             bEnableWallCreate = true;
+
+            // 기존 effect 해제
+            UEffectManager::GetInstance().ClearAura(this);
             break;
 
         case ESkillType::Shotgun:
             bEnableShotgun = true;
             ShotgunstartPos = Location;
+
+            // 기존 effect 해제
+            UEffectManager::GetInstance().ClearAura(this);
             break;
 
         case ESkillType::Ghost:
             bEnableGhost = true;
+
+            // 기존 effect 해제
+            UEffectManager::GetInstance().ClearAura(this);
             break;
         
         case ESkillType::Magnet:
             bEnableMagnet = true;
+
+            // 기존 effect 해제
+            UEffectManager::GetInstance().ClearAura(this);
             break;
 
         case ESkillType::Return:
             bEnableReturn = true;
             Returnpos = Location;
+
+            // 기존 effect 해제
+            UEffectManager::GetInstance().ClearAura(this);
             break;
         default:
             break;

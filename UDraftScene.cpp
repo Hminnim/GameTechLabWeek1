@@ -29,10 +29,15 @@ void UDraftScene::Initialize()
         "heavier",
         "mine",
         "repulse",
-        "wall"
+        "wall",
+        "shotgun",
+        "ghost",
+        "magnetic",
+        "return"
     };
      DraftSkills = {
-        ESkillType::Freeze, ESkillType::Giant, ESkillType::Heavier, ESkillType::Mine, ESkillType::Repulse, ESkillType::WallCreate, ESkillType::WallCreate, ESkillType::WallCreate, ESkillType::WallCreate, ESkillType::WallCreate
+        ESkillType::Freeze, ESkillType::Giant, ESkillType::Heavier, ESkillType::Mine, ESkillType::Repulse,
+        ESkillType::WallCreate, ESkillType::Shotgun, ESkillType::Ghost, ESkillType::Magnet, ESkillType::Return
     };
 
     int NumButtons = DraftSkills.size();
