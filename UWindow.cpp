@@ -1,4 +1,5 @@
 #include "pch.h"
+#include <windowsx.h>
 #include "UWindow.h"
 #include "UInputManager.h"
 
@@ -47,8 +48,8 @@ LRESULT UWindow::StaticWndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lP
 
     case WM_MOUSEMOVE:
         int x, y;
-        x = LOWORD(lParam);
-        y = HIWORD(lParam);
+        x = GET_X_LPARAM(lParam);
+        y = GET_Y_LPARAM(lParam);
         UInputManager::GetInstance().OnMouseMove(x, y);
         break;
 
