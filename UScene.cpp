@@ -525,6 +525,8 @@ void DraftScene::Enter()
 {
 }
 
+
+
 /////////////////
 // UIntroScene //
 /////////////////
@@ -539,7 +541,7 @@ void UIntroScene::Initialize()
     
     float iconSize = 300.0f;
     float startX = (ScreenWidth / 2.0f) - (iconSize / 2.0f);
-    float yOffset = 200.0f;
+    float yOffset = 100.0f;
     float startY = (ScreenHeight / 2.0f) - (iconSize / 2.0f) - yOffset;
 
     UUI* out = new UUI();
@@ -589,7 +591,6 @@ void UIntroScene::Update(float deltaTime)
 void UIntroScene::Render(URenderer& renderer)
 {
     renderer.BeginSprite();
-
     m_background->Render(renderer);
     m_out->Render(renderer);
     m_in->Render(renderer);

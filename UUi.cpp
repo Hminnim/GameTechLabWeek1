@@ -36,7 +36,6 @@ void UUI::Render(URenderer& renderer) {
 
     if (!_isActive) return;
 
-    // 1. 텍스처의 원본 해상도를 알아내서 회전 중심점(Origin) 구하기
     Microsoft::WRL::ComPtr<ID3D11Resource> resource;
     _srv->GetResource(resource.GetAddressOf());
 
@@ -46,23 +45,18 @@ void UUI::Render(URenderer& renderer) {
     D3D11_TEXTURE2D_DESC desc;
     tex2D->GetDesc(&desc);
 
-    // Origin은 텍스처 픽셀 기준의 정중앙입니다.
     DirectX::XMFLOAT2 origin(desc.Width / 2.0f, desc.Height / 2.0f);
 
-    // 2. 그려질 화면 중심 좌표 계산
     LONG centerX = (LONG)(_x + _width / 2.0f);
     LONG centerY = (LONG)(_y + _height / 2.0f);
 
-    // SpriteBatch에 Origin을 넘기면, destRect의 좌측상단(left, top) 위치에 Origin이 오게 됩니다.
-    // 폭과 높이는 (우측-좌측), (하단-상단)으로 정상 적용됩니다.
     RECT destRect = {
-        centerX,                   // 화면에 찍힐 중심 X 좌표
-        centerY,                   // 화면에 찍힐 중심 Y 좌표
+        centerX,                   
+        centerY,                   
         (LONG)(centerX + _width),
         (LONG)(centerY + _height)
     };
 
-    // 3. 회전을 지원하는 Draw 오버로딩 사용
     renderer.m_spriteBatch->Draw(
         _srv,
         destRect,
