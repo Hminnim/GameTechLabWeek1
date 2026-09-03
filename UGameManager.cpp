@@ -158,7 +158,6 @@ void UGameManager::CheckGameOver(std::vector<UPrimitive*>& primitives)
 
 	if (CurrentGameResult != EGameResult::None)
 	{
-		USceneManager::GetInstance().ChangeScene("GameOver");
 		for (auto* primitive : primitives)
 		{
 			if (UBall* ball = dynamic_cast<UBall*>(primitive))

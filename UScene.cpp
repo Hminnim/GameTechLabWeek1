@@ -489,27 +489,46 @@ void UIntroScene::Initialize()
 void UIntroScene::Update(float deltaTime)
 {
     m_elapsedTime += deltaTime;
-    char buf[128];
-    sprintf_s(buf, "dt=%f, elapsed=%f, renderTime=%f\n", deltaTime, m_elapsedTime, m_renderTime);
-    OutputDebugStringA(buf);
-    if (m_elapsedTime >= m_renderTime) {
-        USceneManager::GetInstance().RequestChangeScene("Title");
+
+    if (m_elapsedTime >= m_renderTime && !m_bIsFadingOut) 
+    {
+        m_fadeoverlay.StartFadeOut(1.0f);
+        m_bIsFadingOut = true; // 페이드 아웃이 시작되었음을 체크
+    }
+
+    if (m_bIsFadingOut) 
+    {
+        if (m_elapsedTime >= m_renderTime + 1.0f) 
+        {
+            USceneManager::GetInstance().RequestChangeScene("Title");
+        }
     }
 
     float rotateSpeed = 1.0f;
     m_rotationAngle += rotateSpeed * deltaTime;
 
-    if (m_in) {
+    if (m_in) 
+    {
         m_in->SetRotation(m_rotationAngle);
     }
+
+    if (m_bisNowEnter)
+    {
+        m_fadeoverlay.StartFadeIn(1.0f);
+        m_bisNowEnter = false;
+    }
+
+    m_fadeoverlay.Update(deltaTime);
 }
 
 void UIntroScene::Render(URenderer& renderer)
 {
     renderer.BeginSprite();
+
     m_background->Render(renderer);
     m_out->Render(renderer);
     m_in->Render(renderer);
+    m_fadeoverlay.Render(renderer);
     renderer.EndSprite();
 }
 
