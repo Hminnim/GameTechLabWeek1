@@ -16,8 +16,11 @@ public:
 	UINT            m_numVertices;
 
     bool bEnableShotgun = false;
+    bool bEnableGhost = false;
     bool bEnableFreeze = false;
+    bool bEnableReturn = false;
     bool bEnableWallCreate = false;
+    bool bEnableMagnet = false;
     bool isFreezed = false;
     bool isShotgunbullet = false;
     FVector ShotgunstartPos;
@@ -25,6 +28,7 @@ public:
     bool isSizeScaling = false;
     bool isMassScaling = false;
     bool isMagnetActivated = false;   
+    bool AlreadyActiveMagnetism = false;
     bool AlreadyActiveMag = false;
     bool isGiantActivated = false;      // 지름증가 스킬 활성화 여부
     bool isHeavierActivated = false;    // 질량증가 스킬 활성화 여부
@@ -55,6 +59,7 @@ public:
     virtual void ApplySkill(ESkillType Skill);
     virtual void RemoveAllSkill();
     virtual void Update(float DeltaTime, std::vector<UPrimitive*>& others) override;
+    void ApplyMagnetism(UPrimitive* OtherPrimitive, float DeltaTime, float MagneticForce, float MaxDist);
     void CollisionManage(float DeltaTime, std::vector<UPrimitive*>& others);
     void ReverseMagnetWhenMine(float DeltaTime, std::vector<UPrimitive*>& others);
     void FrictionFloor(float DeltaTime, std::vector<UPrimitive*>& others);

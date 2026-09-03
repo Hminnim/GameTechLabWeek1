@@ -55,6 +55,7 @@ void UPlayerController::Update(std::vector<UPrimitive*>& primitives)
     // 2. 우클릭 드래그: 발사 조작 (스킬 걸고 나서 쏘기!)
     if (SelectedBall != nullptr && UInputManager::GetInstance().IsKeyDown(VK_RBUTTON))
     {
+        SelectedBall->ApplySkill(ESkillType::Return);
         bIsDragging = true;
         SelectedBall->Velocity = FVector(0, 0, 0);
         UEffectManager::GetInstance().ClearAura(SelectedBall);   // aura Effect 해제
@@ -92,7 +93,7 @@ void UPlayerController::Update(std::vector<UPrimitive*>& primitives)
                     "Resources/shooting.png",
                     DirectX::XMFLOAT2(SelectedBall->Location.x, SelectedBall->Location.y),
                     0.25f,
-                    DirectX::XMFLOAT2(2.0f, 2.0f),
+                    DirectX::XMFLOAT2(1.0f, 1.0f),
                     6,
                     false,
                     launchAngle

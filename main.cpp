@@ -88,11 +88,12 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLine
     // << 삭제예정
 
     // Scene Manager
+    USceneManager::GetInstance().AddScene("Intro", new UIntroScene());
     USceneManager::GetInstance().AddScene("Title", new UTitleScene());
     USceneManager::GetInstance().AddScene("Draft", new UDraftScene());
 	USceneManager::GetInstance().AddScene("InGame", new UInGameScene());
 	USceneManager::GetInstance().AddScene("GameOver", new UGameOverScene());
-    USceneManager::GetInstance().RequestChangeScene("Title");
+    USceneManager::GetInstance().RequestChangeScene("Intro");
 
     ///////////////////////////////////////////////
     //////////////////EFFECT TEST//////////////////
@@ -320,7 +321,7 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLine
         if (bIsDragging && UInputManager::GetInstance().IsKeyUp(VK_LBUTTON))
         {
             if (SelectedBall != nullptr)
-            {
+            {                
                 POINT mouse = UInputManager::GetInstance().GetMousePos();
                 FVector launchVec(SelectedBall->Location.x - (float)mouse.x, SelectedBall->Location.y - (float)mouse.y, 0.0f);
 
