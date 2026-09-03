@@ -11,5 +11,4 @@ public:
 
 private:
 	std::vector<ESkillType> DraftSkills;
-	int NumRemainDraftSkills = 0;
 };

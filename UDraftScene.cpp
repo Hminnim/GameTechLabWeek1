@@ -41,7 +41,7 @@ void UDraftScene::Initialize()
     };
 
     int NumButtons = DraftSkills.size();
-    NumRemainDraftSkills = NumButtons;
+    UGameManager::GetInstance().NumRemainDraftSkills = NumButtons;
 
     float TotalWidth = (ButtonWidth * NumButtons) + (ButtonGap * (NumButtons - 1));
     float StartX = (ScreenWidth - TotalWidth) / 2.0f;
@@ -65,15 +65,15 @@ void UDraftScene::Initialize()
             if (bIsRedTurn)
             {
                 UGameManager::GetInstance().RedDraftedSkills.push_back(CurrentSkill);
-                UGameManager::GetInstance().CurrentDraftTurn = EPlayer::Blue;
+                UGameManager::GetInstance().ChangeDraftTurn();
             }
             else
             {
                 UGameManager::GetInstance().BlueDraftedSkills.push_back(CurrentSkill);
-                UGameManager::GetInstance().CurrentDraftTurn = EPlayer::Red;
+                UGameManager::GetInstance().ChangeDraftTurn();
             }
 
-            NumRemainDraftSkills--;            
+            UGameManager::GetInstance().NumRemainDraftSkills--;
 
             // 한번 클릭 시 비활성화
             draftBtn->SetActive(false);
@@ -87,7 +87,7 @@ void UDraftScene::Update(float deltaTime)
 {
     UScene::Update(deltaTime);
 
-    if (NumRemainDraftSkills <= 0)
+    if (UGameManager::GetInstance().NumRemainDraftSkills <= 0)
     {
         USceneManager::GetInstance().ChangeScene("InGame");
     }
@@ -100,14 +100,12 @@ void UDraftScene::Render(URenderer& renderer)
 
 void UDraftScene::Enter()
 {
-    // 골라둔 스킬 비우기
-    UGameManager::GetInstance().RedDraftedSkills.clear();
-    UGameManager::GetInstance().BlueDraftedSkills.clear();
+    UGameManager::GetInstance().InitDraft();
 
     for (UUI* btn : UDraftScene::_uis)
     {
         btn->SetActive(true);
     }
 
-    NumRemainDraftSkills = DraftSkills.size();
+    UGameManager::GetInstance().NumRemainDraftSkills = DraftSkills.size();
 }
