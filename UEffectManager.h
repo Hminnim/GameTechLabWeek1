@@ -30,7 +30,7 @@ struct FActiveEffect
     int FrameHeight = 0; // 프레임 세로 크기 (pixel)
 
     // Fade out 여부
-    bool bFadeOut = true;
+    bool bFadeOut = false;
 
     // (경과시간 >= 재생 시간) -> true
     bool IsFinished() const { return ElapsedTime >= Duration; }
