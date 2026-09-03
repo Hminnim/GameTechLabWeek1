@@ -1,6 +1,6 @@
 # 🎯 커스텀 2D 물리 엔진 게임 (알까기)
 
-C++17, Win32 API 및 DirectX 11을 사용하여 밑바닥부터(From Scratch) 직접 개발한 2D 턴제 물리 전략 게임입니다\[cite: 9, 33, 46]. 자체 개발한 물리 엔진을 통해 정밀한 원-원(Circle-to-Circle) 및 원-벽(Circle-to-Wall) 충돌에 따른 충격량(Impulse) 연산을 처리하며\[cite: 3], 전략적인 "스킬 드래프트(Skill Draft)" 시스템을 결합하여 게임의 깊이를 더했습니다.
+C++17, Win32 API 및 DirectX 11을 사용하여 밑바닥부터(From Scratch) 직접 개발한 2D 턴제 물리 전략 게임입니다. 자체 개발한 물리 엔진을 통해 정밀한 원-원(Circle-to-Circle) 및 원-벽(Circle-to-Wall) 충돌에 따른 충격량(Impulse) 연산을 처리하며, 전략적인 "스킬 드래프트(Skill Draft)" 시스템을 결합하여 게임의 깊이를 더했습니다.
 
 ## 🛠 사용 기술 (Tech Stack)
 
@@ -39,7 +39,7 @@ C++17, Win32 API 및 DirectX 11을 사용하여 밑바닥부터(From Scratch) �
 ### 4\. 엔진 아키텍처
 
 * **매니저 패턴 (Manager Pattern):** `UGameManager`, `USceneManager`, `UInputManager`, `UResourceManager`, `USoundManager` 등의 싱글톤 매니저를 통해 전역 상태와 각종 리소스를 독립적으로 분리하여 관리합니다.
-* **입력 처리:** Win32의 원시 `WM\_MOUSEMOVE` 데이터를 읽어올 때 `GET\_X\_LPARAM` 매크로를 사용하여 화면 밖 마우스 좌표 오버플로우 문제를 방지하고, 게임 로직에는 일관된 좌표계로 변환하여 전달합니다.
+* **입력 처리:** Win32의 원시 `WM\\\_MOUSEMOVE` 데이터를 읽어올 때 `GET\\\_X\\\_LPARAM` 매크로를 사용하여 화면 밖 마우스 좌표 오버플로우 문제를 방지하고, 게임 로직에는 일관된 좌표계로 변환하여 전달합니다.
 * **이펙트 시스템:** `SpriteBatch`를 기반으로 설계된 `UEffectManager`를 통해 일회성 파티클 애니메이션, 마우스 드래그 조준 화살표, 루프형 스킬 오라(Aura) 이펙트를 효율적으로 제어하고 렌더링합니다.
 * **오디오 엔진:** FMOD 오디오 라이브러리를 통합하여 폴더 내의 `.wav`, `.mp3` 등의 사운드 리소스를 일괄 로드하고 재생 및 채널 관리를 수행합니다.
 
