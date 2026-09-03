@@ -63,7 +63,6 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLine
     // Resource Manager
     UResourceManager::GetInstance().Initialize("sphere",renderer.Device, VertexBufferSphere, NumVerticesSphere);
     UResourceManager::GetInstance().Initialize("square",renderer.Device, VertexBufferSquare, NumVerticesSquare);
-    ID3D11ShaderResourceView* testUITexture = UResourceManager::GetInstance().GetTexture("Resources/Title.png");
 
     // ImGui를 생성합니다.
     IMGUI_CHECKVERSION();
@@ -77,15 +76,6 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLine
     float DeltaTime = 0.0f;
 
     bool bActiveMagnetism = true;
-	
-    // Resource Manager test code >> 삭제예정
-    ID3D11ShaderResourceView* testTexture = UResourceManager::GetInstance().GetTexture("Resources/test.jpg");
-    if (!testTexture) {
-        OutputDebugStringA("Texture Load Failed!\n");
-        assert(false);
-    }
-    renderer.DeviceContext->PSSetShaderResources(0, 1, &testTexture);
-    // << 삭제예정
 
     // Scene Manager
     USceneManager::GetInstance().AddScene("Intro", new UIntroScene());

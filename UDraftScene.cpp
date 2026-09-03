@@ -113,10 +113,27 @@ void UDraftScene::Update(float deltaTime)
 {
     UScene::Update(deltaTime);
 
-    if (UGameManager::GetInstance().NumRemainDraftSkills <= 0)
+    if (m_bisNowEnter)
     {
-        USceneManager::GetInstance().RequestChangeScene("InGame");
+        m_fadeoverlay.StartFadeIn(1.0f);
+        m_bisNowEnter = false;
     }
+
+    if (UGameManager::GetInstance().NumRemainDraftSkills <= 0 && !m_bIsFadingOut)
+    {
+        m_fadeoverlay.StartFadeOut(1.0f);
+        m_bIsFadingOut = true;           
+    }
+
+    if (m_bIsFadingOut)
+    {
+        if (!m_fadeoverlay.IsFading())
+        {
+            USceneManager::GetInstance().RequestChangeScene("InGame");
+        }
+    }
+
+    m_fadeoverlay.Update(deltaTime);
 }
 
 void UDraftScene::Render(URenderer& renderer)
@@ -128,8 +145,8 @@ void UDraftScene::Render(URenderer& renderer)
     {
         draftedUI->Render(renderer);
     }
+    m_fadeoverlay.Render(renderer);
     renderer.EndSprite();
-   
 }
 
 void UDraftScene::Enter()

@@ -13,6 +13,11 @@ public:
 	void SetDraftedUI(ESkillType skillType);
 
 private:
+	bool m_bisNowEnter = true;
+	bool m_bIsFadingOut = false;
+
 	std::vector<ESkillType> DraftSkills;
 	std::vector<UUI*> m_draftedUIs;
+
+	UFadeOverlay m_fadeoverlay;
 };
