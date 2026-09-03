@@ -61,7 +61,7 @@ public:
 	// Draft
 	EPlayer CurrentDraftTurn;
 	std::vector<ESkillType> RedDraftedSkills;
-	std::vector<ESkillType> BlueDrafedSkills;
+	std::vector<ESkillType> BlueDraftedSkills;
 
 	void Update(std::vector<UPrimitive*>& primitives,float Deltatime);
 	void InitGame();
