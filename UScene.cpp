@@ -70,7 +70,7 @@ void UScene::Update(float Deltatime)
 
             UButton* btn = dynamic_cast<UButton*>(ui);
 
-            if (btn != nullptr && btn->HitTest((float)mouseX, (float)mouseY)) {
+            if (btn != nullptr && btn->HitTest((float)mouseX, (float)mouseY)) {                
                 btn->OnClick();
                 break;
             }
@@ -107,7 +107,8 @@ void UTitleScene::Initialize()
     startbtn->Init("Resources/button_start.png", StartBtnX, ButtonY, ButtonWidth, ButtonHeight);
     AddUI(startbtn);
     startbtn->SetOnClick([]() {
-        USceneManager::GetInstance().RequestChangeScene("InGame");
+        //USceneManager::GetInstance().RequestChangeScene("InGame");
+        USceneManager::GetInstance().RequestChangeScene("Draft");
         });
 
     UButton* exitbtn = new UButton();
@@ -116,8 +117,6 @@ void UTitleScene::Initialize()
     exitbtn->SetOnClick([]() {
         PostQuitMessage(0);
         });
-
-    
 }
 
 void UTitleScene::Update(float deltaTime)
@@ -208,6 +207,7 @@ void UInGameScene::Initialize()
     "heavier",  // 3: Heavier
     "mine",     // 4: Mine
     "repulse"   // 5: Repulse
+    "wall"      // 6: Wall
     };
 
     for (int i = 0; i < (int)ESlot::MaxCount; ++i)
@@ -312,6 +312,7 @@ void UInGameScene::Update(float deltaTime)
     }
 
     UGameManager::GetInstance().Update(_primitives,deltaTime);
+
 }
 
 void UInGameScene::Render(URenderer& renderer)
@@ -336,9 +337,6 @@ void UInGameScene::Enter()
         delete* it;
         it = _primitives.erase(it);
     }
-
-    // 스킬들 리셋
-	UGameManager::GetInstance().ResetSkiils();
 
     // 지정된 위치 공 소환
     float ScreenWidth = (float)UGameSetting::GetInstance().ScreendWidth;
@@ -374,6 +372,70 @@ void UInGameScene::Enter()
     {
         AddPrimitive(new UBall("sphere", EPlayer::Blue, spawnPos));
     }
+
+    // Set Drafted skills
+
+    float BtnWidth = ScreenWidth * (120.0f / 2040.0f);
+    float BtnHeight = BtnWidth;
+    float BtnX = ScreenWidth * (92.0f / 2040.0f);
+    float RightBtnX = ScreenWidth - BtnX - BtnWidth;
+    int NumButtons = 5;
+    float BtnYInterval = ScreenHeight / (NumButtons + 1);
+
+    std::vector<ESkillType>& redSkills = UGameManager::GetInstance().RedDraftedSkills;
+    std::vector<ESkillType>& blueSkills = UGameManager::GetInstance().BlueDraftedSkills;
+
+    for (int i = 0; i < (int)ESlot::MaxCount; ++i)
+    {
+        int yIndex = (i % 5) + 1;
+        float slotY = (BtnYInterval * yIndex) - (BtnHeight * 0.5f);
+        float slotX = (i < (int)ESlot::MaxCount / 2) ? BtnX : RightBtnX;
+
+        if (i < (int)ESlot::MaxCount / 2)
+        {
+            m_slotData[(ESlot)i] = { blueSkills[i],slotX, slotY };
+        }
+        else
+        {
+            m_slotData[(ESlot)i] = { redSkills[i % 5],slotX, slotY };
+        }
+    }
+
+    std::string skillNames[] = {
+        "none",
+        "freeze",
+        "giant",
+        "heavier",
+        "mine",
+        "repulse",
+        "wall",
+        "shotgun",
+        "ghost",
+        "magnetic",
+        "return"
+    };
+
+    for (int i = 0; i < (int)ESlot::MaxCount; ++i)
+    {
+        ESlot currentSlot = (ESlot)i;
+        FSlotData slotInfo = m_slotData[currentSlot];
+
+        std::string baseName = skillNames[(int)slotInfo.AssignedSkill];
+
+        std::string normalTex = "Resources/button_" + baseName + ".png";
+        std::string usedTex = "Resources/button_" + baseName + "_used.png";
+
+        m_skillButtons[i]->Init(normalTex, slotInfo.x, slotInfo.y, BtnWidth, BtnHeight);
+        m_skillButtons[i]->SetUsedTexture(usedTex);
+        m_skillButtons[i]->SetSkillType(slotInfo.AssignedSkill);
+        m_skillButtons[i]->SetOnClick([this, slotInfo]() {
+            this->PlayerController.ApplySkill(slotInfo.AssignedSkill);
+            });        
+    }
+
+    // 스킬들 리셋
+    UGameManager::GetInstance().ResetSkiils();
+
     UGameManager::GetInstance().InitGame();
 }
 
@@ -411,7 +473,8 @@ void UGameOverScene::Initialize()
     temp2->Init("Resources/button_restart.png", RestartBtnX, ButtonY, ButtonWidth, ButtonHeight);
     AddUI(temp2);
     temp2->SetOnClick([]() {
-        USceneManager::GetInstance().RequestChangeScene("InGame");
+        //USceneManager::GetInstance().RequestChangeScene("InGame");
+        USceneManager::GetInstance().RequestChangeScene("Draft");
         });
 
     UButton* temp3 = new UButton();
@@ -437,7 +500,8 @@ void UGameOverScene::Render(URenderer& renderer)
 }
 
 void UGameOverScene::Enter()
-{  
+{
+
 }
 
 
@@ -458,5 +522,82 @@ void DraftScene::Render(URenderer& renderer)
 }
 
 void DraftScene::Enter()
+{
+}
+
+
+
+/////////////////
+// UIntroScene //
+/////////////////
+void UIntroScene::Initialize()
+{
+    float ScreenWidth = (float)UGameSetting::GetInstance().ScreendWidth;
+    float ScreenHeight = (float)UGameSetting::GetInstance().ScreenHeight;
+
+    UUI* background = new UUI();
+    background->Init("Resources/background_intro.png", 0, 0, ScreenWidth, ScreenHeight);
+    SetBackground(background);
+    
+    float iconSize = 300.0f;
+    float startX = (ScreenWidth / 2.0f) - (iconSize / 2.0f);
+    float yOffset = 100.0f;
+    float startY = (ScreenHeight / 2.0f) - (iconSize / 2.0f) - yOffset;
+
+    UUI* out = new UUI();
+    out->Init("Resources/Jungle_out.png", startX, startY, iconSize, iconSize);
+    AddOut(out);
+
+    UUI* in = new UUI();
+    in->Init("Resources/Jungle_in.png", startX, startY, iconSize, iconSize);
+    AddIn(in);
+}
+
+void UIntroScene::Update(float deltaTime)
+{
+    m_elapsedTime += deltaTime;
+
+    if (m_elapsedTime >= m_renderTime && !m_bIsFadingOut) 
+    {
+        m_fadeoverlay.StartFadeOut(1.0f);
+        m_bIsFadingOut = true; // 페이드 아웃이 시작되었음을 체크
+    }
+
+    if (m_bIsFadingOut) 
+    {
+        if (m_elapsedTime >= m_renderTime + 1.0f) 
+        {
+            USceneManager::GetInstance().RequestChangeScene("Title");
+        }
+    }
+
+    float rotateSpeed = 1.0f;
+    m_rotationAngle += rotateSpeed * deltaTime;
+
+    if (m_in) 
+    {
+        m_in->SetRotation(m_rotationAngle);
+    }
+
+    if (m_bisNowEnter)
+    {
+        m_fadeoverlay.StartFadeIn(1.0f);
+        m_bisNowEnter = false;
+    }
+
+    m_fadeoverlay.Update(deltaTime);
+}
+
+void UIntroScene::Render(URenderer& renderer)
+{
+    renderer.BeginSprite();
+    m_background->Render(renderer);
+    m_out->Render(renderer);
+    m_in->Render(renderer);
+    m_fadeoverlay.Render(renderer);
+    renderer.EndSprite();
+}
+
+void UIntroScene::Enter()
 {
 }

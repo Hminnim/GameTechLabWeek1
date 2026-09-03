@@ -88,11 +88,15 @@ void UGameManager::CheckTurnEnd(std::vector<UPrimitive*>& primitives)
 				Wall->bIsDestroyed = true;
 			}						
 			UBall* ball = dynamic_cast<UBall*>(primitive);
+			if (ball && ball->bEnableReturn)
+			{
+				ball->Location = ball->Returnpos;
+			}
 			if (ball && ball->Owner == CurrentPlayerTurn)
 			{
 				ball->RemoveAllSkill();
 				if (ball->isShotgunbullet) ball->bIsDestroyed = true;
-			}
+			}			
 		}		
 
 		CurrentPlayerTurn = (CurrentPlayerTurn == EPlayer::Red ? EPlayer::Blue : EPlayer::Red);		
@@ -100,8 +104,6 @@ void UGameManager::CheckTurnEnd(std::vector<UPrimitive*>& primitives)
 
 		USoundManager::GetInstance().PlaySound("change_turn");
 	}
-
-
 }
 
 void UGameManager::CheckGameOver(std::vector<UPrimitive*>& primitives)
@@ -156,7 +158,6 @@ void UGameManager::CheckGameOver(std::vector<UPrimitive*>& primitives)
 
 	if (CurrentGameResult != EGameResult::None)
 	{
-		USceneManager::GetInstance().ChangeScene("GameOver");
 		for (auto* primitive : primitives)
 		{
 			if (UBall* ball = dynamic_cast<UBall*>(primitive))
@@ -219,4 +220,36 @@ void UGameManager::CheckFrozenTurnSkip(std::vector<UPrimitive*>& primitives, flo
 			0.0f
 		);
 	}
+}
+
+void UGameManager::InitDraft()
+{
+	// 골라둔 스킬 비우기
+	UGameManager::GetInstance().RedDraftedSkills.clear();
+	UGameManager::GetInstance().BlueDraftedSkills.clear();
+
+	CurrentDraftTurn = EPlayer::Blue;
+
+	std::string turnTexture = (CurrentDraftTurn == EPlayer::Red) ? "Resources/Red_turn.png" : "Resources/Blue_turn.png";
+	UEffectManager::GetInstance().PlayEffect(
+		turnTexture,
+		{ (float)UGameSetting::GetInstance().ScreendWidth * 0.5f, (float)UGameSetting::GetInstance().ScreenHeight * 0.5f },
+		0.5f,
+		DirectX::XMFLOAT2(1.0f, 1.0f),
+		1
+	);
+}
+
+void UGameManager::ChangeDraftTurn()
+{
+	CurrentDraftTurn = (CurrentDraftTurn == EPlayer::Red) ? EPlayer::Blue : EPlayer::Red;
+
+	std::string turnTexture = (CurrentDraftTurn == EPlayer::Red) ? "Resources/Red_turn.png" : "Resources/Blue_turn.png";
+	UEffectManager::GetInstance().PlayEffect(
+		turnTexture,
+		{ (float)UGameSetting::GetInstance().ScreendWidth * 0.5f, (float)UGameSetting::GetInstance().ScreenHeight * 0.5f },
+		0.5f,
+		DirectX::XMFLOAT2(1.0f, 1.0f),
+		1
+	);
 }

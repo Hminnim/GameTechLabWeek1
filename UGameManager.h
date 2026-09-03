@@ -25,7 +25,10 @@ enum class ESkillType
 	Mine,
 	Repulse,
 	WallCreate,
-	Shotgun
+	Shotgun,
+	Ghost,
+	Magnet,
+	Return
 };
 
 enum class EGameResult
@@ -50,7 +53,7 @@ public:
 	UGameManager(const UGameManager&) = delete;
 	UGameManager& operator=(const UGameManager&) = delete;
 
-	// State
+	// InGame State
 	EPlayer CurrentPlayerTurn;
 	ETurnState CurrentTurnState;
 	ESkillType m_currentSelectedSkill;
@@ -58,7 +61,15 @@ public:
 	EGameResult CurrentGameResult = EGameResult::None;
 	float m_frozenTimer = 0.0f;
 
+	// Draft
+	EPlayer CurrentDraftTurn = EPlayer::Blue;
+	std::vector<ESkillType> RedDraftedSkills;
+	std::vector<ESkillType> BlueDraftedSkills;
+	int NumRemainDraftSkills = 0;
+
 	void Update(std::vector<UPrimitive*>& primitives,float Deltatime);
+
+	// InGame
 	void InitGame();
 	bool CanSelectBall(UBall* TargetBall);
 	void CheckTurnEnd(std::vector<UPrimitive*>& primitives);
@@ -69,4 +80,8 @@ public:
 	void ResetSkiils() { m_usedSkills.clear(); }
 	void ConsumeSkill(EPlayer player, ESkillType skill) { m_usedSkills[player][skill] = true; }
 	void ConsumeCurrentSkill() { m_usedSkills[CurrentPlayerTurn][m_currentSelectedSkill] = true; }
+
+	// Draft
+	void InitDraft();
+	void ChangeDraftTurn();
 };

@@ -12,12 +12,13 @@ class UUI
         // virtual functions
         virtual bool Init(const std::string& texturePath, float x, float y, float width, float height);
         virtual void Update(float deltaTime) {};
-        virtual void Render(URenderer& renderer);
+        virtual void Render(URenderer& renderer);     
 
         // Setter
         void SetActive(bool active) { _isActive = active; }
 		void SetPosition(float x, float y) { _x = x; _y = y; }
-        
+        void SetRotation(float radian) { _rotation = radian; }
+
         // Check the status (item or not)
         bool IsActive() const { return _isActive; }
 
@@ -27,10 +28,15 @@ class UUI
         float GetWidth() const { return _width; }
         float GetHeight() const { return _height; }
 
+        void ChangeTextureByTexturePath(const std::string& texturePath) { _textureKey = texturePath; }
+
     protected:
         // position
         float _x = 0.0f;
         float _y = 0.0f;
+
+        // roattion
+        float _rotation = 0.0f;
 
         // scale
         float _width = 0.0f;

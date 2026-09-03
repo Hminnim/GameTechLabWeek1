@@ -30,19 +30,39 @@ bool UUI::Init(const std::string& texturePath, float x, float y, float width, fl
 }
 
 // Rendering
-void UUI::Render(URenderer& renderer)
-{
-    // render 대상 아니거나 srv, mesh 없으면 render pass
-    //if (!_isActive || !_srv || !_mesh)
-    //    return;
-
-    // Todo: 렌더링 구현
+void UUI::Render(URenderer& renderer) {
     _srv = UResourceManager::GetInstance().GetTexture(_textureKey);
+    if (!_srv) return;
+
+    if (!_isActive) return;
+
+    Microsoft::WRL::ComPtr<ID3D11Resource> resource;
+    _srv->GetResource(resource.GetAddressOf());
+
+    Microsoft::WRL::ComPtr<ID3D11Texture2D> tex2D;
+    resource.As(&tex2D);
+
+    D3D11_TEXTURE2D_DESC desc;
+    tex2D->GetDesc(&desc);
+
+    DirectX::XMFLOAT2 origin(desc.Width / 2.0f, desc.Height / 2.0f);
+
+    LONG centerX = (LONG)(_x + _width / 2.0f);
+    LONG centerY = (LONG)(_y + _height / 2.0f);
+
     RECT destRect = {
-        (LONG)_x,
-        (LONG)_y,
-        (LONG)(_x + _width),
-        (LONG)(_y + _height)
+        centerX,                   
+        centerY,                   
+        (LONG)(centerX + _width),
+        (LONG)(centerY + _height)
     };
-    renderer.m_spriteBatch->Draw(_srv, destRect);
+
+    renderer.m_spriteBatch->Draw(
+        _srv,
+        destRect,
+        nullptr,                      // sourceRect (nullptr이면 전체 이미지)
+        DirectX::Colors::White,       // 색상 (기본 흰색)
+        _rotation,                    // 회전값 (라디안)
+        origin                        // 회전 중심점
+    );
 }
