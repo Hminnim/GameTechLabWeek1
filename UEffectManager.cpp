@@ -49,10 +49,6 @@ void UEffectManager::PlayEffect(const std::string& textureKey, const DirectX::XM
     effect.FrameHeight = (int)desc.Height;
     effect.bFadeOut = fadeOut;
 
-    char buffer[128];
-    sprintf_s(buffer, "Texture Width: %d, Height: %d, FrameWidth: %d\n", (int)desc.Width, (int)desc.Height, effect.FrameWidth);
-    OutputDebugStringA(buffer);
-
     m_activeEffects.push_back(effect);
 }
 
@@ -226,7 +222,9 @@ void UEffectManager::RenderAuras()
             effect.FrameHeight                  // bottom
         };
 
-        // Todo: FadeOut 처리
+        // FadeOut 처리
+        float alpha = effect.bFadeOut ? (1.0f - progress) : 1.0f; // 처음에 alpha:1(불투명) => 마지막에 alpha:0(투명) 
+        DirectX::XMVECTORF32 tintColor = { 1.0f, 1.0f, 1.0f, alpha };
         
         // Effect 중심부터 Draw
         DirectX::XMFLOAT2 origin =
@@ -239,8 +237,8 @@ void UEffectManager::RenderAuras()
             effect.Texture,
             effect.Position,
             &sourceRECT,
-            DirectX::XMVECTORF32{ 1.0f, 1.0f, 1.0f, 0.5f },   // 알파(투명도)
-            effect.Rotation,                                  // NO rotation
+            DirectX::Colors::White,
+            effect.Rotation,       // NO rotation
             origin,
             effect.Scale
 
@@ -256,13 +254,7 @@ void UEffectManager::Render()
         return;
 
     m_spriteBatch->Begin();
-    // renderer.BeginSprite();
-
-    char buf[64];
-    sprintf_s(buf, "Render calling, m_hasArrow=%d\n", m_hasArrow);
-    OutputDebugStringA(buf);
-
-
+ 
     // Normal Effect
     for (const auto& effect : m_activeEffects)
     {
@@ -282,8 +274,14 @@ void UEffectManager::Render()
             effect.FrameHeight                  // bottom
         };
 
-        // Todo: FadeOut 처리
-        
+        // FadeOut 처리
+        float alpha = effect.bFadeOut ? (1.0f - progress) : 1.0f; // 처음에 alpha:1(불투명) => 마지막에 alpha:0(투명) 
+        DirectX::XMVECTORF32 tintColor = { 1.0f, 1.0f, 1.0f, alpha };
+
+        char buf[64];
+        sprintf_s(buf, "alpha=%.2f progress=%.2f fadeOut=%d\n", alpha, progress, effect.bFadeOut);
+        OutputDebugStringA(buf);
+
         // Effect 중심부터 Draw
         DirectX::XMFLOAT2 origin =
         {
@@ -323,7 +321,9 @@ void UEffectManager::Render()
             m_arrow.FrameHeight                  // bottom
         };
 
-        // Todo: FadeOut 처리
+        // FadeOut 처리
+        float alpha = m_arrow.bFadeOut ? (1.0f - progress) : 1.0f; // 처음에 alpha:1(불투명) => 마지막에 alpha:0(투명) 
+        DirectX::XMVECTORF32 tintColor = { 1.0f, 1.0f, 1.0f, alpha };
         
         // Effect 중심부터 Draw
         DirectX::XMFLOAT2 origin =

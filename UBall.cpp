@@ -110,7 +110,8 @@ void UBall::Update(float DeltaTime, std::vector<UPrimitive*>& others)
     }
 
     // 이동하는 중에도 Effect 적용
-    if ( bEnableFreeze || isSelfDestruct || isMagnetActivated || isGiantActivated || isHeavierActivated )
+    if ( bEnableFreeze || isSelfDestruct || isMagnetActivated || isGiantActivated || isHeavierActivated
+        || bEnableWallCreate || bEnableGhost || bEnableMagnet ||bEnableReturn || bEnableShotgun )
     {
 
         // 각 skill 별 texture-key
@@ -121,6 +122,11 @@ void UBall::Update(float DeltaTime, std::vector<UPrimitive*>& others)
         else if (isMagnetActivated)     Texture = "Resources/purple_aura.png";
         else if (isGiantActivated)      Texture = "Resources/green_aura.png";
         else if (isHeavierActivated)    Texture = "Resources/yellow_aura.png";
+        else if (bEnableWallCreate)     Texture = "Resources/wall_aura.png";
+        else if (bEnableGhost)          Texture = "Resources/ghost_aura.png";
+        else if (bEnableMagnet)         Texture = "Resources/magnet_aura.png";
+        else if (bEnableReturn)         Texture = "Resources/return_aura.png";
+        else if (bEnableShotgun)        Texture = "Resources/shotgun_aura.png";
 
         UEffectManager::GetInstance().DrawAura(
             &_skillAuraKey,
@@ -318,6 +324,18 @@ void UBall::ApplySkill(ESkillType skill)
 
             // 기존 effect 해제
             UEffectManager::GetInstance().ClearAura(this);
+                        
+            // Wall Selected Ball Effect
+            UEffectManager::GetInstance().DrawAura(
+                &_skillAuraKey,
+                "Resources/wall_aura.png",
+                DirectX::XMFLOAT2(this->Location.x, this->Location.y),
+                1.0f,
+                // 1.0f,
+                DirectX::XMFLOAT2(0.5f, 0.5f),
+                16
+            );
+
             break;
 
         case ESkillType::Shotgun:
@@ -328,12 +346,35 @@ void UBall::ApplySkill(ESkillType skill)
             UEffectManager::GetInstance().ClearAura(this);
             break;
 
+            // shotgun Selected Ball Effect
+            UEffectManager::GetInstance().DrawAura(
+                &_skillAuraKey,
+                "Resources/shotgun_aura.png",
+                DirectX::XMFLOAT2(this->Location.x, this->Location.y),
+                1.0f,
+                // 1.0f,
+                DirectX::XMFLOAT2(0.5f, 0.5f),
+                16
+            );
+
+
         case ESkillType::Ghost:
             bEnableGhost = true;
 
             // 기존 effect 해제
             UEffectManager::GetInstance().ClearAura(this);
             break;
+
+            // ghost Selected Ball Effect
+            UEffectManager::GetInstance().DrawAura(
+                &_skillAuraKey,
+                "Resources/ghost_aura.png",
+                DirectX::XMFLOAT2(this->Location.x, this->Location.y),
+                1.0f,
+                // 1.0f,
+                DirectX::XMFLOAT2(0.5f, 0.5f),
+                16
+            );
         
         case ESkillType::Magnet:
             bEnableMagnet = true;
@@ -342,6 +383,17 @@ void UBall::ApplySkill(ESkillType skill)
             UEffectManager::GetInstance().ClearAura(this);
             break;
 
+            // magnet Selected Ball Effect
+            UEffectManager::GetInstance().DrawAura(
+                &_skillAuraKey,
+                "Resources/magnet_aura.png",
+                DirectX::XMFLOAT2(this->Location.x, this->Location.y),
+                1.0f,
+                // 1.0f,
+                DirectX::XMFLOAT2(0.5f, 0.5f),
+                16
+            );
+
         case ESkillType::Return:
             bEnableReturn = true;
             Returnpos = Location;
@@ -349,6 +401,18 @@ void UBall::ApplySkill(ESkillType skill)
             // 기존 effect 해제
             UEffectManager::GetInstance().ClearAura(this);
             break;
+
+            // return Selected Ball Effect
+            UEffectManager::GetInstance().DrawAura(
+                &_skillAuraKey,
+                "Resources/return_aura.png",
+                DirectX::XMFLOAT2(this->Location.x, this->Location.y),
+                1.0f,
+                // 1.0f,
+                DirectX::XMFLOAT2(0.5f, 0.5f),
+                16
+            );
+
         default:
             break;
     }
@@ -512,6 +576,10 @@ void UBall::FrictionFloor(float DeltaTime, std::vector<UPrimitive*>& others)
         float dist = sqrtf(dx * dx + dy * dy);
         
         if (dist >= 150.0f) {
+
+            // 발사 시 이펙트 해제
+            UEffectManager::GetInstance().ClearAura(&_skillAuraKey);
+
             float angle = atan2f(Velocity.y, Velocity.x);
             FVector leftdir = FVector(cosf(angle - 0.20f), sin(angle - 0.20f), 0.0f);
             UBall* leftBall = new UBall("sphere", this->Owner, Location);

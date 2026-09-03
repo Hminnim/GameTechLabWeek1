@@ -153,6 +153,9 @@ void UDraftScene::Enter()
 {
     UGameManager::GetInstance().InitDraft();
 
+    m_bisNowEnter = true;
+    m_bIsFadingOut = false;
+
     for (UUI* btn : UDraftScene::_uis)
     {
         btn->SetActive(true);
